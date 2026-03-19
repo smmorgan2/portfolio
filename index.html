@@ -663,9 +663,17 @@ function swapCardContent(el, p, isFront, isLastBack){
     el.classList.remove('back');
     el.classList.add('front');
     el.style.background = '#111';
+    /* Start invisible so the strip→video swap is hidden */
+    el.style.transition = 'none';
+    el.style.opacity = '0';
     el.innerHTML = cardInnerHTML(p);
     el.onclick = function(){ if(current==='port') navGo(p.id); };
     rehover();
+    /* Fade in once video is loaded */
+    setTimeout(function(){
+      el.style.transition = 'opacity 0.3s ease';
+      el.style.opacity = '1';
+    }, 50);
     /* Reset bar to hidden state so it animates in fresh */
     var bar = el.querySelector('.card-bar');
     if(bar){ bar.classList.remove('go','out'); bar._barTimer && clearTimeout(bar._barTimer); bar._barTimer = null; }
