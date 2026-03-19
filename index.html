@@ -669,6 +669,7 @@ function swapCardContent(el, p, isFront, isLastBack){
     /* Reset bar to hidden state so it animates in fresh */
     var bar = el.querySelector('.card-bar');
     if(bar){ bar.classList.remove('go','out'); bar._barTimer && clearTimeout(bar._barTimer); bar._barTimer = null; }
+    el.style.opacity = "1"; /* reset after push-forward exit */
     /* Bar starts hidden — RAF will add .go after card settles */
   } else {
     el.classList.remove('front');
@@ -732,6 +733,7 @@ function swapCardContent(el, p, isFront, isLastBack){
       el.style.bottom    = 'auto';
       el.style.zIndex    = String(n+20);
       el.style.transform = 'translateY('+(prog*cardH*1.08)+'px)';
+      el.style.opacity   = '1';
 
       /* External deck-bar: always visible, tracks card, fades with scroll */
       var deckBar = document.getElementById('deck-bar');
