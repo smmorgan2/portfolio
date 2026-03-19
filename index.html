@@ -637,11 +637,14 @@ function initDeck(){
     el.dataset.slot = i;
     if(i===0){
       el.classList.add('front');
-      el.style.background='#111';
-      el.innerHTML = cardInnerHTML(p);
-      el.onclick = function(){ if(current==='port') navGo(p.id); };
     } else {
       el.classList.add('back', p.stripColor);
+    }
+    el.dataset.pid = p.id;
+    el.style.background='#111';
+    el.innerHTML = cardInnerHTML(p);
+    if(i===0){
+      el.onclick = function(){ if(current==='port') navGo(p.id); };
     }
     deckEl.appendChild(el);
     cardEls.push(el);
@@ -682,9 +685,13 @@ function swapCardContent(el, p, isFront, isLastBack){
   } else {
     el.classList.remove('front');
     el.classList.add('back', p.stripColor);
-    el.style.background = '';
+    el.style.background = '#111';
     el.style.opacity = '1';
-    el.innerHTML = '';  /* clear any video/img from when this was front */
+    /* Keep video content — just swap if project changed */
+    if(el.dataset.pid !== p.id){
+      el.innerHTML = cardInnerHTML(p);
+      el.dataset.pid = p.id;
+    }
     el.onclick = null;
     /* Only fade the card reappearing at the very back of stack */
     if(isLastBack){
