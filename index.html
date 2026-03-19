@@ -675,7 +675,8 @@ function swapCardContent(el, p, isFront, isLastBack){
     el.classList.remove('front');
     el.classList.add('back', p.stripColor);
     el.style.background = '';
-    el.innerHTML = '';
+    el.style.opacity = '1';
+    el.innerHTML = '';  /* clear any video/img from when this was front */
     el.onclick = null;
     /* Only fade the card reappearing at the very back of stack */
     if(isLastBack){
