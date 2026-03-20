@@ -676,6 +676,13 @@ function initDeck(){
       el.style.height    = cardH + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + (prog * cardH * 1.08) + 'px)';
+      /* Keep onclick pointing to correct project */
+      var fp3 = projectAt(0);
+      if(fp3 && el._clickId !== fp3.id){
+        el._clickId = fp3.id;
+        var _fid = fp3.id;
+        el.onclick = function(){ if(current==='port') navGo(_fid); };
+      }
 
       /* deck-bar */
       var deckBar = document.getElementById('deck-bar');
@@ -958,6 +965,13 @@ var scrollTgt = 0;
       el.style.height    = cardH + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + (prog * cardH * 1.08) + 'px)';
+      /* Keep onclick pointing to correct project */
+      var fp3 = projectAt(0);
+      if(fp3 && el._clickId !== fp3.id){
+        el._clickId = fp3.id;
+        var _fid = fp3.id;
+        el.onclick = function(){ if(current==='port') navGo(_fid); };
+      }
 
       /* deck-bar */
       var db = document.getElementById('deck-bar');
