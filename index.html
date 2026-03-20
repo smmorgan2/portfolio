@@ -128,10 +128,7 @@ body.lite #cur{background:var(--black)}
   opacity:0;
   padding-bottom:0.22em;
   margin-bottom:-0.22em;
-  transition:
-    transform 0.55s cubic-bezier(0.16,1,0.3,1),
-    opacity   0.25s ease,
-    color     0.7s ease;
+  transition:transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease, color 0.6s ease;
 }
 .land-char.space{display:inline-block;width:0.28em;color:transparent;opacity:0;}
 .land-name.go .land-char{
@@ -646,7 +643,8 @@ function initDeck(){
 /* RAF — zero DOM changes, only CSS transforms */
 (function loop(){
   requestAnimationFrame(loop);
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
 
   sCur += (sRaw - sCur) * 0.075;
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
@@ -735,12 +733,19 @@ function initDeck(){
       el.style.height    = PEEK + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
+      /* Last back slot fades in as scroll progresses */
+      if(slot === n - 1){
+        el.style.opacity = String(Math.min(1, prog * 3));
+      } else {
+        el.style.opacity = '1';
+      }
     }
   }
 })();
 
 document.getElementById('pg-port').addEventListener('wheel', function(e){
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
   e.preventDefault();
   sRaw += e.deltaY * 1.2;
 },{passive:false});
@@ -882,9 +887,9 @@ updateNav();
   var roleEl = document.getElementById('land-role');
   if(!nameEl) return;
   var chars = nameEl.querySelectorAll('.land-char');
-  /* Stagger each character */
   chars.forEach(function(c, i){
-    c.style.transitionDelay = (i * 0.055) + 's';
+    var d = (i * 0.055) + 's';
+    c.style.transitionDelay = d;
   });
   /* Role pops in after all chars have landed */
 
@@ -946,7 +951,8 @@ var scrollTgt = 0;
 
 (function loop(){
   requestAnimationFrame(loop);
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
 
   scrollPos += (scrollTgt - scrollPos) * 0.075;
   if(Math.abs(scrollTgt - scrollPos) < 0.05) scrollPos = scrollTgt;
@@ -1019,13 +1025,20 @@ var scrollTgt = 0;
       el.style.height    = PEEK + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
+      /* Last back slot fades in as scroll progresses */
+      if(slot === n - 1){
+        el.style.opacity = String(Math.min(1, prog * 3));
+      } else {
+        el.style.opacity = '1';
+      }
     }
   }
 })();
 
 /* Wheel — scroll forward AND backward */
 document.getElementById('pg-port').addEventListener('wheel', function(e){
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
   e.preventDefault();
   scrollTgt += e.deltaY * 1.2;
 },{passive:false});
@@ -1168,9 +1181,9 @@ updateNav();
   var roleEl = document.getElementById('land-role');
   if(!nameEl) return;
   var chars = nameEl.querySelectorAll('.land-char');
-  /* Stagger each character */
   chars.forEach(function(c, i){
-    c.style.transitionDelay = (i * 0.055) + 's';
+    var d = (i * 0.055) + 's';
+    c.style.transitionDelay = d;
   });
   /* Role pops in after all chars have landed */
 
@@ -1228,7 +1241,8 @@ function initDeck(){
 
 (function loop(){
   requestAnimationFrame(loop);
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
 
   sCur += (sRaw - sCur) * 0.075;
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
@@ -1306,13 +1320,20 @@ function initDeck(){
       el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
+      /* Last back slot fades in as scroll progresses */
+      if(slot === n - 1){
+        el.style.opacity = String(Math.min(1, prog * 3));
+      } else {
+        el.style.opacity = '1';
+      }
 
     }
   }
 })();
 
 document.getElementById('pg-port').addEventListener('wheel', function(e){
-  if(current !== 'port') return;
+  var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
+  if(current !== 'port' && !portOn) return;
   e.preventDefault();
   sRaw += e.deltaY * 1.2;
 },{passive:false});
