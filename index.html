@@ -645,8 +645,8 @@ function initDeck(){
 
   sCur += (sRaw - sCur) * 0.075;
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
-  /* Scroll backwards */
-  if(sCur <= -CARD_H){
+  /* Scroll backwards — trigger as soon as sCur goes negative */
+  if(sCur < 0){
     sCur += CARD_H; sRaw += CARD_H;
     baseIndex = ((baseIndex - 1) % N + N) % N;
   }
