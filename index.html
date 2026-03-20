@@ -344,7 +344,7 @@ body.lite #cur{background:var(--black)}
 </section>
 <section id="pg-port" class="page pg-port-under">
   <div id="scroll-hint">Scroll to browse</div>
-  <div id="deck"></div><div id="deck-bar" style="position:absolute;left:0;right:0;z-index:9999;display:grid;grid-template-columns:1fr 1fr 1fr;padding:0 64px;pointer-events:none;opacity:0;transform:translateY(10px);transition:opacity 0.35s ease,transform 0.45s cubic-bezier(0.16,1,0.3,1);isolation:isolate;"><span id="db-tags" style="font-size:12px;font-weight:400;letter-spacing:-0.05em;color:var(--bg);line-height:1.2;font-family:inherit;text-align:left;mix-blend-mode:difference"></span><span id="db-title" style="font-size:12px;font-weight:400;letter-spacing:-0.05em;color:var(--bg);line-height:1.2;font-family:inherit;text-align:center;mix-blend-mode:difference"></span><span id="db-year" style="font-size:12px;font-weight:400;letter-spacing:-0.05em;color:var(--bg);line-height:1.2;font-family:inherit;text-align:right;mix-blend-mode:difference"></span></div>
+  <div id="deck"></div>
 </section>
 <div id="proj-pages"></div>
 <section id="pg-about" class="page">
@@ -752,41 +752,15 @@ function initDeck(){
       el.style.right     = PAD_BASE + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + ty + 'px)';
-
-      var deckBar = document.getElementById('deck-bar');
-      if(deckBar){
-        var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'))||52;
-        deckBar.style.top = (navH + (n-1)*PEEK + cardH*0.70 + ty + 10) + 'px';
-        if(prog < 0.03){
-          if(!deckBar._vis){
-            deckBar._vis = true;
-            deckBar._t = deckBar._t || setTimeout(function(){
-              deckBar.style.transition = 'opacity 0.35s ease,transform 0.45s cubic-bezier(0.16,1,0.3,1)';
-              deckBar.style.transform  = 'translateY(0)';
-              deckBar.style.opacity    = '1';
-            }, 220);
-          }
-        } else {
-          if(deckBar._vis || deckBar._t){
-            deckBar._vis = false;
-            if(deckBar._t){ clearTimeout(deckBar._t); deckBar._t = null; }
-            deckBar.style.transition = 'opacity 0.15s ease,transform 0.15s ease';
-            deckBar.style.transform  = 'translateY(10px)';
-            deckBar.style.opacity    = '0';
-          }
-        }
-        var fp = projectAt(0);
-        if(fp){
-          var dt=document.getElementById('db-tags');
-          var dtt=document.getElementById('db-title');
-          var dy=document.getElementById('db-year');
-          if(dt && dt.textContent !== fp.tags.join(', ')){
-            dt.textContent=fp.tags.join(', ');
-            dtt.textContent=fp.title;
-            dy.textContent=fp.year;
-          }
-        }
+      el.style.cursor = 'pointer';
+      var fp3 = projectAt(0);
+      if(fp3 && el._clickId !== fp3.id){
+        el._clickId = fp3.id;
+        var _fid = fp3.id;
+        el.onclick = (function(id){ return function(e){ if(current==='port'){ e.stopPropagation(); navGo(id); } }; })(fp3.id);
       }
+
+      
     } else {
       var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
