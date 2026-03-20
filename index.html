@@ -15,7 +15,7 @@ body{font-family:var(--font);overflow-x:hidden;cursor:none;background:var(--blac
 a{text-decoration:none;color:inherit;cursor:none}
 button{background:none;border:none;font:inherit;color:inherit;cursor:none}
 img{display:block;max-width:100%}
-h1,h2,h3,.land-name,.ab-h1,.pj-h1,.m-link,.n-logo,.n-menu-btn,.land-corner,.card-bar,.pj-feat-h{font-weight:700;letter-spacing:-0.05em}
+h1,h2,h3,.land-name,.ab-h1,.pj-h1,.m-link,.n-logo,.n-menu-btn,.land-corner,.pj-feat-h{font-weight:700;letter-spacing:-0.05em}
 #cur{position:fixed;z-index:9999;pointer-events:none;width:10px;height:10px;border-radius:50%;background:var(--green);transform:translate(-50%,-50%);transition:width .2s var(--ease),height .2s var(--ease),background .2s}
 body.hov #cur{width:18px;height:18px;opacity:.75}
 body.lite #cur{background:var(--black)}
@@ -112,6 +112,7 @@ body.lite #cur{background:var(--black)}
 #pg-land{position:fixed;inset:0;z-index:50;width:100vw;height:100vh;overflow:hidden;background:var(--bg);will-change:transform}
 .land-bg{position:absolute;inset:0;will-change:transform}
 .land-bg img{width:100%;height:120%;object-fit:cover;object-position:center top;will-change:transform}
+
 .land-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;will-change:transform;overflow:visible}
 .land-name{
   font-size:clamp(68px,12vw,160px);line-height:.95;
@@ -135,12 +136,10 @@ body.lite #cur{background:var(--black)}
 .land-name.go .land-char{
   transform:translateX(0);
   opacity:1;
-  /* Color stays as inherited from parent */
 }
 /* Parent handles the color wipe as one unit */
 .land-name{transition:color 0.8s ease;}
-.land-name.go{color:var(--green);}
-.land-role{font-weight:400;font-size:clamp(12px,1.2vw,15px);color:var(--bg);letter-spacing:0.04em;text-align:center;}
+.land-role{font-weight:400;font-size:clamp(12px,1.2vw,15px);color:var(--bg);letter-spacing:-0.05em;text-align:center;}
 
 .land-corners{position:absolute;bottom:24px;left:var(--g);right:var(--g);display:flex;justify-content:space-between}
 .land-corner{font-size:13px;font-weight:700;letter-spacing:-0.05em;color:rgba(255,255,255,.85);transition:color .15s}
@@ -156,19 +155,24 @@ body.lite #cur{background:var(--black)}
 .card.front{z-index:30;background:#111}
 .card-img{position:absolute;inset:0;background:#111}
 .card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
-.card-bar{
-  position:absolute;top:85%;left:0;right:0;bottom:auto;
+#card-info{
+  position:absolute;bottom:24px;left:var(--g);right:var(--g);
   display:grid;grid-template-columns:1fr 1fr 1fr;
   align-items:flex-end;
-  padding:16px var(--g);
   pointer-events:none;
+  z-index:100;
 }
-.card-bar span{font-size:12px;font-weight:400;letter-spacing:-0.05em;color:#fff;line-height:1.2;display:block;opacity:0;transition:opacity 0.4s ease}
-.card-bar.go span{opacity:1}
-.card-bar .cb-tags{text-align:left;}
-.card-bar .cb-t{text-align:center;font-weight:400}
-.card-bar .cb-yr{text-align:right;}
-.card-bar.out span{opacity:0;transition:opacity 0.15s ease}
+.ci-col{
+  font-size:13px;font-weight:400;letter-spacing:-0.03em;
+  color:var(--black);line-height:1.2;display:block;
+  opacity:0;transform:translateY(8px);
+  transition:opacity 0.4s ease, transform 0.4s ease;
+}
+#card-info.go .ci-col{opacity:1;transform:translateY(0)}
+#card-info.out .ci-col{opacity:0;transform:translateY(-6px);transition:opacity 0.18s ease, transform 0.18s ease}
+.ci-left{text-align:left}
+.ci-center{text-align:center}
+.ci-right{text-align:right}
 /* ── PROJECT PAGES ── */
 .pg-proj{background:var(--black);color:#fff;overflow-x:hidden}
 
@@ -338,13 +342,18 @@ body.lite #cur{background:var(--black)}
     <div class="land-role land-slide" id="land-role" style="margin-top:-12px">Motion Art Director</div>
   </div>
   <div class="land-corners">
-    <span class="land-corner land-slide" id="land-sm" style="color:var(--green)">S-M</span>
+    <span class="land-corner land-slide" id="land-sm" style="color:var(--bg)">S-M</span>
     <a class="land-corner land-slide" id="land-port" onclick="navGo('port')">Portfolio</a>
   </div>
 </section>
 <section id="pg-port" class="page pg-port-under">
   <div id="scroll-hint">Scroll to browse</div>
   <div id="deck"></div>
+  <div id="card-info">
+    <span id="ci-tags" class="ci-col ci-left"></span>
+    <span id="ci-title" class="ci-col ci-center"></span>
+    <span id="ci-year" class="ci-col ci-right"></span>
+  </div>
 </section>
 <div id="proj-pages"></div>
 <section id="pg-about" class="page">
@@ -613,8 +622,33 @@ var baseIndex = 0;
 var N         = PROJECTS.length;
 var cardEls   = [];
 var deckEl;
+var _lastFrontId = null;
+var _ciTimeout   = null;
 
 function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
+
+function updateCardInfo(proj, animate){
+  var infoEl = document.getElementById('card-info');
+  if(!infoEl || !proj) return;
+  if(animate){
+    infoEl.classList.remove('go');
+    infoEl.classList.add('out');
+    clearTimeout(_ciTimeout);
+    _ciTimeout = setTimeout(function(){
+      document.getElementById('ci-tags').textContent  = proj.tags.join(', ');
+      document.getElementById('ci-title').textContent = proj.title;
+      document.getElementById('ci-year').textContent  = proj.year;
+      infoEl.classList.remove('out');
+      requestAnimationFrame(function(){ infoEl.classList.add('go'); });
+    }, 200);
+  } else {
+    document.getElementById('ci-tags').textContent  = proj.tags.join(', ');
+    document.getElementById('ci-title').textContent = proj.title;
+    document.getElementById('ci-year').textContent  = proj.year;
+    infoEl.classList.remove('out');
+    infoEl.classList.add('go');
+  }
+}
 
 
 var scrollObserver=new IntersectionObserver(function(entries){
@@ -718,6 +752,13 @@ function initDeck(){
   var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
   if(current !== 'port' && !portOn) return;
 
+  /* Compute actual card height so CARD_H stays current with viewport */
+  var n    = N;
+  var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
+  var cardW = dw - PAD_BASE * 2;
+  var cardH = Math.round(cardW * 9/16);
+  CARD_H = cardH;
+
   sCur += (sRaw - sCur) * 0.075;
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
   /* Backward */
@@ -733,10 +774,6 @@ function initDeck(){
   }
 
   var prog = sCur / CARD_H;
-  var n    = N;
-  var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  var cardW = dw - PAD_BASE * 2;
-  var cardH = Math.round(cardW * 9/16);
 
   for(var slot = 0; slot < n; slot++){
     var domIdx = ((baseIndex + slot) % n + n) % n;
@@ -759,8 +796,17 @@ function initDeck(){
         var _fid = fp3.id;
         el.onclick = (function(id){ return function(e){ if(current==='port'){ e.stopPropagation(); navGo(id); } }; })(fp3.id);
       }
-
-      
+      /* Info bar: detect front card change */
+      if(fp3 && fp3.id !== _lastFrontId){
+        _lastFrontId = fp3.id;
+        updateCardInfo(fp3, true);
+      }
+      /* Fade info bar based on scroll progress */
+      var infoEl = document.getElementById('card-info');
+      if(infoEl){
+        var infoOpacity = 1 - Math.min(1, prog * 3);
+        infoEl.style.opacity = String(Math.max(0, infoOpacity));
+      }
     } else {
       var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
@@ -801,6 +847,8 @@ document.getElementById('pg-port').addEventListener('touchend',function(e){},{pa
 initDeck();
 buildProjectPages();
 updateNav();
+/* Initialize info bar with first project */
+updateCardInfo(projectAt(0), false);
 
 /* Landing title animation */
 (function(){
@@ -812,13 +860,26 @@ updateNav();
   var chars = nameEl.querySelectorAll('.land-char');
   chars.forEach(function(c, i){ c.style.transitionDelay = (i * 0.055) + 's'; });
   var lastCharMs = chars.length * 55;
+
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    /* 1. Chars slide in white with stagger */
     nameEl.classList.add('go');
+
+    /* 2. Sweep green through each char with stagger, starting shortly after slide begins */
+    chars.forEach(function(c, i){
+      if(c.classList.contains('space')) return;
+      setTimeout(function(){
+        c.style.transition = 'transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease, color 0.7s ease';
+        c.style.color = 'var(--green)';
+      }, 150 + (i * 55));
+    });
+
+    /* 3. Show role + corners after everything settles */
     setTimeout(function(){
       if(roleEl) roleEl.classList.add('go');
       if(smEl)   smEl.classList.add('go');
       if(portEl) portEl.classList.add('go');
-    }, lastCharMs + 200);
+    }, lastCharMs + 400);
   }); });
 })();
 
