@@ -491,6 +491,11 @@ function navGo(id){
             bindScrollReveal(pg);
             animatePjTitle(pg);
           }
+          if(id==='port'){
+            var db=document.getElementById('deck-bar');
+            if(db){ db._vis=false; if(db._t){clearTimeout(db._t);db._t=null;}
+              db.style.opacity='0'; db.style.transform='translateY(10px)'; }
+          }
           if(id==='about'){
             var ap=document.getElementById('pg-about');
             if(ap){
@@ -708,7 +713,12 @@ function initDeck(){
         var fp2 = projectAt(0);
         if(fp2){
           var dt=document.getElementById('db-tags'),dtt=document.getElementById('db-title'),dy=document.getElementById('db-year');
-          if(dt&&dt.textContent!==fp2.tags.join(', ')){dt.textContent=fp2.tags.join(', ');dtt.textContent=fp2.title;dy.textContent=fp2.year;}
+          if(dt&&dt.textContent!==fp2.tags.join(', ')){
+            dt.textContent=fp2.tags.join(', ');dtt.textContent=fp2.title;dy.textContent=fp2.year;
+            /* New project — reset bar so animation replays */
+            deckBar._vis=false; if(deckBar._t){clearTimeout(deckBar._t);deckBar._t=null;}
+            deckBar.style.transition='none'; deckBar.style.opacity='0'; deckBar.style.transform='translateY(10px)';
+          }
         }
       }
     } else {
