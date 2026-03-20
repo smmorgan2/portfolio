@@ -687,8 +687,9 @@ function swapCardContent(el, p, isFront, isLastBack){
     el.onclick = null;
     /* Only fade the card reappearing at the very back of stack */
     if(isLastBack){
-      fadingEls.add(el);
-      el._fadeStart = performance.now();
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.5s ease';
+      setTimeout(function(){ el.style.opacity = '1'; }, 30);
     }
   }
 }
@@ -712,8 +713,15 @@ function swapCardContent(el, p, isFront, isLastBack){
       var p = projectAt(slot);
       var currentId = el.dataset.pid;
       if(currentId !== p.id){
-        el.dataset.pid = p.id;
-        swapCardContent(el, p, slot === 0, slot === N - 1);
+        /* Only swap the very back slot (nearly invisible) to avoid mid-scroll stutter */
+        if(slot === N - 1){
+          el.dataset.pid = p.id;
+          swapCardContent(el, p, false, true);
+        } else if(slot === 0){
+          /* Front card swap happens silently — it's already scrolled past */
+          el.dataset.pid = p.id;
+          swapCardContent(el, p, true, false);
+        }
       }
     });
   }
@@ -861,6 +869,326 @@ document.getElementById('pg-port').addEventListener('touchend',function(e){},{pa
 /* ═══════════════════════════════════════════════════
    PROJECT PAGES
 ═══════════════════════════════════════════════════ */
+function buildProjectPages(){
+  var wrap=document.getElementById('proj-pages');
+  var featured=PROJECTS.filter(function(p){return p.featured;}).slice(0,3);
+  PROJECTS.forEach(function(p){
+    var sec=document.createElement('section');
+    sec.id='pg-'+p.id; sec.className='page pg-proj';
+    var featCards=featured.map(function(f){
+      return '<div class="pj-feat-card" onclick="navGo(&apos;'+f.id+'&apos;)"><div class="pj-feat-thumb">'+mkMedia(f.heroVideo||f.heroImg,f.ph,f.title)+'</div><div class="pj-feat-lbl">'+f.title+'</div></div>';
+    }).join('');
+    var chars=p.title.split('').map(function(c){
+      return c===' '?'<span class="pj-char space"> </span>':'<span class="pj-char">'+c+'</span>';
+    }).join('');
+    var words=p.body.split(' '); var lines=[];
+    for(var i=0;i<words.length;i+=10){
+      lines.push('<span class="pj-line-wrap"><span class="pj-line">'+words.slice(i,i+10).join(' ')+'</span></span>');
+    }
+    sec.innerHTML=
+      '<div class="pj-head"><div class="pj-h1"><span class="pj-h1-inner">'+chars+'</span></div>'+
+      '<div class="pj-tags">'+p.tags.join(', ')+'</div></div>'+
+      '<div class="pj-hero pj-reveal">'+mkMedia(p.heroVideo||p.heroImg,p.ph,p.title+' hero')+'</div>'+
+      (function(){
+      var sWords = p.statement.split(' ');
+      var sLines = [];
+      for(var si=0;si<sWords.length;si+=6){
+        sLines.push('<span class="pj-stmt-line-wrap"><span class="pj-stmt-line">'+sWords.slice(si,si+6).join(' ')+'</span></span>');
+      }
+      return '<div class="pj-stmt">'+sLines.join(' ')+'</div>';
+    })()+
+      '<div class="pj-2col"><div class="pj-reveal">'+mkMedia(p.portraits[0],p.ph,p.title+' 1')+'</div>'+
+      '<div class="pj-reveal">'+mkMedia(p.portraits[1],p.ph,p.title+' 2')+'</div></div>'+
+      '<div class="pj-banner pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' wide')+'</div>'+
+      '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
+      '<div class="pj-3col"><div class="pj-reveal">'+mkMedia(p.portraits[0],p.ph,p.title+' a')+'</div>'+
+      '<div class="pj-reveal">'+mkMedia(p.portraits[1],p.ph,p.title+' b')+'</div>'+
+      '<div class="pj-reveal">'+mkMedia(p.portraits[2],p.ph,p.title+' c')+'</div></div>'+
+      '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' wide 2')+'</div>'+
+      '<div class="pj-feat pj-reveal"><div class="pj-feat-h">Featured Work</div>'+
+      '<div class="pj-feat-row">'+featCards+'</div></div>'+
+      '<footer class="footer on-black"><div class="ft-l">Sam Morgan<br>smmorgan2@gmail.com</div>'+
+      '<div class="ft-links"><a href="https://linkedin.com" target="_blank">LinkedIn</a>'+
+      '<a href="https://instagram.com" target="_blank">Instagram</a></div>'+
+      '<div class="ft-copy">2025 All rights reserved</div></footer>';
+    wrap.appendChild(sec);
+  });
+}
+
+function mkMedia(src,cls,lbl){
+  if(!src) return '<div class="cph '+cls+'"><span class="cph-lbl">'+lbl+'</span></div>';
+  if(/\.mp4$|\.webm$|\.mov$/i.test(src))
+    return '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;"></video>';
+  return '<img src="'+src+'" alt="'+lbl+'" loading="lazy">';
+}
+
+/* ═══════════════════════════════════════════════════
+   CURSOR
+═══════════════════════════════════════════════════ */
+var curEl=document.getElementById('cur');
+document.addEventListener('mousemove',function(e){
+  curEl.style.left=e.clientX+'px';
+  curEl.style.top=e.clientY+'px';
+});
+
+function rehover(){
+  document.querySelectorAll('a,button,[onclick],.card,.pj-feat-card,.land-corner,.n-menu-btn,.n-dropdown a').forEach(function(el){
+    if(el._hv)return; el._hv=true;
+    el.addEventListener('mouseenter',function(){document.body.classList.add('hov');});
+    el.addEventListener('mouseleave',function(){document.body.classList.remove('hov');});
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL REVEAL + TITLE ANIMATION
+═══════════════════════════════════════════════════ */
+
+function bindScrollReveal(page){
+  var lineIdx=0, stmtIdx=0;
+  page.querySelectorAll('.pj-reveal,.pj-line,.pj-stmt-line').forEach(function(el){
+    /* Mark for animation */
+    el.classList.add('will-animate');
+    if(el.classList.contains('pj-line')){
+      el.style.transitionDelay=(lineIdx*0.06)+'s'; lineIdx++;
+    } else if(el.classList.contains('pj-stmt-line')){
+      el.style.transitionDelay=(stmtIdx*0.08)+'s'; stmtIdx++;
+    }
+    scrollObserver.observe(el);
+  });
+}
+function animatePjTitle(page){
+  page.querySelectorAll('.pj-char').forEach(function(c,i){c.style.transitionDelay=(i*0.04)+'s';});
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    var h1=page.querySelector('.pj-h1');if(h1)h1.classList.add('revealed');
+  });});
+}
+
+function animateAboutTitle(){
+  var h1=document.getElementById('about-h1');
+  if(!h1) return;
+  /* Split text into individual character spans */
+  var txt = 'About';
+  h1.innerHTML = txt.split('').map(function(c){
+    return c===' ' ? '<span class="pj-char space"> </span>' : '<span class="pj-char">'+c+'</span>';
+  }).join('');
+  /* Stagger each char */
+  h1.querySelectorAll('.pj-char').forEach(function(c,i){
+    c.style.transitionDelay = (i * 0.06) + 's';
+  });
+  /* Trigger on next two frames so CSS picks up initial state first */
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      h1.classList.add('revealed');
+    });
+  });
+}
+
+
+
+/* ═══════════════════════════════════════════════════
+   INIT
+*/
+initDeck();
+buildProjectPages();
+updateNav();
+
+/* Landing title animation — fires on page load */
+(function(){
+  var nameEl = document.getElementById('land-name');
+  var roleEl = document.getElementById('land-role');
+  if(!nameEl) return;
+  var chars = nameEl.querySelectorAll('.land-char');
+  /* Stagger each character */
+  chars.forEach(function(c, i){
+    c.style.transitionDelay = (i * 0.055) + 's';
+  });
+  /* Role pops in after all chars have landed */
+
+  /* Last char lands at: chars.length * 0.055s after go fires */
+  var lastCharMs = chars.length * 55;
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      /* Slide chars in — also starts gradient wipe */
+      nameEl.classList.add('go');
+      /* Corners + role slide up after name finishes */
+      var smEl   = document.getElementById('land-sm');
+      var portEl = document.getElementById('land-port');
+      setTimeout(function(){
+        if(roleEl) roleEl.classList.add('go');
+        if(smEl)   smEl.classList.add('go');
+        if(portEl) portEl.classList.add('go');
+      }, lastCharMs + 200);
+    });
+  });
+})();
+</script>
+</body>
+</html/* ── CARD SCROLL SYSTEM ──────────────────────────────────────────────
+   Pure virtual scroll. N card elements created ONCE with videos loaded.
+   During scroll ONLY transform/top/left/right/zIndex change — zero DOM mutation.
+   Deck rotation remaps which slot each element occupies mathematically.
+────────────────────────────────────────────────────────────────────── */
+var sRaw      = 0;
+var sCur      = 0;
+var CARD_H    = 800;
+var baseIndex = 0;
+var N         = PROJECTS.length;
+var cardEls   = [];
+var deckEl;
+
+/* projectAt: which project does visual slot i show right now */
+function projectAt(i){
+  return PROJECTS[((baseIndex + i) % N + N) % N];
+}
+
+function initDeck(){
+  deckEl = document.getElementById('deck');
+  deckEl.innerHTML = '';
+  cardEls = [];
+
+  /* Create every card with its video pre-loaded — never touch innerHTML again */
+  PROJECTS.forEach(function(p, i){
+    var el = document.createElement('div');
+    el.className = 'card';
+    el.style.background = '#111';
+    el.style.overflow = 'hidden';
+    el.innerHTML = '<div class="card-img">' + mkMedia(p.heroVideo||p.heroImg, p.ph, p.title) + '</div>';
+    el.dataset.projIndex = i;
+    deckEl.appendChild(el);
+    cardEls.push(el);
+  });
+  rehover();
+}
+
+/* RAF loop — pure math, zero DOM changes */
+(function loop(){
+  requestAnimationFrame(loop);
+  if(current !== 'port') return;
+
+  sCur += (sRaw - sCur) * 0.075;
+  if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
+  if(sCur < 0){ sCur = 0; sRaw = 0; }
+
+  /* Advance baseIndex when a full card has scrolled */
+  while(sCur >= CARD_H){
+    sCur      -= CARD_H;
+    sRaw      -= CARD_H;
+    baseIndex  = (baseIndex + 1) % N;
+  }
+
+  var prog = sCur / CARD_H; /* 0→1 */
+  var n    = N;
+
+  var deckW = deckEl ? deckEl.offsetWidth  : window.innerWidth;
+  var deckH = deckEl ? deckEl.offsetHeight : window.innerHeight;
+  var cardW = deckW - PAD_BASE * 2;
+  var cardH = Math.round(cardW * 9/16);
+
+  for(var slot = 0; slot < n; slot++){
+    /* Which DOM element shows this visual slot? */
+    var domIdx = ((baseIndex + slot) % n + n) % n;
+    var el     = cardEls[domIdx];
+
+    el.style.transition = 'none';
+    el.style.width  = cardW + 'px';
+    el.style.height = cardH + 'px';
+
+    if(slot === 0){
+      /* Front card — slides down */
+      var ty = prog * cardH * 1.08;
+      el.style.top       = (n - 1) * PEEK + 'px';
+      el.style.left      = PAD_BASE + 'px';
+      el.style.right     = PAD_BASE + 'px';
+      el.style.zIndex    = String(n + 20);
+      el.style.transform = 'translateY(' + ty + 'px)';
+      el.style.opacity   = '1';
+
+      /* Strip overlay hidden on front */
+      el.classList.remove('back');
+      el.classList.add('front');
+
+      /* deck-bar tracking */
+      var deckBar = document.getElementById('deck-bar');
+      if(deckBar){
+        var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'))||52;
+        var barY = navH + (n-1)*PEEK + cardH*0.70 + ty + 10;
+        deckBar.style.top = barY + 'px';
+        if(prog < 0.03){
+          if(!deckBar._vis){
+            deckBar._vis = true;
+            deckBar._t = deckBar._t || setTimeout(function(){
+              deckBar.style.transition = 'opacity 0.35s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+              deckBar.style.transform  = 'translateY(0)';
+              deckBar.style.opacity    = '1';
+            }, 220);
+          }
+        } else {
+          if(deckBar._vis || deckBar._t){
+            deckBar._vis = false;
+            if(deckBar._t){ clearTimeout(deckBar._t); deckBar._t = null; }
+            deckBar.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+            deckBar.style.transform  = 'translateY(10px)';
+            deckBar.style.opacity    = '0';
+          }
+        }
+        /* Update labels */
+        var fp = projectAt(0);
+        if(fp){
+          var dt = document.getElementById('db-tags');
+          var dtt = document.getElementById('db-title');
+          var dy = document.getElementById('db-year');
+          if(dt && dt.textContent !== fp.tags.join(', ')){
+            dt.textContent  = fp.tags.join(', ');
+            dtt.textContent = fp.title;
+            dy.textContent  = fp.year;
+          }
+        }
+      }
+
+    } else {
+      /* Back cards — strips cascade */
+      var cascade   = Math.pow(0.65, slot - 1);
+      var f         = prog * cascade;
+      var restTop   = (n - 1 - slot) * PEEK;
+      var frontTop  = (n - 1) * PEEK;
+      var restInset = PAD_BASE + slot * STEP;
+
+      el.style.top       = (restTop  + (frontTop  - restTop)  * f) + 'px';
+      el.style.left      = (restInset + (PAD_BASE - restInset) * f) + 'px';
+      el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
+      el.style.zIndex    = String(n + 19 - slot);
+      el.style.transform = 'translateY(0)';
+      el.style.opacity   = '1';
+
+      el.classList.remove('front');
+      el.classList.add('back');
+    }
+  }
+})();
+
+/* Wheel */
+document.getElementById('pg-port').addEventListener('wheel', function(e){
+  if(current !== 'port') return;
+  e.preventDefault();
+  sRaw += e.deltaY * 1.2;
+  if(sRaw < 0) sRaw = 0;
+}, {passive:false});
+
+/* Touch */
+var _ty=0, _tl=0;
+document.getElementById('pg-port').addEventListener('touchstart',function(e){
+  _ty=_tl=e.touches[0].clientY;
+},{passive:true});
+document.getElementById('pg-port').addEventListener('touchmove',function(e){
+  if(current!=='port') return;
+  sRaw += (_tl - e.touches[0].clientY) * 1.8;
+  if(sRaw < 0) sRaw = 0;
+  _tl = e.touches[0].clientY;
+},{passive:true});
+document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
+
+
 function buildProjectPages(){
   var wrap=document.getElementById('proj-pages');
   var featured=PROJECTS.filter(function(p){return p.featured;}).slice(0,3);
