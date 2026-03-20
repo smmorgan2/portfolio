@@ -151,10 +151,10 @@ body.lite #cur{background:var(--black)}
 #scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:200;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);opacity:0;pointer-events:none;animation:hintFade 2.5s var(--ease) 1.2s forwards}
 @keyframes hintFade{0%{opacity:0;transform:translateX(-50%) translateY(6px)}30%{opacity:.6;transform:translateX(-50%) translateY(0)}80%{opacity:.6}100%{opacity:0}}
 #deck{position:absolute;top:var(--nav-h);left:0;right:0;bottom:0;overflow:hidden;perspective:1200px;transform-style:preserve-3d}
-.card{position:absolute;bottom:0;border-radius:5px;overflow:hidden;transform-style:preserve-3d;will-change:transform}
+.card{position:absolute;border-radius:5px;overflow:hidden;background:#111}
 .card.front{z-index:30;background:#111}
-.card-img{position:absolute;inset:0;background:#111;aspect-ratio:16/9}
-.card-img img,.card-img video,.card-img .cph{width:100%;height:100%;object-fit:cover}
+.card-img{position:absolute;inset:0;background:#111}
+.card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
 .card-bar{
   position:absolute;top:85%;left:0;right:0;bottom:auto;
   display:grid;grid-template-columns:1fr 1fr 1fr;
@@ -310,8 +310,7 @@ body.lite #cur{background:var(--black)}
 .ph-amazon{background:#10172a;color:#fff}.ph-google{background:#e8e8e6;color:#000}
 .ph-spotify{background:#121212;color:#fff}.ph-listen{background:#e4e2df;color:#000}
 .ph-triennial{background:#1c0a3a;color:#fff}.ph-hp{background:#003087;color:#fff}
-.s-cyan{background:#00F0FF}.s-yellow{background:#FFFC00}.s-lime{background:#00FF3A}
-.s-magenta{background:#FF00EF}.s-blue{background:#1500FF}.s-orange{background:#FF6200}
+
 @media(max-width:768px){.ab-grid{grid-template-columns:1fr}.ab-paras{max-width:100%}.pj-2col,.pj-3col,.pj-feat-row{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.pj-3col,.pj-feat-row{grid-template-columns:1fr}}
 </style>
@@ -367,7 +366,8 @@ body.lite #cur{background:var(--black)}
     <div class="ft-copy">2025 All rights reserved</div>
   </footer>
 </section>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
+
 
 /* ═══════════════════════════════════════════════════
    ★  PROJECT DATA  ★  Edit here to update portfolio
@@ -611,264 +611,128 @@ function updateNav_silent(id){current=id;updateNav();current='land';}
      = (baseIndex + i) % N  where baseIndex advances with scroll.
 ═══════════════════════════════════════════════════ */
 var fadingEls = new Set(); /* cards currently fading in */
-var sRaw  = 0;   /* raw scroll target, accumulates forever */
-var sCur  = 0;   /* smoothed current scroll                */
-var CARD_H = 800; /* px per card transition                 */
+var sRaw = 0, sCur = 0, CARD_H = 800, baseIndex = 0;
 var N = PROJECTS.length;
-var baseIndex = 0;  /* how many full cards have passed      */
+var cardEls = [], deckEl;
 
-/* Which project does slot i show right now */
-function projectAt(i){
-  return PROJECTS[(baseIndex + i) % N];
-}
-
-/* Build the initial DOM: N card elements, never recreated */
-var deckEl = null;
-var cardEls = [];  /* persistent card element references    */
+function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
 function initDeck(){
   deckEl = document.getElementById('deck');
   deckEl.innerHTML = '';
   cardEls = [];
-
+  /* All cards get their video immediately — no color strips */
   PROJECTS.forEach(function(p, i){
     var el = document.createElement('div');
     el.className = 'card';
-    el.dataset.slot = i;
-    el.dataset.pid = p.id;
+    el.style.position = 'absolute';
     el.style.background = '#111';
-    el.innerHTML = cardInnerHTML(p);
-    if(i===0){
-      el.classList.add('front');
-      var pid = p.id;
-      el.onclick = function(){ if(current==='port') navGo(pid); };
-    } else {
-      el.classList.add('back', p.stripColor);
-    }
+    el.style.overflow = 'hidden';
+    el.innerHTML = '<div class="card-img">' + mkMedia(p.heroVideo||p.heroImg, p.ph, p.title) + '</div>';
+    el.dataset.idx = i;
+    var pid = p.id;
+    el.onclick = function(){ if(current==='port') navGo(pid); };
     deckEl.appendChild(el);
     cardEls.push(el);
   });
   rehover();
 }
 
-function cardInnerHTML(p){
-  return '<div class="card-img">'+mkMedia(p.heroVideo||p.heroImg,p.ph,p.title)+'</div>';
-}
-
-/* Update a card element to show project p, fading in */
-function swapCardContent(el, p, isFront, isLastBack){
-  ['s-cyan','s-yellow','s-lime','s-magenta','s-blue','s-orange'].forEach(function(c){
-    el.classList.remove(c);
-  });
-
-  if(isFront){
-    el.classList.remove('back');
-    el.classList.add('front');
-    el.style.background = '#111';
-    el.style.opacity = '1';
-    el.innerHTML = cardInnerHTML(p);
-    var _pid = p.id;
-    el.onclick = function(){ if(current==='port') navGo(_pid); };
-    rehover();
-    /* Reset bar to hidden state so it animates in fresh */
-    var bar = el.querySelector('.card-bar');
-    if(bar){ bar.classList.remove('go','out'); bar._barTimer && clearTimeout(bar._barTimer); bar._barTimer = null; }
-
-    /* Bar starts hidden — RAF will add .go after card settles */
-  } else {
-    el.classList.remove('front');
-    el.classList.add('back', p.stripColor);
-    el.style.background = '#111';
-    el.style.opacity = '1';
-    if(el.dataset.pid !== p.id){
-      el.innerHTML = cardInnerHTML(p);
-      el.dataset.pid = p.id;
-    }
-    el.onclick = null;
-    /* Only fade the card reappearing at the very back of stack */
-    if(isLastBack){
-      el.style.opacity = '0';
-      el.style.transition = 'opacity 0.5s ease';
-      setTimeout(function(){ el.style.opacity = '1'; }, 30);
-    }
-  }
-}
-
-/* ── RAF LOOP ── */
+/* RAF — zero DOM changes, only CSS transforms */
 (function loop(){
   requestAnimationFrame(loop);
-  /* Smooth scroll — run even during parallax so cards are visible underneath */
-  sCur += (sRaw - sCur) * 0.075;
-  if(Math.abs(sRaw - sCur) < 0.1) sCur = sRaw;
-  if(sCur < 0) sCur = 0;
+  if(current !== 'port') return;
 
-  /* How many full cards scrolled? */
-  var newBase = Math.floor(sCur / CARD_H);
-  if(newBase !== baseIndex){
-    /* Update any cards that need content swapped */
-    var diff = newBase - baseIndex;
-    baseIndex = newBase;
-    /* Re-assign what each slot shows — only swap if needed */
-    cardEls.forEach(function(el, slot){
-      var p = projectAt(slot);
-      var currentId = el.dataset.pid;
-      if(currentId !== p.id){
-        /* Only swap the very back slot (nearly invisible) to avoid mid-scroll stutter */
-        if(slot === N - 1){
-          el.dataset.pid = p.id;
-          swapCardContent(el, p, false, true);
-        } else if(slot === 0){
-          /* Front card swap happens silently — it's already scrolled past */
-          el.dataset.pid = p.id;
-          swapCardContent(el, p, true, false);
-        }
-      }
-    });
+  sCur += (sRaw - sCur) * 0.075;
+  if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
+  if(sCur < 0){ sCur = 0; sRaw = 0; }
+
+  /* Rotate when full card scrolled */
+  if(sCur >= CARD_H){
+    sCur -= CARD_H; sRaw -= CARD_H;
+    baseIndex = (baseIndex + 1) % N;
   }
 
-  /* Progress within current card: 0→1 */
-  var prog = (sCur % CARD_H) / CARD_H;
-  if(prog < 0) prog = 0;
+  var prog = sCur / CARD_H;
+  var n    = N;
+  var dw   = (deckEl && deckEl.offsetWidth > 0) ? deckEl.offsetWidth : (document.getElementById('pg-port') ? document.getElementById('pg-port').offsetWidth : window.innerWidth);
+  var cardW = dw - PAD_BASE * 2;
+  var cardH = Math.round(cardW * 9 / 16);
 
-  /* Apply positions */
-  var vh = window.innerHeight;
-  var n  = N;
-
-  cardEls.forEach(function(el, i){
+  for(var slot = 0; slot < n; slot++){
+    var domIdx = (baseIndex + slot) % n;
+    var el = cardEls[domIdx];
     el.style.transition = 'none';
-    if(i===0){
-      /* Front slides down */
-      var deckEl2   = document.getElementById('deck');
-      var deckW     = deckEl2 ? deckEl2.offsetWidth : window.innerWidth;
-      var cardW     = deckW - PAD_BASE*2;
-      var cardH     = Math.round(cardW * 9/16);
-      el.style.top       = ((n-1)*PEEK) + 'px';
-      el.style.left      = PAD_BASE + 'px';
-      el.style.right     = PAD_BASE + 'px';
-      el.style.height    = cardH + 'px';
-      el.style.bottom    = 'auto';
-      el.style.zIndex    = String(n+20);
-      el.style.transform = 'translateY('+(prog*cardH*1.08)+'px)';
-      el.style.opacity   = '1';
 
-      /* External deck-bar: always visible, tracks card, fades with scroll */
+    if(slot === 0){
+      /* Front: full 16:9, slides down */
+      el.style.top       = (n-1)*PEEK + 'px';
+      el.style.left      = PAD_BASE + 'px';
+      el.style.right     = PAD_BASE + 'px';  /* same right as back cards */
+      el.style.height    = cardH + 'px';
+      el.style.zIndex    = String(n + 20);
+      el.style.transform = 'translateY(' + (prog * cardH * 1.08) + 'px)';
+
+      /* deck-bar */
       var deckBar = document.getElementById('deck-bar');
       if(deckBar){
         var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'))||52;
-        var cTop = parseFloat(el.style.top)||0;
-        var cH   = parseFloat(el.style.height)||300;
-        var cTY  = prog * cH * 1.08;
-        var barY = navH + cTop + cH*0.70 + cTY + 10;
-        deckBar.style.top = barY + 'px';
-
-        /* Delayed slide-up + fade — only when port is active */
-        if(current !== "port"){ deckBar.style.opacity="0"; deckBar._vis=false; if(deckBar._t){clearTimeout(deckBar._t);deckBar._t=null;} return; }
-        if(prog < 0.03 && !transActive){
+        deckBar.style.top = (navH + (n-1)*PEEK + cardH*0.70 + prog*cardH*1.08 + 10) + 'px';
+        if(prog < 0.03){
           if(!deckBar._vis){
             deckBar._vis = true;
-            deckBar.style.transition = 'opacity 0.35s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1)';
             deckBar._t = deckBar._t || setTimeout(function(){
-              deckBar.style.transform = 'translateY(0)';
-              deckBar.style.opacity   = '1';
+              deckBar.style.transition = 'opacity 0.35s ease,transform 0.45s cubic-bezier(0.16,1,0.3,1)';
+              deckBar.style.transform  = 'translateY(0)'; deckBar.style.opacity = '1';
             }, 220);
           }
         } else {
           if(deckBar._vis || deckBar._t){
             deckBar._vis = false;
             if(deckBar._t){ clearTimeout(deckBar._t); deckBar._t = null; }
-            deckBar.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
-            deckBar.style.transform  = 'translateY(10px)';
-            deckBar.style.opacity    = '0';
+            deckBar.style.transition = 'opacity 0.15s ease,transform 0.15s ease';
+            deckBar.style.transform  = 'translateY(10px)'; deckBar.style.opacity = '0';
           }
         }
-        var fp = projectAt(0);
-        if(fp){
-          var dbTags = document.getElementById('db-tags');
-          var dbT    = document.getElementById('db-title');
-          var dbYr   = document.getElementById('db-year');
-          if(dbTags){ dbTags.textContent = fp.tags.join(', '); }
-          if(dbT)   { dbT.textContent    = fp.title; }
-          if(dbYr)  { dbYr.textContent   = fp.year; }
-        }
-      }
-      /* Bar slides in with a delay after card settles, slides out when scrolling */
-      var bar = el.querySelector('.card-bar');
-      if(bar){
-        if(prog < 0.03){
-          if(!bar._barTimer && !bar.classList.contains('go')){
-            bar._barTimer = setTimeout(function(){
-              bar.classList.remove('out');
-              bar.classList.add('go');
-              bar._barTimer = null;
-            }, 220);
-          }
-        } else {
-          if(bar._barTimer){ clearTimeout(bar._barTimer); bar._barTimer = null; }
-          if(!bar.classList.contains('out')){
-            bar.classList.remove('go');
-            bar.classList.add('out');
-          }
+        var fp2 = projectAt(0);
+        if(fp2){
+          var dt=document.getElementById('db-tags'),dtt=document.getElementById('db-title'),dy=document.getElementById('db-year');
+          if(dt&&dt.textContent!==fp2.tags.join(', ')){dt.textContent=fp2.tags.join(', ');dtt.textContent=fp2.title;dy.textContent=fp2.year;}
         }
       }
     } else {
-      /* Back cards cascade forward */
-      var cascade   = Math.pow(0.6, i-1);
+      /* Back: PEEK height, left steps inward, right stays fixed = matches reference */
+      var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
-      var restTop   = (n-1-i)*PEEK;
-      var frontTop  = (n-1)*PEEK;
-      var restInset = PAD_BASE + i*STEP;
-      var frontInset= PAD_BASE;
-
-      /* Full height same as front card — only top PEEK px visible above front */
-      var deckEl3   = document.getElementById('deck');
-      var dw        = deckEl3 ? deckEl3.offsetWidth : window.innerWidth;
-      var bw        = dw - frontInset*2;
-      var bh        = Math.round(bw * 9/16);
-
-      el.style.top    = (restTop    + (frontTop    - restTop)    * f) + 'px';
-      el.style.left   = (restInset  + (frontInset  - restInset)  * f) + 'px';
-      el.style.right  = (restInset  + (frontInset  - restInset)  * f) + 'px';
-      el.style.height = bh + 'px';
-      el.style.bottom = 'auto';
-      el.style.bottom = '0';
-      el.style.zIndex = String(n+19-i);
-      el.style.transform = 'scale('+(1+f*0.018)+')';
+      var restTop   = (n - 1 - slot) * PEEK;
+      var frontTop  = (n - 1) * PEEK;
+      var restLeft  = PAD_BASE + slot * STEP;  /* steps left */
+      var frontLeft = PAD_BASE;
+      el.style.top       = (restTop   + (frontTop   - restTop)   * f) + 'px';
+      el.style.left      = (restLeft  + (frontLeft  - restLeft)  * f) + 'px';
+      el.style.right     = PAD_BASE + 'px';   /* fixed right edge */
+      el.style.height    = PEEK + 'px';
+      el.style.zIndex    = String(n + 19 - slot);
+      el.style.transform = 'translateY(0)';
     }
-
-    /* RAF-driven fade-in for back cards returning to stack */
-    if(fadingEls.has(el)){
-      var elapsed = performance.now() - el._fadeStart;
-      var fp = Math.min(elapsed / 700, 1);
-      el.style.opacity = String(fp);
-      if(fp >= 1) fadingEls.delete(el);
-    } else if(i > 0){
-      el.style.opacity = '1';
-    }
-  });
+  }
 })();
 
-/* Wheel */
-document.getElementById('pg-port').addEventListener('wheel',function(e){
-  if(current!=='port') return;
+document.getElementById('pg-port').addEventListener('wheel', function(e){
+  if(current !== 'port') return;
   e.preventDefault();
   sRaw += e.deltaY * 1.2;
   if(sRaw < 0) sRaw = 0;
 },{passive:false});
 
-/* Touch */
-var _ty=0,_tl=0;
-document.getElementById('pg-port').addEventListener('touchstart',function(e){_ty=_tl=e.touches[0].clientY;},{passive:true});
+var _ty2=0,_tl2=0;
+document.getElementById('pg-port').addEventListener('touchstart',function(e){_ty2=_tl2=e.touches[0].clientY;},{passive:true});
 document.getElementById('pg-port').addEventListener('touchmove',function(e){
-  if(current!=='port') return;
-  sRaw+=(_tl-e.touches[0].clientY)*1.8;
-  if(sRaw<0)sRaw=0;
-  _tl=e.touches[0].clientY;
+  if(current!=='port') return; sRaw+=(_tl2-e.touches[0].clientY)*1.8; if(sRaw<0)sRaw=0; _tl2=e.touches[0].clientY;
 },{passive:true});
 document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
 
-/* ═══════════════════════════════════════════════════
-   PROJECT PAGES
-═══════════════════════════════════════════════════ */
+
 function buildProjectPages(){
   var wrap=document.getElementById('proj-pages');
   var featured=PROJECTS.filter(function(p){return p.featured;}).slice(0,3);
@@ -1081,7 +945,6 @@ function initDeck(){
     var el     = cardEls[domIdx];
 
     el.style.transition = 'none';
-    el.style.width  = cardW + 'px';
     el.style.height = cardH + 'px';
 
     if(slot === 0){
@@ -1091,7 +954,6 @@ function initDeck(){
       el.style.right     = PAD_BASE + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + ty + 'px)';
-      el.style.borderTop = 'none';
 
       var deckBar = document.getElementById('deck-bar');
       if(deckBar){
@@ -1138,10 +1000,7 @@ function initDeck(){
       el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
-      /* Strip color via border-top */
-      var p = projectAt(slot);
-      var colors = {'s-cyan':'#0ff','s-yellow':'#ff0','s-lime':'#0f0','s-magenta':'#f0f','s-blue':'#00f','s-orange':'#f80'};
-      el.style.borderTop = '4px solid ' + (colors[p.stripColor]||'#fff');
+
     }
   }
 })();
@@ -1164,6 +1023,7 @@ document.getElementById('pg-port').addEventListener('touchend',function(e){},{pa
 initDeck();
 buildProjectPages();
 updateNav();
+
 
 </script>
 </body>
