@@ -378,11 +378,13 @@ var PROJECTS=[
    body:'I contributed to the Amazon Ads Rising Stars campaign while on the creative team at Code + Theory, focusing on developing a dynamic and modular motion identity. The Rising Stars initiative highlights the unique journeys and successes of small business owners using Amazon Ads. Tasked with implementing and expanding the official Amazon Ads motion system, I developed a full suite of motion assets and templates for the campaign. This involved animating styleframes provided by the Creative Director—including the logo reveal, lower thirds, and various text boxes—to create reusable video templates for the Rising Stars team. To support broad campaign needs, I also created a set of animated graphics for digital and social media, ensuring a consistent visual language. The resulting modular system allows the campaign to seamlessly showcase varying numbers of featured business owners across diverse aspect ratios, culminating in a cohesive visual narrative that underscores the power of Amazon Ads.'},
   {id:'google-ads',title:'Google Ads',tags:['Motion','Social'],year:'2025',
    stripColor:'s-yellow',ph:'ph-google',featured:true,heroImg:'',heroVideo:'videos/google_ads_01.mp4',
+   featVideo:'videos/G-THI25B_ThinkSocials_LOreal_1x1_V06.mp4',
    portraits:['','','',''],wideImg:'',
    statement:'Customers using our AI models in Vertex have grown over 125% YTD.',
    body:"Motion design for Google Ads featuring AI-powered advertising campaigns. Created engaging video and social media assets communicating the power of Google's advertising platform."},
   {id:'spotify',title:'Spotify',tags:['Motion','Social Content'],year:'2024',
    stripColor:'s-lime',ph:'ph-spotify',featured:true,heroImg:'',heroVideo:'videos/spotify_wrapped_v01.mp4',
+   featVideo:'videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4',
    portraits:['','','',''],wideImg:'',
    statement:'Bringing your year in music to life through motion.',
    body:'Seasonal campaign motion design for Spotify Wrapped. Developed a suite of animated templates maintaining the iconic Wrapped visual identity.'},
@@ -653,7 +655,15 @@ function buildProjectPages(){
     var sec=document.createElement('section');
     sec.id='pg-'+p.id; sec.className='page pg-proj';
     var featCards=featured.map(function(f){
-      return '<div class="pj-feat-card" onclick="navGo(&apos;'+f.id+'&apos;)"><div class="pj-feat-thumb">'+mkMedia(f.heroVideo||f.heroImg,f.ph,f.title)+'</div><div class="pj-feat-lbl">'+f.title+'</div></div>';
+      var fSrc = f.featVideo||f.heroVideo||f.heroImg;
+      var media;
+      if(!fSrc){ media='<div class="cph '+f.ph+'"><span class="cph-lbl">'+f.title+'</span></div>'; }
+      else if(/\.mp4$|\.webm$|\.mov$/i.test(fSrc)){
+        media='<video src="'+fSrc+'" muted loop playsinline preload="auto" style="width:100%;height:100%;display:block;"></video>';
+      } else {
+        media='<img src="'+fSrc+'" alt="'+f.title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
+      }
+      return '<div class="pj-feat-card" onclick="navGo(&apos;'+f.id+'&apos;)"><div class="pj-feat-thumb">'+media+'</div><div class="pj-feat-lbl">'+f.title+'</div></div>';
     }).join('');
     var chars=p.title.split('').map(function(c){
       return c===' '?'<span class="pj-char space"> </span>':'<span class="pj-char">'+c+'</span>';
@@ -800,6 +810,14 @@ document.getElementById('pg-port').addEventListener('touchend',function(e){},{pa
 initDeck();
 buildProjectPages();
 updateNav();
+
+/* Featured work: hover to play videos */
+document.querySelectorAll('.pj-feat-thumb').forEach(function(thumb){
+  var vid = thumb.querySelector('video');
+  if(!vid) return;
+  thumb.addEventListener('mouseenter', function(){ vid.currentTime = 0; vid.play(); });
+  thumb.addEventListener('mouseleave', function(){ vid.pause(); });
+});
 
 /* Landing title animation */
 (function(){
