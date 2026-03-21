@@ -67,7 +67,10 @@ body.lite #cur{background:var(--black)}
 .n-logo{pointer-events:all;font-size:14px;letter-spacing:-0.05em;color:var(--green);line-height:1;transition:color .15s}
 #n-right{pointer-events:all;position:relative}
 .n-menu-wrap{position:relative;display:inline-block}
-.n-menu-btn{font-size:14px;letter-spacing:-0.05em;color:var(--green);line-height:1;display:block}
+.n-menu-btn{font-size:14px;letter-spacing:-0.05em;color:var(--black);line-height:1;display:block;transition:color .15s}
+.n-menu-wrap:hover .n-menu-btn{color:var(--green)}
+#nav.dark .n-menu-btn{color:rgba(255,255,255,.85)}
+#nav.dark .n-menu-wrap:hover .n-menu-btn{color:var(--green)}
 .n-dropdown{
   position:absolute;right:0;top:100%;padding-top:8px;
   display:flex;flex-direction:column;align-items:flex-end;gap:0;
@@ -537,9 +540,7 @@ function parallaxToPort(){
   /* 1. Show portfolio UNDERNEATH first — land page sits on top (z-index:50) */
   var portPage = document.getElementById('pg-port');
   portPage.classList.add('on');
-  current = 'port';
-  updateNav();
-  current = 'land'; /* keep land active for the animation */
+  current = 'land'; /* keep land active for the animation — nav stays hidden */
 
   var landPage   = document.getElementById('pg-land');
   var landBg     = landPage.querySelector('.land-bg');
