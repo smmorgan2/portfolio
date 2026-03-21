@@ -218,7 +218,8 @@ body.lite #cur{background:var(--black)}
 /* 2-col portrait grid */
 .pj-2col{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 var(--g) 6px}
 .pj-2col>div{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:#111}
-.pj-2col img,.pj-2col .cph,.pj-2col video{width:100%;height:100%;object-fit:cover;display:block}
+.pj-2col img,.pj-2col .cph{width:100%;height:100%;object-fit:cover;display:block}
+.pj-2col video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 
 /* Dark banner / video */
 .pj-banner{
@@ -226,13 +227,14 @@ body.lite #cur{background:var(--black)}
   aspect-ratio:16/9;border-radius:4px;
   background:#0d0e18;overflow:hidden;
 }
-.pj-banner img,.pj-banner .cph,.pj-banner video{width:100%;height:100%;object-fit:cover;display:block}
+.pj-banner img,.pj-banner .cph{width:100%;height:100%;object-fit:cover;display:block}
+.pj-banner video{width:100%;height:100%;object-fit:contain;display:block;background:#0d0e18}
 
 /* Body copy — scroll-reveal per line */
-.pj-copy{padding:48px var(--g) 52px;}
+.pj-copy{padding:48px var(--g) 48px;}
 .pj-copy p{
-  font-size:24px;font-weight:300;
-  line-height:1.49;
+  font-size:14px;font-weight:300;
+  line-height:1.7;
   letter-spacing:0.011em;
   color:var(--bg);
   margin:0;
@@ -254,11 +256,13 @@ body.lite #cur{background:var(--black)}
 /* 3-col vertical grid */
 .pj-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 var(--g) 6px}
 .pj-3col>div{aspect-ratio:9/16;border-radius:4px;overflow:hidden;background:#111}
-.pj-3col img,.pj-3col .cph,.pj-3col video{width:100%;height:100%;object-fit:cover;display:block}
+.pj-3col img,.pj-3col .cph{width:100%;height:100%;object-fit:cover;display:block}
+.pj-3col video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 
 /* Wide single */
-.pj-wide{margin:0 var(--g) 64px;aspect-ratio:16/7;border-radius:4px;overflow:hidden;background:#111}
-.pj-wide img,.pj-wide .cph,.pj-wide video{width:100%;height:100%;object-fit:cover;display:block}
+.pj-wide{margin:0 var(--g) 64px;aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:#111}
+.pj-wide img,.pj-wide .cph{width:100%;height:100%;object-fit:cover;display:block}
+.pj-wide video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 
 /* Featured Work */
 .pj-feat{padding:0 var(--g) 0}
