@@ -615,6 +615,7 @@ var baseIndex = 0;
 var N         = PROJECTS.length;
 var cardEls   = [];
 var deckEl;
+var _hasScrolled = false;
 
 function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
@@ -786,8 +787,7 @@ function initDeck(){
       el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
-      /* Last back slot fades in as scroll progresses */
-      if(slot === n - 1){
+      if(slot === n - 1 && _hasScrolled){
         el.style.opacity = String(Math.min(1, prog * 3));
       } else {
         el.style.opacity = '1';
@@ -802,12 +802,14 @@ document.getElementById('pg-port').addEventListener('wheel', function(e){
   if(current !== 'port' && !portOn) return;
   e.preventDefault();
   sRaw += e.deltaY * 1.2;
+  if(!_hasScrolled) _hasScrolled = true;
 },{passive:false});
 
 var _ty=0,_tl=0;
 document.getElementById('pg-port').addEventListener('touchstart',function(e){_ty=_tl=e.touches[0].clientY;},{passive:true});
 document.getElementById('pg-port').addEventListener('touchmove',function(e){
   if(current!=='port') return;
+  if(!_hasScrolled) _hasScrolled = true;
   sRaw+=(_tl-e.touches[0].clientY)*1.8; if(sRaw<0)sRaw=0; _tl=e.touches[0].clientY;
 },{passive:true});
 document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
