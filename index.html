@@ -155,24 +155,7 @@ body.lite #cur{background:var(--black)}
 .card.front{z-index:30;background:#111}
 .card-img{position:absolute;inset:0;background:#111}
 .card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
-#card-info{
-  position:absolute;bottom:24px;left:var(--g);right:var(--g);
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  align-items:flex-end;
-  pointer-events:none;
-  z-index:100;
-}
-.ci-col{
-  font-size:13px;font-weight:400;letter-spacing:-0.03em;
-  color:var(--black);line-height:1.2;display:block;
-  opacity:0;transform:translateY(8px);
-  transition:opacity 0.4s ease, transform 0.4s ease;
-}
-#card-info.go .ci-col{opacity:1;transform:translateY(0)}
-#card-info.out .ci-col{opacity:0;transform:translateY(-6px);transition:opacity 0.18s ease, transform 0.18s ease}
-.ci-left{text-align:left}
-.ci-center{text-align:center}
-.ci-right{text-align:right}
+
 /* ── PROJECT PAGES ── */
 .pg-proj{background:var(--black);color:#fff;overflow-x:hidden}
 
@@ -349,11 +332,7 @@ body.lite #cur{background:var(--black)}
 <section id="pg-port" class="page pg-port-under">
   <div id="scroll-hint">Scroll to browse</div>
   <div id="deck"></div>
-  <div id="card-info">
-    <span id="ci-tags" class="ci-col ci-left"></span>
-    <span id="ci-title" class="ci-col ci-center"></span>
-    <span id="ci-year" class="ci-col ci-right"></span>
-  </div>
+
 </section>
 <div id="proj-pages"></div>
 <section id="pg-about" class="page">
@@ -622,33 +601,10 @@ var baseIndex = 0;
 var N         = PROJECTS.length;
 var cardEls   = [];
 var deckEl;
-var _lastFrontId = null;
-var _ciTimeout   = null;
 
 function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
-function updateCardInfo(proj, animate){
-  var infoEl = document.getElementById('card-info');
-  if(!infoEl || !proj) return;
-  if(animate){
-    infoEl.classList.remove('go');
-    infoEl.classList.add('out');
-    clearTimeout(_ciTimeout);
-    _ciTimeout = setTimeout(function(){
-      document.getElementById('ci-tags').textContent  = proj.tags.join(', ');
-      document.getElementById('ci-title').textContent = proj.title;
-      document.getElementById('ci-year').textContent  = proj.year;
-      infoEl.classList.remove('out');
-      requestAnimationFrame(function(){ infoEl.classList.add('go'); });
-    }, 200);
-  } else {
-    document.getElementById('ci-tags').textContent  = proj.tags.join(', ');
-    document.getElementById('ci-title').textContent = proj.title;
-    document.getElementById('ci-year').textContent  = proj.year;
-    infoEl.classList.remove('out');
-    infoEl.classList.add('go');
-  }
-}
+
 
 
 var scrollObserver=new IntersectionObserver(function(entries){
@@ -797,17 +753,6 @@ function initDeck(){
         var _fid = fp3.id;
         el.onclick = (function(id){ return function(e){ if(current==='port'){ e.stopPropagation(); navGo(id); } }; })(fp3.id);
       }
-      /* Info bar: detect front card change */
-      if(fp3 && fp3.id !== _lastFrontId){
-        _lastFrontId = fp3.id;
-        updateCardInfo(fp3, true);
-      }
-      /* Fade info bar based on scroll progress */
-      var infoEl = document.getElementById('card-info');
-      if(infoEl){
-        var infoOpacity = 1 - Math.min(1, prog * 3);
-        infoEl.style.opacity = String(Math.max(0, infoOpacity));
-      }
     } else {
       var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
@@ -848,8 +793,6 @@ document.getElementById('pg-port').addEventListener('touchend',function(e){},{pa
 initDeck();
 buildProjectPages();
 updateNav();
-/* Initialize info bar with first project */
-updateCardInfo(projectAt(0), false);
 
 /* Landing title animation */
 (function(){
