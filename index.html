@@ -238,6 +238,7 @@ body.lite #cur{background:var(--black)}
   letter-spacing:0.005em;
   color:#fff;
   margin:0;
+  max-width:680px;
 }
 /* Each line span */
 .pj-line-wrap{
@@ -264,7 +265,7 @@ body.lite #cur{background:var(--black)}
 .pj-wide video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 
 /* Featured Work */
-.pj-feat{padding:0 var(--g) 0}
+.pj-feat{padding:0 var(--g) 100px}
 .pj-feat-h{font-size:clamp(24px,3.2vw,36px);color:#fff;margin-bottom:28px}
 .pj-feat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .pj-feat-card{cursor:pointer}
@@ -390,7 +391,7 @@ var PROJECTS=[
    statement:'Bringing your year in music to life through motion.',
    body:'Seasonal campaign motion design for Spotify Wrapped. Developed a suite of animated templates maintaining the iconic Wrapped visual identity.'},
   {id:'listen',title:'LISTEN',tags:['Branding','Motion Identity'],year:'2024',
-   stripColor:'s-magenta',ph:'ph-listen',featured:false,heroImg:'',heroVideo:'videos/listen_video_01.mp4',
+   stripColor:'s-magenta',ph:'ph-listen',featured:true,heroImg:'',heroVideo:'videos/listen_video_01.mp4',
    portraits:['','','',''],wideImg:'',
    statement:'A brand identity that moves with the music.',body:'LISTEN is a music platform brand identity designed to move with the music. Developed a complete motion system including logo animation, typography in motion, and a suite of social media templates that adapt across formats while maintaining a cohesive visual language.'},
   {id:'r-and-company',title:'R&Company',tags:['Motion','Reel'],year:'2024',
@@ -656,8 +657,11 @@ function animateAboutTitle(){
 
 function buildProjectPages(){
   var wrap=document.getElementById('proj-pages');
-  var featured=PROJECTS.filter(function(p){return p.featured;}).slice(0,3);
+  var featOrder=['google-ads','listen','spotify','amazon-ads','r-and-company'];
   PROJECTS.forEach(function(p){
+    var featured=PROJECTS.filter(function(fp){return fp.featured && fp.id!==p.id;})
+      .sort(function(a,b){return featOrder.indexOf(a.id)-featOrder.indexOf(b.id);})
+      .slice(0,3);
     var sec=document.createElement('section');
     sec.id='pg-'+p.id; sec.className='page pg-proj';
     var featCards=featured.map(function(f){
