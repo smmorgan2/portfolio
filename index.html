@@ -724,10 +724,10 @@ function initDeck(){
   /* Compute actual card height so CARD_H stays current with viewport */
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  var cardW = dw - PAD_BASE * 2;
-  var cardH16 = Math.round(cardW * 9/16);
-  var availH  = (deckEl ? deckEl.offsetHeight : window.innerHeight - 60) - (n - 1) * PEEK - 40;
-  var cardH   = Math.min(cardH16, availH);
+  var FRONT_SCALE = 0.88;  /* front card = 88% of deck width */
+  var SHRINK = 0.04;       /* each card behind shrinks by 4% */
+  var frontW = Math.round(dw * FRONT_SCALE);
+  var cardH  = Math.round(frontW * 9/16);
   CARD_H = cardH;
 
   sCur += (sRaw - sCur) * 0.075;
@@ -750,14 +750,20 @@ function initDeck(){
     var domIdx = ((baseIndex + slot) % n + n) % n;
     var el     = cardEls[domIdx];
 
+    var slotScale = FRONT_SCALE - slot * SHRINK;
+    var slotW     = Math.round(dw * slotScale);
+    var slotH     = Math.round(slotW * 9/16);
+    var slotInset = Math.round((dw - slotW) / 2);
+
     el.style.transition = 'none';
-    el.style.height = cardH + 'px';
+    el.style.width  = slotW + 'px';
+    el.style.height = slotH + 'px';
+    el.style.left   = slotInset + 'px';
+    el.style.right  = 'auto';
 
     if(slot === 0){
       var ty = prog * cardH * 1.08;
       el.style.top       = (n - 1) * PEEK + 'px';
-      el.style.left      = PAD_BASE + 'px';
-      el.style.right     = PAD_BASE + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + ty + 'px)';
       el.style.opacity   = '1';
@@ -773,11 +779,18 @@ function initDeck(){
       var f         = prog * cascade;
       var restTop   = (n - 1 - slot) * PEEK;
       var frontTop  = (n - 1) * PEEK;
-      var restInset = PAD_BASE + slot * STEP;
-      el.style.top       = (restTop  + (frontTop  - restTop)  * f) + 'px';
-      el.style.left      = (restInset + (PAD_BASE - restInset) * f) + 'px';
-      el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
-      el.style.zIndex    = String(n + 19 - slot);
+
+      /* Animate width/position toward front card size during transition */
+      var animScale = slotScale + (FRONT_SCALE - slotScale) * f;
+      var animW     = Math.round(dw * animScale);
+      var animH     = Math.round(animW * 9/16);
+      var animInset = Math.round((dw - animW) / 2);
+
+      el.style.width  = animW + 'px';
+      el.style.height = animH + 'px';
+      el.style.left   = animInset + 'px';
+      el.style.top    = (restTop  + (frontTop  - restTop)  * f) + 'px';
+      el.style.zIndex = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
       if(slot === n - 1 && _hasScrolled){
         el.style.opacity = String(Math.min(1, prog * 3));
