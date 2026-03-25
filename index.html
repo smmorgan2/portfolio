@@ -157,7 +157,7 @@ body.lite #cur{background:var(--black)}
 .card{position:absolute;border-radius:5px;overflow:hidden;background:#111}
 .card.front{z-index:30;background:#111}
 .card-img{position:absolute;inset:0;background:#111}
-.card-img img,.card-img video{width:100%;height:100%;object-fit:contain;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
+.card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
 
 /* ── PROJECT PAGES ── */
 .pg-proj{background:var(--black);color:#fff;overflow-x:hidden}
@@ -403,7 +403,7 @@ var PROJECTS=[
 /* ═══════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════ */
-var PEEK=28, PAD_BASE=100, STEP=18;
+var PEEK=36, PAD_BASE=80, STEP=18;
 
 function getDeckGeometry(order){
   var n=order.length;
@@ -725,7 +725,9 @@ function initDeck(){
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
   var cardW = dw - PAD_BASE * 2;
-  var cardH = Math.round(cardW * 9/16);
+  var cardH16 = Math.round(cardW * 9/16);
+  var availH  = (deckEl ? deckEl.offsetHeight : window.innerHeight - 60) - (n - 1) * PEEK - 40;
+  var cardH   = Math.min(cardH16, availH);
   CARD_H = cardH;
 
   sCur += (sRaw - sCur) * 0.075;
