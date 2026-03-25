@@ -154,10 +154,10 @@ body.lite #cur{background:var(--black)}
 #scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:200;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);opacity:0;pointer-events:none;animation:hintFade 2.5s var(--ease) 1.2s forwards}
 @keyframes hintFade{0%{opacity:0;transform:translateX(-50%) translateY(6px)}30%{opacity:.6;transform:translateX(-50%) translateY(0)}80%{opacity:.6}100%{opacity:0}}
 #deck{position:absolute;top:var(--nav-h);left:0;right:0;bottom:0;overflow:hidden;perspective:1200px;transform-style:preserve-3d}
-.card{position:absolute;border-radius:5px;overflow:hidden;background:#111}
-.card.front{z-index:30;background:#111}
-.card-img{position:absolute;inset:0;background:#111}
-.card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
+.card{position:absolute;border-radius:5px;overflow:hidden;background:var(--bg)}
+.card.front{z-index:30;background:var(--bg)}
+.card-img{position:absolute;inset:0;background:var(--bg)}
+.card-img img,.card-img video{width:100%;height:100%;object-fit:contain;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
 
 /* ── PROJECT PAGES ── */
 .pg-proj{background:var(--black);color:#fff;overflow-x:hidden}
@@ -705,7 +705,7 @@ function initDeck(){
   PROJECTS.forEach(function(p, i){
     var el = document.createElement('div');
     el.className = 'card';
-    el.style.background = '#111';
+    el.style.background = 'var(--bg)';
     el.style.overflow = 'hidden';
     el.style.position = 'absolute';
     el.innerHTML = '<div class="card-img">' + mkMedia(p.heroVideo||p.heroImg, p.ph, p.title) + '</div>';
@@ -724,9 +724,11 @@ function initDeck(){
   /* Compute actual card height so CARD_H stays current with viewport */
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  var FRONT_SCALE = 0.88;  /* front card = 88% of deck width */
-  var SHRINK = 0.04;       /* each card behind shrinks by 4% */
-  var frontW = Math.round(dw * FRONT_SCALE);
+  /* Front card aligns with nav text (S-M / Menu) using --g */
+  var gVal = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--g'));
+  var FRONT_INSET = gVal;          /* matches nav padding */
+  var SHRINK_PX   = dw * 0.035;    /* each card behind shrinks ~3.5% per side */
+  var frontW = dw - FRONT_INSET * 2;
   var cardH  = Math.round(frontW * 9/16);
   CARD_H = cardH;
 
@@ -750,10 +752,9 @@ function initDeck(){
     var domIdx = ((baseIndex + slot) % n + n) % n;
     var el     = cardEls[domIdx];
 
-    var slotScale = FRONT_SCALE - slot * SHRINK;
-    var slotW     = Math.round(dw * slotScale);
+    var slotInset = FRONT_INSET + slot * SHRINK_PX;
+    var slotW     = Math.round(dw - slotInset * 2);
     var slotH     = Math.round(slotW * 9/16);
-    var slotInset = Math.round((dw - slotW) / 2);
 
     el.style.transition = 'none';
     el.style.width  = slotW + 'px';
@@ -780,11 +781,10 @@ function initDeck(){
       var restTop   = (n - 1 - slot) * PEEK;
       var frontTop  = (n - 1) * PEEK;
 
-      /* Animate width/position toward front card size during transition */
-      var animScale = slotScale + (FRONT_SCALE - slotScale) * f;
-      var animW     = Math.round(dw * animScale);
+      /* Animate inset toward front card size during transition */
+      var animInset = slotInset + (FRONT_INSET - slotInset) * f;
+      var animW     = Math.round(dw - animInset * 2);
       var animH     = Math.round(animW * 9/16);
-      var animInset = Math.round((dw - animW) / 2);
 
       el.style.width  = animW + 'px';
       el.style.height = animH + 'px';
