@@ -154,10 +154,10 @@ body.lite #cur{background:var(--black)}
 #scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:200;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);opacity:0;pointer-events:none;animation:hintFade 2.5s var(--ease) 1.2s forwards}
 @keyframes hintFade{0%{opacity:0;transform:translateX(-50%) translateY(6px)}30%{opacity:.6;transform:translateX(-50%) translateY(0)}80%{opacity:.6}100%{opacity:0}}
 #deck{position:absolute;top:var(--nav-h);left:0;right:0;bottom:0;overflow:hidden;perspective:1200px;transform-style:preserve-3d}
-.card{position:absolute;border-radius:5px;overflow:hidden;background:var(--bg)}
-.card.front{z-index:30;background:var(--bg)}
-.card-img{position:absolute;inset:0;background:var(--bg)}
-.card-img img,.card-img video{width:100%;height:100%;object-fit:contain;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
+.card{position:absolute;border-radius:5px;overflow:hidden;background:#111}
+.card.front{z-index:30;background:#111}
+.card-img{position:absolute;inset:0;background:#111}
+.card-img img,.card-img video{width:100%;height:100%;object-fit:cover;display:block}.card-img .cph{width:100%;height:100%;object-fit:cover}
 
 /* ── PROJECT PAGES ── */
 .pg-proj{background:var(--black);color:#fff;overflow-x:hidden}
@@ -705,7 +705,7 @@ function initDeck(){
   PROJECTS.forEach(function(p, i){
     var el = document.createElement('div');
     el.className = 'card';
-    el.style.background = 'var(--bg)';
+    el.style.background = '#111';
     el.style.overflow = 'hidden';
     el.style.position = 'absolute';
     el.innerHTML = '<div class="card-img">' + mkMedia(p.heroVideo||p.heroImg, p.ph, p.title) + '</div>';
