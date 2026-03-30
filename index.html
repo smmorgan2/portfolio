@@ -403,7 +403,7 @@ var PROJECTS=[
 /* ═══════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════ */
-var PEEK=36, PAD_BASE=80, STEP=18;
+var PEEK=28, PAD_BASE=40, STEP=18;
 
 function getDeckGeometry(order){
   var n=order.length;
@@ -724,12 +724,8 @@ function initDeck(){
   /* Compute actual card height so CARD_H stays current with viewport */
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  /* Front card aligns with nav text (S-M / Menu) using --g */
-  var gVal = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--g'));
-  var FRONT_INSET = gVal;          /* matches nav padding */
-  var SHRINK_PX   = dw * 0.035;    /* each card behind shrinks ~3.5% per side */
-  var frontW = dw - FRONT_INSET * 2;
-  var cardH  = Math.round(frontW * 9/16);
+  var cardW = dw - PAD_BASE * 2;
+  var cardH = Math.round(cardW * 9/16);
   CARD_H = cardH;
 
   sCur += (sRaw - sCur) * 0.075;
@@ -752,19 +748,14 @@ function initDeck(){
     var domIdx = ((baseIndex + slot) % n + n) % n;
     var el     = cardEls[domIdx];
 
-    var slotInset = FRONT_INSET + slot * SHRINK_PX;
-    var slotW     = Math.round(dw - slotInset * 2);
-    var slotH     = Math.round(slotW * 9/16);
-
     el.style.transition = 'none';
-    el.style.width  = slotW + 'px';
-    el.style.height = slotH + 'px';
-    el.style.left   = slotInset + 'px';
-    el.style.right  = 'auto';
+    el.style.height = cardH + 'px';
 
     if(slot === 0){
       var ty = prog * cardH * 1.08;
       el.style.top       = (n - 1) * PEEK + 'px';
+      el.style.left      = PAD_BASE + 'px';
+      el.style.right     = PAD_BASE + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + ty + 'px)';
       el.style.opacity   = '1';
@@ -780,17 +771,11 @@ function initDeck(){
       var f         = prog * cascade;
       var restTop   = (n - 1 - slot) * PEEK;
       var frontTop  = (n - 1) * PEEK;
-
-      /* Animate inset toward front card size during transition */
-      var animInset = slotInset + (FRONT_INSET - slotInset) * f;
-      var animW     = Math.round(dw - animInset * 2);
-      var animH     = Math.round(animW * 9/16);
-
-      el.style.width  = animW + 'px';
-      el.style.height = animH + 'px';
-      el.style.left   = animInset + 'px';
-      el.style.top    = (restTop  + (frontTop  - restTop)  * f) + 'px';
-      el.style.zIndex = String(n + 19 - slot);
+      var restInset = PAD_BASE + slot * STEP;
+      el.style.top       = (restTop  + (frontTop  - restTop)  * f) + 'px';
+      el.style.left      = (restInset + (PAD_BASE - restInset) * f) + 'px';
+      el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
+      el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
       if(slot === n - 1 && _hasScrolled){
         el.style.opacity = String(Math.min(1, prog * 3));
