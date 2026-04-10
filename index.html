@@ -724,8 +724,19 @@ function initDeck(){
   /* Compute actual card height so CARD_H stays current with viewport */
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  var cardW = dw - PAD_BASE * 2;
-  var cardH = Math.round(cardW * 9/16);
+  var dh   = deckEl ? deckEl.offsetHeight : (window.innerHeight - 60);
+  var maxW = dw - PAD_BASE * 2;
+  var maxH = dh - (n - 1) * PEEK - 20;
+  /* True 16:9 — fit within both width and height constraints */
+  var cardW, cardH;
+  if(Math.round(maxW * 9/16) <= maxH){
+    cardW = maxW;
+    cardH = Math.round(maxW * 9/16);
+  } else {
+    cardH = maxH;
+    cardW = Math.round(maxH * 16/9);
+  }
+  var frontInset = Math.round((dw - cardW) / 2);
   CARD_H = cardH;
 
   sCur += (sRaw - sCur) * 0.075;
@@ -754,8 +765,8 @@ function initDeck(){
     if(slot === 0){
       var ty = prog * cardH * 1.08;
       el.style.top       = (n - 1) * PEEK + 'px';
-      el.style.left      = PAD_BASE + 'px';
-      el.style.right     = PAD_BASE + 'px';
+      el.style.left      = frontInset + 'px';
+      el.style.right     = frontInset + 'px';
       el.style.zIndex    = String(n + 20);
       el.style.transform = 'translateY(' + ty + 'px)';
       el.style.opacity   = '1';
@@ -771,10 +782,10 @@ function initDeck(){
       var f         = prog * cascade;
       var restTop   = (n - 1 - slot) * PEEK;
       var frontTop  = (n - 1) * PEEK;
-      var restInset = PAD_BASE + slot * STEP;
+      var restInset = frontInset + slot * STEP;
       el.style.top       = (restTop  + (frontTop  - restTop)  * f) + 'px';
-      el.style.left      = (restInset + (PAD_BASE - restInset) * f) + 'px';
-      el.style.right     = (restInset + (PAD_BASE - restInset) * f) + 'px';
+      el.style.left      = (restInset + (frontInset - restInset) * f) + 'px';
+      el.style.right     = (restInset + (frontInset - restInset) * f) + 'px';
       el.style.zIndex    = String(n + 19 - slot);
       el.style.transform = 'translateY(0)';
       if(slot === n - 1 && _hasScrolled){
