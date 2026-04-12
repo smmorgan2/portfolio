@@ -403,7 +403,7 @@ var PROJECTS=[
 /* ═══════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════ */
-var PEEK=28, PAD_BASE=40, STEP=18;
+var PEEK=12, PAD_BASE=40, STEP=18;
 
 function getDeckGeometry(order){
   var n=order.length;
@@ -603,6 +603,7 @@ var N         = PROJECTS.length;
 var cardEls   = [];
 var deckEl;
 var _hasScrolled = false;
+var NAV_INSET = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--g')) || PAD_BASE;
 
 function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
@@ -725,10 +726,10 @@ function initDeck(){
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
   var dh   = deckEl ? deckEl.offsetHeight : (window.innerHeight - 60);
-  var cardW = dw - PAD_BASE * 2;
+  var cardW = dw - NAV_INSET * 2;
   var maxH  = dh - (n - 1) * PEEK - 20;
   var cardH = Math.round(cardW * 9/16);
-  var actualInset = PAD_BASE;
+  var actualInset = NAV_INSET;
   if(cardH > maxH){
     cardH = maxH;
     cardW = Math.round(cardH * 16/9);
