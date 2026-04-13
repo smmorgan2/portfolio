@@ -403,7 +403,7 @@ var PROJECTS=[
 /* ═══════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════ */
-var PEEK=12, PAD_BASE=40, STEP=18;
+var PEEK=22, PAD_BASE=40, STEP=22;
 
 function getDeckGeometry(order){
   var n=order.length;
@@ -725,16 +725,9 @@ function initDeck(){
   /* Compute actual card height so CARD_H stays current with viewport */
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
-  var dh   = deckEl ? deckEl.offsetHeight : (window.innerHeight - 60);
   var cardW = dw - NAV_INSET * 2;
-  var maxH  = dh - (n - 1) * PEEK - 20;
   var cardH = Math.round(cardW * 9/16);
   var actualInset = NAV_INSET;
-  if(cardH > maxH){
-    cardH = maxH;
-    cardW = Math.round(cardH * 16/9);
-    actualInset = Math.round((dw - cardW) / 2);
-  }
   CARD_H = cardH;
 
   sCur += (sRaw - sCur) * 0.075;
