@@ -682,8 +682,7 @@ function buildProjectPages(){
     var chars=p.title.split('').map(function(c){
       return c===' '?'<span class="pj-char space"> </span>':'<span class="pj-char">'+c+'</span>';
     }).join('');
-    var words=p.body.split(' '); var lines=[];
-    for(var i=0;i<words.length;i+=20){lines.push('<span class="pj-line-wrap"><span class="pj-line">'+words.slice(i,i+20).join(' ')+'</span></span>');}
+    var lines=['<span class="pj-line-wrap"><span class="pj-line">'+p.body+'</span></span>'];
     var sWords=p.statement.split(' '); var sLines=[];
     for(var si=0;si<sWords.length;si+=6){sLines.push('<span class="pj-stmt-line-wrap"><span class="pj-stmt-line">'+sWords.slice(si,si+6).join(' ')+'</span></span>');}
     var head='<div class="pj-head"><div class="pj-h1"><span class="pj-h1-inner">'+chars+'</span></div><div class="pj-tags">'+p.tags.join(', ')+'</div></div>';
