@@ -262,6 +262,7 @@ body.lite #cur{background:var(--black)}
 .pj-wide{margin:0 var(--g) 80px;aspect-ratio:16/9;border-radius:5px;overflow:hidden;background:#111}
 .pj-wide img,.pj-wide .cph{width:100%;height:100%;object-fit:cover;display:block}
 .pj-wide video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
+.pj-wide-cover video{object-fit:cover}
 
 /* 3-col 4:5 grid (ML format) */
 .pj-3col-35{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 var(--g) 48px}
@@ -418,7 +419,7 @@ var PROJECTS=[
    wideImg:'videos/R+Company-Subway-Mock_2.mp4',
    wideImg2:'videos/Slide%201%20WIDESCREEN%20REEL.mp4',
    statement:'Motion identity and social content for R&Company, New York\'s landmark design gallery.',
-   body:'Social media motion design and event content for R&Company gallery. Created IG stories, social assets, and out-of-home mockups in support of their cultural programming and exhibitions.'}
+   body:'The challenge was to translate a landmark design exhibition featuring fifty contemporary American artists into compelling Instagram content that honored its collectible prestige. Our solution created a fluid visual system that bridged physical and digital experiences - using dynamic motion collages and typographic treatments to showcase both the objects and their makers\' stories, actively growing R&Company\'s global collector engagement.'}
 ];
 
 /* ═══════════════════════════════════════════════════
@@ -711,8 +712,8 @@ function buildProjectPages(){
         '<div class="pj-stmt">'+sLines.join(' ')+'</div>'+
         '<div class="pj-3col"><div class="pj-reveal">'+mkMedia(p.col3[0],p.ph,'Social 1')+'</div><div class="pj-reveal">'+mkMedia(p.col3[1],p.ph,'Social 2')+'</div><div class="pj-reveal">'+mkMedia(p.col3[2],p.ph,'Social 3')+'</div></div>'+
         '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
-        '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' subway')+'</div>'+
-        '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg2,p.ph,p.title+' reel')+'</div>'+
+        '<div class="pj-wide pj-wide-cover pj-reveal">'+mkMedia(p.wideImg2,p.ph,p.title+' reel')+'</div>'+
+        '<div class="pj-wide pj-wide-cover pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' subway')+'</div>'+
         feat+footer;
     } else {
       sec.innerHTML=
