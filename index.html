@@ -787,17 +787,16 @@ function initDeck(){
 
     if(slot === 0){
       var ty = prog * cardH * 1.08;
-      el.style.top       = (n - 1) * PEEK + 'px';
-      el.style.left      = actualInset + 'px';
-      el.style.right     = actualInset + 'px';
-      el.style.zIndex    = String(n + 20);
-      el.style.transform = 'translateY(' + ty + 'px)';
-      el.style.opacity   = '1';
-      el.style.cursor = 'pointer';
+      el.style.top           = (n - 1) * PEEK + 'px';
+      el.style.left          = actualInset + 'px';
+      el.style.right         = actualInset + 'px';
+      el.style.zIndex        = String(n + 20);
+      el.style.transform     = 'translateY(' + ty + 'px)';
+      el.style.opacity       = '1';
+      el.style.cursor        = 'pointer';
+      el.style.pointerEvents = 'auto';
       var fp3 = projectAt(0);
-      if(fp3 && el._clickId !== fp3.id){
-        el._clickId = fp3.id;
-        var _fid = fp3.id;
+      if(fp3){
         el.onclick = (function(id){ return function(e){ if(current==='port'){ e.stopPropagation(); navGo(id); } }; })(fp3.id);
       }
     } else {
@@ -809,8 +808,10 @@ function initDeck(){
       el.style.top       = (restTop  + (frontTop  - restTop)  * f) + 'px';
       el.style.left      = (restInset + (actualInset - restInset) * f) + 'px';
       el.style.right     = (restInset + (actualInset - restInset) * f) + 'px';
-      el.style.zIndex    = String(n + 19 - slot);
-      el.style.transform = 'translateY(0)';
+      el.style.zIndex        = String(n + 19 - slot);
+      el.style.transform     = 'translateY(0)';
+      el.style.cursor        = 'default';
+      el.style.pointerEvents = 'none';
       if(slot === n - 1 && _hasScrolled){
         el.style.opacity = String(Math.min(1, prog * 3));
       } else {
