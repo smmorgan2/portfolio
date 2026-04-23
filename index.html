@@ -823,7 +823,7 @@ function initDeck(){
 
   /* Wheel momentum */
   sRaw += wheelVel;
-  wheelVel *= 0.85;
+  wheelVel *= 0.80;
   if(Math.abs(wheelVel) < 0.1) wheelVel = 0;
 
   sCur += (sRaw - sCur) * 0.15;
@@ -900,7 +900,7 @@ document.getElementById('pg-port').addEventListener('wheel', function(e){
   var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
   if(current !== 'port' && !portOn) return;
   e.preventDefault();
-  wheelVel += e.deltaY * 0.9;
+  wheelVel += e.deltaY * 0.675;
   if(!_hasScrolled) _hasScrolled = true;
 },{passive:false});
 
