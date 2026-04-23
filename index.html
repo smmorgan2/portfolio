@@ -650,6 +650,7 @@ var mouseX = 0, mouseY = 0;
 var curX = 0, curY = 0;
 var wheelVel = 0;
 var cardTiltX = 0, cardTiltY = 0;
+var cur = document.getElementById('cur');
 
 function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
@@ -957,7 +958,6 @@ document.querySelectorAll('.pj-feat-thumb').forEach(function(thumb){
   }); });
 })();
 
-var cur = document.getElementById('cur');
 document.addEventListener('mousemove', function(e){
   mouseX = e.clientX;
   mouseY = e.clientY;
