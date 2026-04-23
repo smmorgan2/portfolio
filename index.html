@@ -264,9 +264,17 @@ body.lite #cur{background:var(--black)}
 .pj-wide video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 .pj-wide-cover video{object-fit:cover}
 
-/* Sticker row (Spotify) */
-.pj-stickers{display:flex;justify-content:center;align-items:center;gap:clamp(16px,2.5vw,40px);padding:0 var(--g) 80px;flex-wrap:wrap}
-.pj-stickers img{height:clamp(80px,10vw,150px);width:auto;object-fit:contain}
+/* 6-up 1:1 grid — 3 cols × 2 rows (Spotify socials) */
+.pj-6sq{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 var(--g) 48px}
+.pj-6sq>div{aspect-ratio:1;border-radius:5px;overflow:hidden;background:#111}
+.pj-6sq img,.pj-6sq .cph{width:100%;height:100%;object-fit:cover;display:block}
+.pj-6sq video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
+
+/* Sticker rows (Spotify) */
+.pj-stickers{padding:0 var(--g) 80px}
+.pj-stickers-row{display:flex;gap:clamp(12px,2vw,28px);justify-content:space-between;align-items:flex-end}
+.pj-stickers-row+.pj-stickers-row{margin-top:clamp(12px,1.5vw,24px);padding-left:18%}
+.pj-stickers img{height:clamp(70px,11vw,158px);width:auto;object-fit:contain}
 
 /* 3-col 4:5 grid (ML format) */
 .pj-3col-35{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 var(--g) 48px}
@@ -405,7 +413,7 @@ var PROJECTS=[
    featVideo:'videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4',
    portraits:['','','',''],
    wideImg:'videos/spotify-web-asset-mock.mp4',
-   col3:['videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_02.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_03.mp4'],
+   col3:['videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_02.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_03.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_04.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_05.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_06.mp4'],
    wideImg2:'videos/spotify-ig-story-mock-animated.gif',
    stickers:['videos/spotify-sticker-3.png','videos/spotify-sticker-4.png','videos/spotify-sticker-5.gif','videos/spotify-sticker-6.png','videos/spotify-sticker-7.png'],
    statement:'What did you 2021 sound like?',
@@ -714,16 +722,18 @@ function buildProjectPages(){
         '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' wide')+'</div>'+
         feat+footer;
     } else if(p.id==='spotify'){
-      var stickerHtml=p.stickers.map(function(s){return '<img src="'+s+'" alt="Spotify sticker">';}).join('');
+      var sqCells=p.col3.map(function(v,i){return '<div class="pj-reveal">'+mkMedia(v,p.ph,'Social '+(i+1))+'</div>';}).join('');
+      var stTop=p.stickers.slice(0,3).map(function(s){return '<img src="'+s+'" alt="">';}).join('');
+      var stBot=p.stickers.slice(3).map(function(s){return '<img src="'+s+'" alt="">';}).join('');
       sec.innerHTML=
         head+
         '<div class="pj-hero pj-reveal">'+mkMedia(p.heroVideo,p.ph,p.title+' hero')+'</div>'+
         '<div class="pj-stmt">'+sLines.join(' ')+'</div>'+
         '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' web mock')+'</div>'+
         '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
-        '<div class="pj-3col"><div class="pj-reveal">'+mkMedia(p.col3[0],p.ph,'Social 1')+'</div><div class="pj-reveal">'+mkMedia(p.col3[1],p.ph,'Social 2')+'</div><div class="pj-reveal">'+mkMedia(p.col3[2],p.ph,'Social 3')+'</div></div>'+
+        '<div class="pj-6sq">'+sqCells+'</div>'+
         '<div class="pj-wide pj-wide-cover pj-reveal">'+mkMedia(p.wideImg2,p.ph,p.title+' IG story')+'</div>'+
-        '<div class="pj-stickers">'+stickerHtml+'</div>'+
+        '<div class="pj-stickers"><div class="pj-stickers-row">'+stTop+'</div><div class="pj-stickers-row">'+stBot+'</div></div>'+
         feat+footer;
     } else if(p.id==='r-and-company'){
       sec.innerHTML=
