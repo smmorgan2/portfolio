@@ -804,12 +804,6 @@ function initDeck(){
 (function loop(){
   requestAnimationFrame(loop);
 
-  /* Cursor lerp — runs on every page */
-  curX += (mouseX - curX) * 0.15;
-  curY += (mouseY - curY) * 0.15;
-  cur.style.left = curX.toFixed(2) + 'px';
-  cur.style.top  = curY.toFixed(2) + 'px';
-
   var portOn = document.getElementById('pg-port') && document.getElementById('pg-port').classList.contains('on');
   if(current !== 'port' && !portOn) return;
 
@@ -855,8 +849,8 @@ function initDeck(){
       var deckOT = deckEl ? deckEl.offsetTop : 0;
       var cardCX = window.innerWidth / 2;
       var cardCY = deckOT + (n - 1) * PEEK + cardH / 2 + ty;
-      var dx = Math.max(-1, Math.min(1, (curX - cardCX) / (cardW * 0.55)));
-      var dy = Math.max(-1, Math.min(1, (curY - cardCY) / (cardH * 0.55)));
+      var dx = Math.max(-1, Math.min(1, (mouseX - cardCX) / (cardW * 0.55)));
+      var dy = Math.max(-1, Math.min(1, (mouseY - cardCY) / (cardH * 0.55)));
       var tiltTgtX = -dy * 5;
       var tiltTgtY =  dx * 8;
       cardTiltX += (tiltTgtX - cardTiltX) * 0.07;
@@ -869,10 +863,6 @@ function initDeck(){
       el.style.opacity       = '1';
       el.style.cursor        = 'pointer';
       el.style.pointerEvents = 'auto';
-      var fp3 = projectAt(0);
-      if(fp3){
-        el.onclick = (function(id){ return function(e){ if(current==='port'){ e.stopPropagation(); navGo(id); } }; })(fp3.id);
-      }
     } else {
       var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
@@ -914,6 +904,11 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
 document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
 
 initDeck();
+deckEl.addEventListener('click', function(){
+  if(current !== 'port') return;
+  var fp = projectAt(0);
+  if(fp) navGo(fp.id);
+});
 buildProjectPages();
 updateNav();
 
@@ -961,6 +956,8 @@ document.querySelectorAll('.pj-feat-thumb').forEach(function(thumb){
 document.addEventListener('mousemove', function(e){
   mouseX = e.clientX;
   mouseY = e.clientY;
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
 });
 
 
