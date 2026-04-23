@@ -264,6 +264,10 @@ body.lite #cur{background:var(--black)}
 .pj-wide video{width:100%;height:100%;object-fit:contain;display:block;background:#111}
 .pj-wide-cover video{object-fit:cover}
 
+/* Sticker row (Spotify) */
+.pj-stickers{display:flex;justify-content:center;align-items:center;gap:clamp(16px,2.5vw,40px);padding:0 var(--g) 80px;flex-wrap:wrap}
+.pj-stickers img{height:clamp(80px,10vw,150px);width:auto;object-fit:contain}
+
 /* 3-col 4:5 grid (ML format) */
 .pj-3col-35{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0 var(--g) 48px}
 .pj-3col-35>div{aspect-ratio:4/5;border-radius:5px;overflow:hidden;background:#111}
@@ -396,12 +400,16 @@ var PROJECTS=[
    portraits:['','','',''],wideImg:'',
    statement:'Customers using our AI models in Vertex have grown over 125% YTD.',
    body:"Motion design for Google Ads featuring AI-powered advertising campaigns. Created engaging video and social media assets communicating the power of Google's advertising platform."},
-  {id:'spotify',title:'Spotify',tags:['Motion','Social Content'],year:'2024',
+  {id:'spotify',title:'Spotify',tags:['Branding','Motion','Identity'],year:'2024',
    stripColor:'s-lime',ph:'ph-spotify',featured:true,heroImg:'',heroVideo:'videos/spotify_wrapped_v01.mp4',
    featVideo:'videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4',
-   portraits:['','','',''],wideImg:'',
-   statement:'Bringing your year in music to life through motion.',
-   body:'Seasonal campaign motion design for Spotify Wrapped. Developed a suite of animated templates maintaining the iconic Wrapped visual identity.'},
+   portraits:['','','',''],
+   wideImg:'videos/spotify-web-asset-mock.mp4',
+   col3:['videos/spotify_2021%20wrapped%20social_heart%20to%20remind_01.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_02.mp4','videos/spotify_2021%20wrapped%20social_heart%20to%20remind_03.mp4'],
+   wideImg2:'videos/spotify-ig-story-mock-animated.gif',
+   stickers:['videos/spotify-sticker-3.png','videos/spotify-sticker-4.png','videos/spotify-sticker-5.gif','videos/spotify-sticker-6.png','videos/spotify-sticker-7.png'],
+   statement:'What did you 2021 sound like?',
+   body:'2021 Spotify Wrapped celebrates the millions of weird and wonderful ways to listen and live in a world that continues to keep us on our toes. Working within a larger team of designers, I contributed to the development of visual assets that were used across a variety of social media platforms, including Instagram, Twitter, and Facebook.'},
   {id:'listen',title:'LISTEN',tags:['Branding','Motion Identity'],year:'2024',
    stripColor:'s-magenta',ph:'ph-listen',featured:true,heroImg:'',heroVideo:'videos/listen_video_01.mp4',
    featVideo:'videos/LISTEN-Logo-ani.mp4',
@@ -704,6 +712,18 @@ function buildProjectPages(){
         '<div class="pj-3col-35"><div class="pj-reveal">'+mkMedia(p.ml3x5[0],p.ph,'ML 1')+'</div><div class="pj-reveal">'+mkMedia(p.ml3x5[1],p.ph,'ML 2')+'</div><div class="pj-reveal">'+mkMedia(p.ml3x5[2],p.ph,'ML 3')+'</div></div>'+
         '<div class="pj-mixed"><div class="pj-mixed-left pj-reveal">'+mkMedia(p.ml9x16,p.ph,'ML 9x16')+'</div><div class="pj-mixed-right pj-reveal">'+mkMedia(p.poster,p.ph,'New Issue')+'</div></div>'+
         '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' wide')+'</div>'+
+        feat+footer;
+    } else if(p.id==='spotify'){
+      var stickerHtml=p.stickers.map(function(s){return '<img src="'+s+'" alt="Spotify sticker">';}).join('');
+      sec.innerHTML=
+        head+
+        '<div class="pj-hero pj-reveal">'+mkMedia(p.heroVideo,p.ph,p.title+' hero')+'</div>'+
+        '<div class="pj-stmt">'+sLines.join(' ')+'</div>'+
+        '<div class="pj-wide pj-reveal">'+mkMedia(p.wideImg,p.ph,p.title+' web mock')+'</div>'+
+        '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
+        '<div class="pj-3col"><div class="pj-reveal">'+mkMedia(p.col3[0],p.ph,'Social 1')+'</div><div class="pj-reveal">'+mkMedia(p.col3[1],p.ph,'Social 2')+'</div><div class="pj-reveal">'+mkMedia(p.col3[2],p.ph,'Social 3')+'</div></div>'+
+        '<div class="pj-wide pj-wide-cover pj-reveal">'+mkMedia(p.wideImg2,p.ph,p.title+' IG story')+'</div>'+
+        '<div class="pj-stickers">'+stickerHtml+'</div>'+
         feat+footer;
     } else if(p.id==='r-and-company'){
       sec.innerHTML=
