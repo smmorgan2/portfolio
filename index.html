@@ -904,9 +904,12 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
 document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
 
 initDeck();
-deckEl.addEventListener('click', function(){
+deckEl.addEventListener('click', function(e){
   if(current !== 'port') return;
-  var fp = projectAt(0);
+  var card = e.target.closest('.card');
+  if(!card) return;
+  var idx = parseInt(card.dataset.projIndex, 10);
+  var fp = PROJECTS[idx];
   if(fp) navGo(fp.id);
 });
 buildProjectPages();
