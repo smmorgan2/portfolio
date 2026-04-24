@@ -861,8 +861,8 @@ function initDeck(){
       el.style.zIndex        = String(n + 20);
       el.style.transform     = 'translateY('+ty+'px) rotateX('+cardTiltX.toFixed(3)+'deg) rotateY('+cardTiltY.toFixed(3)+'deg)';
       el.style.opacity       = '1';
-      el.style.cursor        = 'pointer';
-      el.style.pointerEvents = 'auto';
+      el.style.cursor        = prog > 0.85 ? 'default' : 'pointer';
+      el.style.pointerEvents = prog > 0.85 ? 'none' : 'auto';
     } else {
       var cascade   = Math.pow(0.65, slot - 1);
       var f         = prog * cascade;
@@ -874,8 +874,9 @@ function initDeck(){
       el.style.right     = (restInset + (actualInset - restInset) * f) + 'px';
       el.style.zIndex        = String(n + 19 - slot);
       el.style.transform     = 'translateY(0)';
-      el.style.cursor        = 'default';
-      el.style.pointerEvents = 'none';
+      var isNextFront = slot === 1 && prog > 0.5;
+      el.style.cursor        = isNextFront ? 'pointer' : 'default';
+      el.style.pointerEvents = isNextFront ? 'auto' : 'none';
       if(slot === n - 1 && _hasScrolled){
         el.style.opacity = String(Math.min(1, prog * 3));
       } else {
