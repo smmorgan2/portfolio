@@ -51,9 +51,9 @@ Green scanner overlay sweeps between pages. Pages stay still during transitions 
 ## Project Data (PROJECTS array)
 1. **Amazon Ads** — fully built with videos in all slots (hero, 2-col, banner, 3-col, wide banner)
 2. **Google Ads** — fully built. Custom layout (see below). All videos live.
-3. **Spotify** — hero video set, needs project page content
+3. **Spotify** — fully built. Custom layout: wide → body → 6-sq grid → wide cover → stickers
 4. **LISTEN** — fully built with all media slots filled, `featured: true`
-5. **R&Company** — hero video only, needs statement/body/tags
+5. **R&Company** — fully built. Custom layout: hero → statement → 3-col → body → wide cover
 
 ## Google Ads Page — Custom Layout
 Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildProjectPages()`.
@@ -101,7 +101,7 @@ Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildPr
 - The portfolio currently reads stronger as a Brand + Motion Designer book than an Art Director book
 - Copy should emphasize decisions made and direction given, not just execution tasks
 - To elevate toward Art Director positioning: rewrite body copy to foreground creative decisions, concepts owned, and team/stakeholder direction
-- R&Company and Spotify pages still need full content
+- All 5 project pages are fully built with content and media
 
 ## Workflow
 - Sam gives direct, specific corrections when output doesn't match reference
