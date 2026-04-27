@@ -401,9 +401,10 @@ var PROJECTS=[
   {id:'google-ads',title:'Google Ads',tags:['Motion','Social'],year:'2025',
    stripColor:'s-yellow',ph:'ph-google',featured:true,heroImg:'',heroVideo:'videos/G-THI25B-ThinkSocials-LOreal-16x9.mp4',
    featVideo:'videos/G-THI25B_ThinkSocials_LOreal_1x1_V06.mp4',
-   portraits:['','','',''],wideImg:'',
-   statement:'Customers using our AI models in Vertex have grown over 125% YTD.',
-   body:"Motion design for Google Ads featuring AI-powered advertising campaigns. Created engaging video and social media assets communicating the power of Google's advertising platform."},
+   col3:['videos/G-THI25B_ThinkSocials_Sephora_1x1_V06.mp4','videos/G-THI25B_ThinkSocials_Asset%20Studio_1x1_V10.mp4','videos/G-THI25B_ThinkSocials_MoneyGroup_1x1_V07.3.mp4'],
+   wideVid:'videos/G-THI25B_ThinkSocials_ClickUp_1x1_V11.mp4',
+   statement:'Demystifying Google Ads, one social video at a time.',
+   body:"As the sole motion designer on this project, I developed a series of social videos for Google Ads — designed to help customers understand and activate the platform's suite of advertising tools. Working within Google Ads' existing motion system, I introduced a new set of animated icons to bring clarity and energy to each feature highlight. The videos featured real brand examples — including L'Oréal, Sephora, ClickUp, and Money Group — grounding abstract ad concepts in recognizable, real-world campaigns. The result was a set of educational social assets that made Google's most powerful tools feel intuitive and within reach."},
   {id:'amazon-ads',title:'Amazon Ads',tags:['Branding','Motion Identity'],year:'2025',
    stripColor:'s-cyan',ph:'ph-amazon',featured:true,heroImg:'',heroVideo:'videos/amazon_ads_v01_clipped.mp4',
    portraits:['videos/250524-AMZN-RisingStars-Social-4x5-1%20person-a.mp4','videos/250524-AMZN-RisingStars-Social-4x5-10-person.mp4','',''],
@@ -751,6 +752,16 @@ function buildProjectPages(){
         '<div class="pj-3col"><div class="pj-reveal">'+mkMedia(p.col3[0],p.ph,'Social 1')+'</div><div class="pj-reveal">'+mkMedia(p.col3[1],p.ph,'Social 2')+'</div><div class="pj-reveal">'+mkMedia(p.col3[2],p.ph,'Social 3')+'</div></div>'+
         '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
         '<div class="pj-wide pj-wide-cover pj-reveal">'+mkMedia(p.wideImg2,p.ph,p.title+' reel')+'</div>'+
+        feat+footer;
+    } else if(p.id==='google-ads'){
+      var sqCells3=p.col3.map(function(v,i){return '<div class="pj-reveal">'+mkMedia(v,p.ph,'Social '+(i+1))+'</div>';}).join('');
+      sec.innerHTML=
+        head+
+        '<div class="pj-hero pj-reveal">'+mkMedia(p.heroVideo,p.ph,p.title+' hero')+'</div>'+
+        '<div class="pj-stmt">'+sLines.join(' ')+'</div>'+
+        '<div class="pj-6sq">'+sqCells3+'</div>'+
+        '<div class="pj-copy"><p>'+lines.join(' ')+'</p></div>'+
+        '<div class="pj-wide pj-reveal">'+mkMedia(p.wideVid,p.ph,p.title+' wide')+'</div>'+
         feat+footer;
     } else {
       sec.innerHTML=
