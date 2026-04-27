@@ -1,7 +1,7 @@
 # Sam Morgan Portfolio — CLAUDE.md
 
 ## Overview
-Single-page portfolio app for Sam Morgan (he/they), Motion Art Director. One self-contained `index.html` file using vanilla HTML/CSS/JS — no frameworks. Deployed to GitHub Pages at https://smmorgan2.github.io/portfolio. Videos are hosted on GitHub in a `videos/` folder relative to `index.html`.
+Single-page portfolio app for Sam Morgan (he/they), Brand + Motion Designer. One self-contained `index.html` file using vanilla HTML/CSS/JS — no frameworks. Deployed to GitHub Pages at https://smmorgan2.github.io/portfolio. Videos are hosted on GitHub in a `videos/` folder relative to `index.html`.
 
 ## Architecture
 All code lives in a single `index.html`. The site is a client-side SPA with custom routing:
@@ -22,6 +22,7 @@ All code lives in a single `index.html`. The site is a client-side SPA with cust
 
 ### Landing Page — LOCKED
 Character-by-character "Sam Morgan" slide-in with green color transition, role text, S-M logo, Portfolio text. Do NOT modify without explicit instruction.
+- **Role title**: "Brand + Motion Designer" (updated from "Motion Art Director" — better reflects work shown)
 
 ### Card Deck (Portfolio Scroll)
 - Virtual scroll with 16:9 video cards using `object-fit: cover`
@@ -49,16 +50,41 @@ Green scanner overlay sweeps between pages. Pages stay still during transitions 
 
 ## Project Data (PROJECTS array)
 1. **Amazon Ads** — fully built with videos in all slots (hero, 2-col, banner, 3-col, wide banner)
-2. **Google Ads** — hero video set, needs project page content
+2. **Google Ads** — fully built. Custom layout (see below). All videos live.
 3. **Spotify** — hero video set, needs project page content
-4. **LISTEN** — hero video set, needs project page content, `featured: true`
+4. **LISTEN** — fully built with all media slots filled, `featured: true`
 5. **R&Company** — hero video only, needs statement/body/tags
+
+## Google Ads Page — Custom Layout
+Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildProjectPages()`.
+
+**Layout order:**
+1. Head (title + tags)
+2. Hero — `G-THI25B-ThinkSocials-LOreal-16x9.mp4`
+3. Statement — "Demystifying Google Ads, one social video at a time."
+4. 3-col square grid (`pj-6sq`) — Sephora, Asset Studio, MoneyGroup 1:1 videos
+5. Body copy
+6. Wide 1:1 square container (aspect-ratio override: `style="aspect-ratio:1/1"`) — ClickUp video, no black bars
+7. Featured Work + Footer
+
+**Videos used:**
+- Hero: `videos/G-THI25B-ThinkSocials-LOreal-16x9.mp4`
+- featVideo: `videos/G-THI25B_ThinkSocials_LOreal_1x1_V06.mp4`
+- col3[0]: `videos/G-THI25B_ThinkSocials_Sephora_1x1_V06.mp4`
+- col3[1]: `videos/G-THI25B_ThinkSocials_Asset%20Studio_1x1_V10.mp4`
+- col3[2]: `videos/G-THI25B_ThinkSocials_MoneyGroup_1x1_V07.3.mp4`
+- wideVid: `videos/G-THI25B_ThinkSocials_ClickUp_1x1_V11.mp4`
+
+**Copy:**
+- Statement: "Demystifying Google Ads, one social video at a time."
+- Body: Sole motion designer. Social videos helping Google Ads customers activate platform tools. Worked within Google's existing motion system, introduced new animated icons. Featured brands: L'Oréal, Sephora, ClickUp, Money Group.
 
 ## Key Utilities
 - `mkMedia()` — auto-detects `.mp4/.webm/.mov` to render video vs. image
 - `featVideo` property — allows featured work thumbnails to use different videos than the hero
 - `object-fit: contain` for videos on project pages, `cover` for images
 - `object-fit: cover` for card deck videos
+- Square 1:1 video containers: use `pj-6sq` for grids, or `pj-wide` with `style="aspect-ratio:1/1"` for standalone
 
 ## Critical Rules — READ THESE
 1. **Don't break locked sections** — Landing page and page transitions are finalized
@@ -69,6 +95,13 @@ Green scanner overlay sweeps between pages. Pages stay still during transitions 
 6. **Spaces in video filenames** are encoded as `%20` in paths
 7. **Surgical edits only** — don't touch unrelated parts of the file
 8. **No rebuilds** — prefer targeted fixes over broad rewrites
+9. **Role title is "Brand + Motion Designer"** — not "Motion Art Director"
+
+## Positioning Notes
+- The portfolio currently reads stronger as a Brand + Motion Designer book than an Art Director book
+- Copy should emphasize decisions made and direction given, not just execution tasks
+- To elevate toward Art Director positioning: rewrite body copy to foreground creative decisions, concepts owned, and team/stakeholder direction
+- R&Company and Spotify pages still need full content
 
 ## Workflow
 - Sam gives direct, specific corrections when output doesn't match reference
