@@ -311,14 +311,15 @@ body.lite #cur{background:var(--black)}
 .pj-reveal.will-animate{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.16,1,0.3,1);}
 .pj-reveal.will-animate.in-view{opacity:1;transform:translateY(0)}
 #pg-about{background:var(--bg);color:var(--black);min-height:100vh}
-.ab-wrap{padding:calc(var(--nav-h) + 14px) var(--g) 0}
+.ab-wrap{padding:calc(var(--nav-h) + 14px) var(--g) 100px}
 .ab-h1{font-size:clamp(48px,7.5vw,96px);line-height:.92;letter-spacing:-0.05em;color:var(--green);margin-bottom:44px;overflow:visible;padding-bottom:0.08em}
-.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
-.ab-bio{font-weight:400;font-size:64px;line-height:1.05;letter-spacing:-0.011em;color:var(--black);text-wrap:balance}
-.ab-photo{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:#c5b49c}
-.ab-photo img{width:100%;height:100%;object-fit:cover}
-.ab-paras{margin-top:48px;max-width:100%;display:flex;flex-direction:column;gap:0;padding-bottom:60px}
-.ab-p{font-size:15px;font-weight:300;line-height:1.88;color:var(--black)}
+.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:stretch}
+.ab-left{display:flex;flex-direction:column}
+.ab-bio{font-weight:400;font-size:clamp(36px,4.5vw,64px);line-height:1.05;letter-spacing:-0.011em;color:var(--black);text-wrap:balance}
+.ab-photo{border-radius:4px;overflow:hidden;background:#c5b49c;min-height:400px}
+.ab-photo video,.ab-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ab-paras{margin-top:48px;display:flex;flex-direction:column;gap:20px}
+.ab-p{font-family:'Aktiv Grotesk',Helvetica,sans-serif;font-size:14px;font-weight:400;line-height:1.75;letter-spacing:-0.05em;color:var(--black)}
 .footer{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;padding:22px var(--g)}
 .footer.on-white{border-top:1px solid rgba(0,0,0,.08);color:var(--black)}
 .footer.on-black{border-top:1px solid rgba(255,255,255,.07);color:var(--bg)}
@@ -375,18 +376,24 @@ body.lite #cur{background:var(--black)}
   <div class="ab-wrap">
     <div class="ab-h1" id="about-h1">About</div>
     <div class="ab-grid">
-      <div class="ab-bio"><span class="pj-stmt-line-wrap"><span class="pj-stmt-line">Sam Morgan (he/they) is a Mexican-Jamaican</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">designer who brings brands to life</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">through dynamic story driven animation and</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">design.</span></span></div>
-      <div class="ab-photo fu"></div>
-    </div>
-    <div class="ab-paras">
-      <p class="ab-p"><span class="pj-line-wrap"><span class="pj-line">Movement is at the core of everything I do—whether it’s</span></span> <span class="pj-line-wrap"><span class="pj-line">in design, skateboarding, or cinematography. I bring a diverse perspective</span></span> <span class="pj-line-wrap"><span class="pj-line">to my work, blending cultural influences with dynamic motion and</span></span> <span class="pj-line-wrap"><span class="pj-line">storytelling to create high-impact visuals that help brands like Spotify</span></span> <span class="pj-line-wrap"><span class="pj-line">and HP connect with their audiences in fresh, intentional, and</span></span> <span class="pj-line-wrap"><span class="pj-line">captivating ways. From motion identities to social content and digital</span></span> <span class="pj-line-wrap"><span class="pj-line">campaigns, I craft designs that resonate across digital and social</span></span> <span class="pj-line-wrap"><span class="pj-line">platforms. At the heart of my design thinking is a</span></span> <span class="pj-line-wrap"><span class="pj-line">passion for pushing ideas further. Whether refining a brand’s visual</span></span> <span class="pj-line-wrap"><span class="pj-line">identity or skating through the city, I’m always seeking new</span></span> <span class="pj-line-wrap"><span class="pj-line">ways to bring movement and meaning to the work I</span></span> <span class="pj-line-wrap"><span class="pj-line">do. When I’m not designing, you’ll catch me skateboarding or</span></span> <span class="pj-line-wrap"><span class="pj-line">taking neighborhood walks, drawing inspiration from everyday moments.</span></span></p>
+      <div class="ab-left">
+        <div class="ab-bio"><span class="pj-stmt-line-wrap"><span class="pj-stmt-line">Sam Morgan (he/they) is a Mexican-Jamaican</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">designer who brings brands to life</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">through dynamic story driven animation and</span></span> <span class="pj-stmt-line-wrap"><span class="pj-stmt-line">design.</span></span></div>
+        <div class="ab-paras">
+          <p class="ab-p"><span class="pj-line-wrap"><span class="pj-line">Movement is at the core of everything I do—whether it’s in design, skateboarding, or cinematography. I bring a diverse perspective to my work, blending cultural influences with dynamic motion and storytelling to create high-impact visuals that help brands like Spotify and HP connect with their audiences in fresh, intentional, and captivating ways. From motion identities to social content and digital campaigns, I craft designs that resonate across digital and social platforms.</span></span></p>
+          <p class="ab-p"><span class="pj-line-wrap"><span class="pj-line">At the heart of my design thinking is a passion for pushing ideas further. Whether refining a brand’s visual identity or skating through the city, I’m always seeking new ways to bring movement and meaning to the work I do.</span></span></p>
+          <p class="ab-p"><span class="pj-line-wrap"><span class="pj-line">When I’m not designing, you’ll catch me skateboarding or taking neighborhood walks, drawing inspiration from everyday moments.</span></span></p>
+        </div>
+      </div>
+      <div class="ab-photo fu">
+        <video src="videos/about%20me%20carousel.mp4" autoplay muted loop playsinline></video>
+      </div>
     </div>
   </div>
   <footer class="footer on-white fu">
-    <div class="ft-l">Sam Morgan<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="93e0fefefce1f4f2fda1d3f4fef2faffbdf0fcfe">[email&#160;protected]</a></div>
+    <div class="ft-l">Sam Morgan<br>smmorgan2@gmail.com</div>
     <div class="ft-links">
-      <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-      <a href="https://instagram.com" target="_blank">Instagram</a>
+      <a href="https://www.linkedin.com/in/sam-morgan-297a02108/" target="_blank">LinkedIn</a>
+      <a href="https://www.instagram.com/sammorgan.mov/" target="_blank">Instagram</a>
     </div>
     <div class="ft-copy">2025 All rights reserved</div>
   </footer>
@@ -717,7 +724,7 @@ function buildProjectPages(){
     var sWords=p.statement.split(' '); var sLines=[];
     for(var si=0;si<sWords.length;si+=6){sLines.push('<span class="pj-stmt-line-wrap"><span class="pj-stmt-line">'+sWords.slice(si,si+6).join(' ')+'</span></span>');}
     var head='<div class="pj-head"><div class="pj-h1"><span class="pj-h1-inner">'+chars+'</span></div><div class="pj-tags">'+p.tags.join(', ')+'</div></div>';
-    var footer='<footer class="footer on-black"><div class="ft-l">Sam Morgan<br>smmorgan2@gmail.com</div><div class="ft-links"><a href="https://linkedin.com" target="_blank">LinkedIn</a><a href="https://instagram.com" target="_blank">Instagram</a></div><div class="ft-copy">2025 All rights reserved</div></footer>';
+    var footer='<footer class="footer on-black"><div class="ft-l">Sam Morgan<br>smmorgan2@gmail.com</div><div class="ft-links"><a href="https://www.linkedin.com/in/sam-morgan-297a02108/" target="_blank">LinkedIn</a><a href="https://www.instagram.com/sammorgan.mov/" target="_blank">Instagram</a></div><div class="ft-copy">2025 All rights reserved</div></footer>';
     var feat='<div class="pj-feat pj-reveal"><div class="pj-feat-h">Featured Work</div><div class="pj-feat-row">'+featCards+'</div></div>';
     if(p.id==='listen'){
       sec.innerHTML=
