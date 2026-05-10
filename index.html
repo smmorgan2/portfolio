@@ -831,6 +831,8 @@ function initDeck(){
     el.dataset.projIndex = i;
     deckEl.appendChild(el);
     cardEls.push(el);
+    var _v = el.querySelector('video');
+    if(_v){ _v.muted = true; _v.play().catch(function(){}); }
   });
   rehover();
 }
@@ -937,6 +939,13 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
   sRaw+=(_tl-e.touches[0].clientY)*1.8; if(sRaw<0)sRaw=0; _tl=e.touches[0].clientY;
 },{passive:true});
 document.getElementById('pg-port').addEventListener('touchend',function(e){},{passive:true});
+/* iOS Low Power Mode: retry play on first user touch (satisfies gesture requirement) */
+document.getElementById('pg-port').addEventListener('touchstart',function(){
+  cardEls.forEach(function(card){
+    var v=card.querySelector('video');
+    if(v&&v.paused){v.muted=true;v.play().catch(function(){});}
+  });
+},{passive:true,once:true});
 
 initDeck();
 deckEl.addEventListener('click', function(e){
