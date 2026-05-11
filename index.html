@@ -590,7 +590,7 @@ function updateNav(){
   document.getElementById('nav').style.display = (current==='land') ? 'none' : '';
   var darkPages=(current==='land'||(current!=='port'&&current!=='about'));
   nav.classList.toggle('dark',darkPages);
-  var menuHtml='<div class="n-menu-wrap"><span class="n-menu-btn">Menu</span><div class="n-dropdown"><a href="mailto:smmorgan2@gmail.com">Contact</a><a onclick="navGo(&apos;about&apos;)">About</a><a href="#">CV</a></div></div>';
+  var menuHtml='<div class="n-menu-wrap"><span class="n-menu-btn">Menu</span><div class="n-dropdown"><a href="mailto:smmorgan2@gmail.com">Contact</a><a onclick="navGo(&apos;about&apos;)">About</a><a href="videos/Sam_Morgan_CV_2026.pdf" target="_blank">CV</a></div></div>';
   if(current==='land'||current==='port'||isProj){nr.innerHTML=menuHtml;}
   else if(current==='about'){nr.innerHTML=menuHtml;}
   rehover();
