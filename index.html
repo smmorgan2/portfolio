@@ -858,6 +858,13 @@ function initDeck(){
 
   sCur += (sRaw - sCur) * (_touchActive ? 0.32 : 0.15);
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
+  /* Settle to nearest card when wheel is idle */
+  if(wheelVel === 0 && CARD_H > 0){
+    var snapTarget = sCur >= CARD_H * 0.5 ? CARD_H : 0;
+    sCur += (snapTarget - sCur) * 0.1;
+    sRaw = sCur;
+    if(Math.abs(snapTarget - sCur) < 0.5){ sCur = snapTarget; sRaw = snapTarget; }
+  }
   /* Backward */
   while(sCur < 0){
     sCur += CARD_H; sRaw += CARD_H;
