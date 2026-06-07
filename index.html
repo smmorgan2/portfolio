@@ -862,7 +862,7 @@ function initDeck(){
   sCur += (sRaw - sCur) * (_touchActive ? 0.32 : 0.15);
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
   /* Gentle settle when wheel is idle — only commits past 70% or below 30% */
-  if(wheelVel === 0 && CARD_H > 0){
+  if(wheelVel === 0 && !_touchActive && CARD_H > 0){
     var prog0 = sCur / CARD_H;
     if(prog0 > 0.3 || prog0 < -0.01){
       var snapTarget = prog0 >= 0.3 ? CARD_H : 0;
@@ -949,7 +949,7 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
   if(current!=='port') return;
   e.preventDefault();
   if(!_hasScrolled) _hasScrolled = true;
-  sRaw+=(_tl-e.touches[0].clientY)*2.2; _tl=e.touches[0].clientY;
+  sRaw+=(_tl-e.touches[0].clientY)*3.8; _tl=e.touches[0].clientY;
 },{passive:false});
 document.getElementById('pg-port').addEventListener('touchend',function(e){_touchActive=false;},{passive:true});
 /* iOS Low Power Mode: retry play on first user touch (satisfies gesture requirement) */
