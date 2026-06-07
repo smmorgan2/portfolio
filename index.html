@@ -337,6 +337,32 @@ body.lite #cur{background:var(--black)}
 .ph-rco{background:#1a1a1a;color:#fff}
 
 @media(hover:none){#cur{display:none}}
+@media(hover:none){
+  #mob-menu{
+    position:fixed;inset:0;z-index:550;
+    background:#000;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    padding:calc(var(--g) * 1.5) var(--g) calc(var(--g) * 2);
+    opacity:0;pointer-events:none;
+    transition:opacity 0.28s ease;
+  }
+  #mob-menu.open{opacity:1;pointer-events:all;}
+  .mob-menu-link{
+    display:block;
+    font-size:clamp(40px,12vw,60px);
+    font-weight:700;letter-spacing:-0.05em;line-height:1.05;
+    color:rgba(255,255,255,0.85);
+    padding:14px 0;
+    border-top:1px solid rgba(255,255,255,0.1);
+    opacity:0;transform:translateY(20px);
+    transition:opacity 0.3s ease,transform 0.3s cubic-bezier(0.16,1,0.3,1),color 0.15s;
+  }
+  .mob-menu-link:last-child{border-bottom:1px solid rgba(255,255,255,0.1);}
+  .mob-menu-link:active{color:var(--green);}
+  #mob-menu.open .mob-menu-link:nth-child(1){opacity:1;transform:translateY(0);transition-delay:0.04s}
+  #mob-menu.open .mob-menu-link:nth-child(2){opacity:1;transform:translateY(0);transition-delay:0.09s}
+  #mob-menu.open .mob-menu-link:nth-child(3){opacity:1;transform:translateY(0);transition-delay:0.14s}
+}
 @media(max-width:768px){
   .ab-grid{grid-template-columns:1fr}
   .ab-paras{max-width:100%}
@@ -502,7 +528,16 @@ var scrollObserver=new IntersectionObserver(function(entries){
   entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in-view');});
 },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 
+function closeMobMenu(){
+  var mob=document.getElementById('mob-menu');
+  if(!mob||!mob.classList.contains('open')) return;
+  mob.classList.remove('open');
+  var btn=document.querySelector('.n-menu-btn');
+  if(btn) btn.textContent='Menu';
+}
+
 function navGo(id){
+  closeMobMenu();
   if(id===current||transActive) return;
   if(current==='land'&&id==='port'){parallaxToPort();return;}
   transActive=true;
@@ -1035,24 +1070,37 @@ document.addEventListener('mousemove', function(e){
   cur.style.top  = e.clientY + 'px';
 });
 
-/* ── MOBILE NAV: tap-to-toggle dropdown ── */
+/* ── NAV MENU: overlay on mobile, dropdown on desktop ── */
 (function(){
   var nr = document.getElementById('n-right');
   nr.addEventListener('click', function(e){
     var btn = e.target.closest('.n-menu-btn');
     if(!btn) return;
     e.stopPropagation();
-    var wrap = btn.closest('.n-menu-wrap');
-    if(wrap) wrap.classList.toggle('open');
+    if(isMobile){
+      var mob = document.getElementById('mob-menu');
+      var isOpen = mob.classList.toggle('open');
+      btn.textContent = isOpen ? 'Close' : 'Menu';
+    } else {
+      var wrap = btn.closest('.n-menu-wrap');
+      if(wrap) wrap.classList.toggle('open');
+    }
   });
   document.addEventListener('click', function(){
-    var open = document.querySelector('.n-menu-wrap.open');
-    if(open) open.classList.remove('open');
+    if(!isMobile){
+      var open = document.querySelector('.n-menu-wrap.open');
+      if(open) open.classList.remove('open');
+    }
   });
 })();
 
 
 
 </script>
+<div id="mob-menu">
+  <a class="mob-menu-link" href="mailto:smmorgan2@gmail.com" onclick="closeMobMenu()">Contact</a>
+  <a class="mob-menu-link" onclick="closeMobMenu();navGo('about')">About</a>
+  <a class="mob-menu-link" href="videos/Sam_Morgan_CV_2026.pdf" target="_blank" onclick="closeMobMenu()">CV</a>
+</div>
 </body>
 </html>
