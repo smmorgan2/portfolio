@@ -949,7 +949,7 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
   if(current!=='port') return;
   e.preventDefault();
   if(!_hasScrolled) _hasScrolled = true;
-  sRaw+=(_tl-e.touches[0].clientY)*3.8; _tl=e.touches[0].clientY;
+  sRaw+=(_tl-e.touches[0].clientY)*5.0; _tl=e.touches[0].clientY;
 },{passive:false});
 document.getElementById('pg-port').addEventListener('touchend',function(e){_touchActive=false;},{passive:true});
 /* iOS Low Power Mode: retry play on first user touch (satisfies gesture requirement) */
