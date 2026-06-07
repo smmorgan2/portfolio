@@ -907,7 +907,7 @@ function initDeck(){
       el.style.cursor        = prog > 0.85 ? 'default' : 'pointer';
       el.style.pointerEvents = prog > 0.85 ? 'none' : 'auto';
     } else {
-      var cascade   = Math.pow(0.65, slot - 1);
+      var cascade   = 1 / slot;
       var f         = prog * cascade;
       var restTop   = (n - 1 - slot) * PEEK;
       var frontTop  = (n - 1) * PEEK;
