@@ -851,7 +851,7 @@ function initDeck(){
   var cardH = isMobile
     ? Math.round(window.innerHeight * 0.70)
     : Math.round(cardW * 9/16);
-  var actualInset = NAV_INSET;
+  var actualInset = isMobile ? Math.round(NAV_INSET * 0.5) : NAV_INSET;
   CARD_H = cardH;
 
   /* Wheel momentum */
