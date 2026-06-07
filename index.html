@@ -683,8 +683,15 @@ function projectAt(i){ return PROJECTS[((baseIndex + i) % N + N) % N]; }
 
 
 var scrollObserver=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in-view');});
-},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('in-view');
+      e.target.querySelectorAll('video').forEach(function(v){
+        if(v.readyState===0){v.load();v.play().catch(function(){});}
+      });
+    }
+  });
+},{threshold:0.1,rootMargin:'200px 0px 0px 0px'});
 
 function bindScrollReveal(page){
   var lineIdx=0, stmtIdx=0;
@@ -728,7 +735,7 @@ function buildProjectPages(){
       var media;
       if(!fSrc){ media='<div class="cph '+f.ph+'"><span class="cph-lbl">'+f.title+'</span></div>'; }
       else if(/\.mp4$|\.webm$|\.mov$/i.test(fSrc)){
-        media='<video src="'+fSrc+'" muted loop playsinline preload="metadata" style="width:100%;height:100%;display:block;"></video>';
+        media='<video src="'+fSrc+'" muted loop playsinline preload="none" style="width:100%;height:100%;display:block;"></video>';
       } else {
         media='<img src="'+fSrc+'" alt="'+f.title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
       }
@@ -814,7 +821,7 @@ function rehover(){
 function mkMedia(src,cls,lbl,eager){
   if(!src) return '<div class="cph '+cls+'"><span class="cph-lbl">'+lbl+'</span></div>';
   if(/\.mp4$|\.webm$|\.mov$/i.test(src))
-    return '<video src="'+src+'" autoplay muted loop playsinline preload="'+(eager?'auto':'metadata')+'" style="width:100%;height:100%;display:block;"></video>';
+    return '<video src="'+src+'" autoplay muted loop playsinline preload="'+(eager?'auto':'none')+'" style="width:100%;height:100%;display:block;"></video>';
   return '<img src="'+src+'" alt="'+lbl+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
 }
 
