@@ -728,7 +728,7 @@ function buildProjectPages(){
       var media;
       if(!fSrc){ media='<div class="cph '+f.ph+'"><span class="cph-lbl">'+f.title+'</span></div>'; }
       else if(/\.mp4$|\.webm$|\.mov$/i.test(fSrc)){
-        media='<video src="'+fSrc+'" muted loop playsinline preload="auto" style="width:100%;height:100%;display:block;"></video>';
+        media='<video src="'+fSrc+'" muted loop playsinline preload="metadata" style="width:100%;height:100%;display:block;"></video>';
       } else {
         media='<img src="'+fSrc+'" alt="'+f.title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
       }
@@ -811,10 +811,10 @@ function rehover(){
   });
 }
 
-function mkMedia(src,cls,lbl){
+function mkMedia(src,cls,lbl,eager){
   if(!src) return '<div class="cph '+cls+'"><span class="cph-lbl">'+lbl+'</span></div>';
   if(/\.mp4$|\.webm$|\.mov$/i.test(src))
-    return '<video src="'+src+'" autoplay muted loop playsinline preload="auto" style="width:100%;height:100%;display:block;"></video>';
+    return '<video src="'+src+'" autoplay muted loop playsinline preload="'+(eager?'auto':'metadata')+'" style="width:100%;height:100%;display:block;"></video>';
   return '<img src="'+src+'" alt="'+lbl+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">';
 }
 
