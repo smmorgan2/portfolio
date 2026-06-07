@@ -469,7 +469,7 @@ var PROJECTS=[
 /* ═══════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════ */
-var PEEK=22, PAD_BASE=40, STEP=22;
+var PEEK=25, PAD_BASE=40, STEP=25;
 
 function getDeckGeometry(order){
   var n=order.length;
@@ -853,8 +853,8 @@ function initDeck(){
 
   /* Wheel momentum */
   sRaw += wheelVel;
-  wheelVel *= 0.80;
-  if(Math.abs(wheelVel) < 0.1) wheelVel = 0;
+  wheelVel *= 0.92;
+  if(Math.abs(wheelVel) < 0.01) wheelVel = 0;
 
   sCur += (sRaw - sCur) * (_touchActive ? 0.32 : 0.15);
   if(Math.abs(sRaw - sCur) < 0.05) sCur = sRaw;
