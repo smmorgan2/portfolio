@@ -482,6 +482,7 @@ function getDeckGeometry(order){
 /* ═══════════════════════════════════════════════════
    ROUTING / NAV
 ═══════════════════════════════════════════════════ */
+var isMobile = window.matchMedia('(hover:none)').matches;
 var current='land', transActive=false;
 var trans        = document.getElementById('trans');
 var transScanner = document.getElementById('trans-scanner');
@@ -847,7 +848,9 @@ function initDeck(){
   var n    = N;
   var dw   = deckEl ? deckEl.offsetWidth  : window.innerWidth;
   var cardW = dw - NAV_INSET * 2;
-  var cardH = Math.round(cardW * 9/16);
+  var cardH = isMobile
+    ? Math.round(window.innerHeight * 0.70)
+    : Math.round(cardW * 9/16);
   var actualInset = NAV_INSET;
   CARD_H = cardH;
 
@@ -946,7 +949,7 @@ document.getElementById('pg-port').addEventListener('touchmove',function(e){
   if(current!=='port') return;
   e.preventDefault();
   if(!_hasScrolled) _hasScrolled = true;
-  sRaw+=(_tl-e.touches[0].clientY)*2.2; if(sRaw<0)sRaw=0; _tl=e.touches[0].clientY;
+  sRaw+=(_tl-e.touches[0].clientY)*2.2; _tl=e.touches[0].clientY;
 },{passive:false});
 document.getElementById('pg-port').addEventListener('touchend',function(e){_touchActive=false;},{passive:true});
 /* iOS Low Power Mode: retry play on first user touch (satisfies gesture requirement) */
@@ -958,6 +961,13 @@ document.getElementById('pg-port').addEventListener('touchstart',function(){
 },{passive:true,once:true});
 
 initDeck();
+if(isMobile){
+  document.getElementById('pg-land').classList.remove('on');
+  document.getElementById('pg-land').style.display='none';
+  document.getElementById('pg-port').classList.add('on');
+  current='port';
+  updateNav();
+}
 deckEl.addEventListener('click', function(e){
   if(current !== 'port') return;
   var card = e.target.closest('.card');
@@ -979,6 +989,7 @@ document.querySelectorAll('.pj-feat-thumb').forEach(function(thumb){
 
 /* Landing title animation */
 (function(){
+  if(isMobile) return;
   var nameEl = document.getElementById('land-name');
   var roleEl = document.getElementById('land-role');
   var smEl   = document.getElementById('land-sm');
