@@ -26,11 +26,13 @@ Character-by-character "Sam Morgan" slide-in with green color transition, role t
 
 ### Card Deck (Portfolio Scroll)
 - Virtual scroll with 16:9 video cards using `object-fit: cover`
-- Current params: `PEEK=22, PAD_BASE=40, STEP=22`
+- Current params: `PEEK=28, PAD_BASE=40, STEP=28` (25% increase from original 22)
 - `NAV_INSET` computed from `--g` at startup — front card edges align with "S-M" and "Menu" nav text
 - No height cap — cards may bleed off viewport bottom (intentional)
 - Front card exits via `translateY` slide-down
 - `_hasScrolled` flag gates the last card fade-in after first scroll cycle
+- **Scroll feel:** `wheelVel *= 0.92` decay, `0.01` threshold, gentle settle at `0.035` eased to nearest card boundary; settle gated on `!_touchActive`
+- No scroll snap — smooth momentum only
 
 ### Project Pages
 - Character-split title animations
@@ -42,11 +44,24 @@ Character-by-character "Sam Morgan" slide-in with green color transition, role t
 - Per-page featured work filtering excludes the current project
 - Featured work order: Google Ads → LISTEN → Spotify (for Amazon Ads page)
 - Featured Work to footer spacing: 100px bottom padding on `.pj-feat`
+- **Title/tag alignment:** `.pj-head` uses `align-items:flex-end`; `.pj-h1` has `padding-bottom:0.04em` to compensate for `line-height:0.92` causing text to bleed 0.04em below the line box — this aligns the visual bottom of the title with the category tags
 
 ### Page Transitions — LOCKED
 Green scanner overlay sweeps between pages. Pages stay still during transitions (no translateY shifts on outgoing/incoming pages). Do NOT add parallax movement to pages during transitions.
 
 ### About Page — Built
+
+### Mobile — Built
+- `isMobile = window.matchMedia('(hover:none)').matches` gates all mobile behavior
+- **Landing page skipped:** `#pg-land` hidden on load; opens directly to card deck
+- **Card size:** `Math.round(window.innerHeight * 0.70)` height (portrait-responsive)
+- **Edge inset:** `NAV_INSET * 0.5` (50% of desktop inset)
+- **Backward swiping:** enabled — no `sRaw < 0` clamp
+- **Touch multiplier:** `5.0` for responsive single-swipe navigation
+- **Video lazy loading:** all project-page videos use `preload="none"`; IntersectionObserver with `rootMargin:'200px 0px 0px 0px'` triggers `load()` + `play()` as sections scroll into view — prevents ~70MB cold load
+- **Mobile video swap:** `mSrc()` helper rewrites `videos/X.mp4` → `videos/mobile/X.mp4` when `isMobile`; used in `mkMedia()`, the featured-work builder, and a startup pass over static `<video>` tags. `videos/mobile/` holds lightweight re-encodes (1280px long edge, CRF 23, faststart, audio stripped). **When adding any new video, also generate its `videos/mobile/` twin** or mobile will 404 (slash-button). Regenerate: `ffmpeg -i in.mp4 -vf "scale=1280:1280:force_original_aspect_ratio=decrease:force_divisible_by=2" -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset medium -movflags +faststart -an videos/mobile/in.mp4`
+- **Mobile menu:** full-screen `#mob-menu` overlay (position:fixed, inset:0, z-index:550, black bg); Menu↔Close text toggle on `.n-menu-btn`; staggered link fade-in with `transition-delay`; `.n-dropdown` suppressed with `display:none!important` in `@media(hover:none)` to prevent iOS double-tap bug (first tap activates CSS `:hover`, second fires click)
+- **Menu links:** Contact (mailto), About (navGo), CV (PDF download); all call `closeMobMenu()` on click
 
 ## Project Data (PROJECTS array)
 1. **Amazon Ads** — fully built with videos in all slots (hero, 2-col, banner, 3-col, wide banner)
@@ -96,6 +111,10 @@ Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildPr
 7. **Surgical edits only** — don't touch unrelated parts of the file
 8. **No rebuilds** — prefer targeted fixes over broad rewrites
 9. **Role title is "Brand + Motion Designer"** — not "Motion Art Director"
+10. **`line-height:0.92` causes 0.04em text overflow** below the line box — compensate with `padding-bottom:0.04em` when using flex alignment on `.pj-h1`
+11. **iOS hover-before-click:** first tap activates `:hover` state, second fires click — suppress hover-only UI with `display:none!important` in `@media(hover:none)` rather than trying to manage state
+12. **Mobile settle fights touch input** — always gate settle logic on `!_touchActive`
+13. **Don't preload videos on mobile** — use `preload="none"` + IntersectionObserver; eager preload causes ~70MB cold load
 
 ## Positioning Notes
 - The portfolio currently reads stronger as a Brand + Motion Designer book than an Art Director book
