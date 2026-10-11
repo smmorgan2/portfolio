@@ -1,7 +1,7 @@
 # Sam Morgan Portfolio — CLAUDE.md
 
 ## Overview
-Single-page portfolio app for Sam Morgan (he/they), Brand + Motion Designer. One self-contained `index.html` file using vanilla HTML/CSS/JS — no frameworks. Deployed to GitHub Pages at https://smmorgan2.github.io/portfolio. Videos are hosted on GitHub in a `videos/` folder relative to `index.html`.
+Single-page portfolio app for Sam Morgan (he/they), Brand + Motion Designer. One self-contained `index.html` file using vanilla HTML/CSS/JS — no frameworks. Deployed to GitHub Pages at https://sammorgancreative.net (repo `smmorgan2/portfolio`; the old https://smmorgan2.github.io/portfolio URL 301-redirects there). Videos are hosted on GitHub in a `videos/` folder relative to `index.html`.
 
 ## Architecture
 All code lives in a single `index.html`. The site is a client-side SPA with custom routing:
@@ -129,6 +129,12 @@ Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildPr
 - Test changes by opening `index.html` in browser or local server
 - Push to GitHub Pages: `git add . && git commit -m "description" && git push`
 - Site updates take ~60 seconds after push, then ⌘+Shift+R to hard refresh
+
+## Domain & Hosting
+- **Domain:** `sammorgancreative.net`, registered via Cargo (eNom). DNS is managed in Cargo: Account Settings → Domain Names → ⋯ → Manage DNS
+- **DNS records:** `ANAME @ → smmorgan2.github.io.` and `CNAME www → smmorgan2.github.io.` (`www` redirects to the main domain)
+- **`CNAME` file** in the repo root holds `sammorgancreative.net`. Don't delete it, or the custom domain stops working
+- **HTTPS:** Let's Encrypt certificate, renewed automatically by GitHub; Enforce HTTPS is on in repo Settings → Pages
 
 ## Contact
 smmorgan2@gmail.com
