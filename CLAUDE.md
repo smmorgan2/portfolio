@@ -130,6 +130,14 @@ Built 2026-04-26. Uses a custom `else if(p.id==='google-ads')` block in `buildPr
 - Push to GitHub Pages: `git add . && git commit -m "description" && git push`
 - Site updates take ~60 seconds after push, then ⌘+Shift+R to hard refresh
 
+## File Location (split setup)
+- **Working files** (index.html, CLAUDE.md, videos/) live on the external drive: `/Volumes/Personal/Projects/S-M brand/01_Project/01_Website_Design_Code/01_index`
+- **Git's internal folder** lives on the Mac at `~/Projects/portfolio.git`; the `.git` in `01_index` is a one-line pointer file to it (`core.worktree` points back)
+- **Why:** the drive is exFAT, and macOS writes `._` AppleDouble files beside everything, which corrupts git internals (`git gc` failed in testing). Never move `.git` onto the drive
+- `core.fileMode=false` because exFAT doesn't store execute permissions
+- The drive must be mounted to edit or commit. `._*` files in the working tree are gitignored and harmless
+- Sibling folders: `02_assets/` (source assets not on the site), `03_untitled/`, `_archive/` (dated duplicates)
+
 ## Domain & Hosting
 - **Domain:** `sammorgancreative.net`, registered via Cargo (eNom). DNS is managed in Cargo: Account Settings → Domain Names → ⋯ → Manage DNS
 - **DNS records:** `ANAME @ → smmorgan2.github.io.` and `CNAME www → smmorgan2.github.io.` (`www` redirects to the main domain)
