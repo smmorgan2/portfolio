@@ -66,11 +66,17 @@
   const word = (t) => [...document.querySelectorAll('.words text')].find((el) => el.textContent === t);
   const photo = document.getElementById('photo');
 
-  // Word: pops up ~56px with a strong ease out, flashes yellow, then settles to white
+  // Pop in: hidden until its moment, then fully visible at once (no fade), like the demo.
+  function popIn(tl, el, at) {
+    gsap.set(el, { autoAlpha: 0 });
+    tl.set(el, { autoAlpha: 1 }, at);
+  }
+
+  // Word: pops in, rises ~56px with a strong ease out, flashes yellow, then settles to white
   // (highlight words stay yellow).
   function wordIn(tl, el, at) {
+    popIn(tl, el, at);
     tl.fromTo(el, { y: 56 }, { y: 0, duration: 0.45, ease: 'expo.out' }, at);
-    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: 'none' }, at);
     if (!el.classList.contains('hl')) {
       tl.fromTo(el, { fill: YELLOW }, { fill: WHITE, duration: 0.35, ease: 'power1.out' }, at + 0.15);
     }
@@ -80,7 +86,7 @@
   function objIn(tl, key, at) {
     const s = seqs[key];
     const proxy = { f: 0 };
-    tl.fromTo(s.canvas, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: 'none' }, at);
+    popIn(tl, s.canvas, at);
     tl.fromTo(s.canvas, { y: 32 }, { y: 0, duration: 0.5, ease: 'expo.out' }, at);
     tl.fromTo(proxy, { f: 0 }, {
       f: FRAMES - 1, duration: 1.0, ease: 'none',
@@ -91,14 +97,15 @@
   /* ---------- Part 1: autoplay ---------- */
   const tlAuto = gsap.timeline({ paused: true });
   wordIn(tlAuto, word('Hi!'), 0.15);
-  tlAuto.fromTo(photo, { y: 56, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' }, 0.45);
+  popIn(tlAuto, photo, 0.45);
+  tlAuto.fromTo(photo, { y: 56 }, { y: 0, duration: 0.6, ease: 'expo.out' }, 0.45);
   wordIn(tlAuto, word('I’m'), 0.85);
   wordIn(tlAuto, word('Sam.'), 1.15);
   wordIn(tlAuto, word('(he/they)'), 1.2);
 
   /* ---------- Part 2: scroll-scrubbed ---------- */
   const tlScroll = gsap.timeline({ paused: true });
-  wordIn(tlScroll, word('I collage'), 0.0);
+  wordIn(tlScroll, word('I collage'), 0.02); // not exactly 0, or it pops before any scroll
   objIn(tlScroll, 'collage', 0.4);
   wordIn(tlScroll, word('culture'), 0.7);
   wordIn(tlScroll, word('through'), 1.0);
@@ -128,7 +135,9 @@
   ScrollTrigger.create({
     trigger: '#intro',
     start: 'top top',
-    end: () => '+=' + Math.round(innerHeight * 1.8),
+    // Scroll distance for the whole build. Lower = more sentence per scroll.
+    // 1.44 screen heights (was 1.8) = 25% more sentence for the same scroll.
+    end: () => '+=' + Math.round(innerHeight * 1.44),
     pin: true,
     scrub: 0.75, // seconds the animation takes to catch up to the scroll (was 0.6)
     animation: tlScroll,
