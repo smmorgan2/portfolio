@@ -61,6 +61,87 @@ body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
   letter-spacing: -1.3px;
 }
 
+/* ---------- Glass header ----------
+   Hidden above the screen. Slides down when the cursor enters .hdr-hot (top of screen).
+   Contents sit on a 1920x1023 artboard (Figma frame), scaled by --hs from JS. */
+.hdr-hot {
+  position: fixed; left: 0; right: 0; top: 0;
+  height: 80px;            /* hover zone; match HOT_ZONE in js/header.js */
+  z-index: 90;
+}
+.hdr {
+  position: fixed; left: 0; right: 0; top: 0;
+  height: calc(1023px * var(--hs, 0.5));
+  z-index: 100;
+  visibility: hidden; /* JS moves it above the screen, then shows it */
+}
+.hdr-glass {
+  position: absolute; inset: 0;
+  border-radius: 0 0 calc(50px * var(--hs, 0.5)) calc(50px * var(--hs, 0.5));
+  background: rgba(82, 82, 82, 0.72); /* reads close to the Figma glass grey over the black page */
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  backdrop-filter: blur(28px) saturate(140%);
+  box-shadow:
+    inset 0 -1px 0 rgba(255, 255, 255, 0.22),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset -1px 0 0 rgba(255, 255, 255, 0.06),
+    0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.hdr-art {
+  position: absolute; top: 0; left: 50%;
+  width: 1920px; height: 1023px;
+  transform: translateX(-50%) scale(var(--hs, 0.5));
+  transform-origin: 50% 0;
+}
+.hdr-art p { margin: 0; }
+.hdr a { color: inherit; text-decoration: none; }
+
+.hdr-badge {
+  position: absolute; left: 174px; top: 66px; width: 145px; height: 79px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hdr .hdr-badge { color: var(--black); }
+.hdr-badge svg { position: absolute; inset: 0; fill: var(--yellow); }
+.hdr-badge span {
+  position: relative;
+  font-weight: 500; font-size: 63.78px; letter-spacing: -6.38px; line-height: 1;
+  padding-right: 6px; /* offsets the trailing letter-spacing so S-M sits centered */
+}
+
+.hdr-title {
+  position: absolute; left: 670px; top: 48px; transform: translateX(-50%);
+  font-weight: 500; font-size: 80px; letter-spacing: -4px; line-height: 111px;
+  color: var(--white); white-space: nowrap;
+}
+
+.hdr-clock {
+  position: absolute; left: 1231px; top: 69px; width: 515px; height: 59px;
+  background: var(--yellow); border: 1px solid var(--white); border-radius: 40.7px;
+  color: var(--black);
+  font-weight: 300; font-size: 26px; letter-spacing: -1.3px; line-height: 57px;
+  font-variant-numeric: tabular-nums;
+}
+.hdr-clock span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.hdr-clock span:nth-child(1) { left: 92px; }
+.hdr-clock span:nth-child(2) { left: 243px; }
+.hdr-clock span:nth-child(3) { left: 409px; }
+
+.hdr-nav a {
+  position: absolute; left: 167px;
+  font-weight: 500; font-size: 150px; letter-spacing: -7.5px; line-height: 168px;
+  color: var(--white);
+  transition: color 0.15s;
+}
+.hdr-nav a:nth-child(1) { top: 178px; }
+.hdr-nav a:nth-child(2) { top: 355px; }
+.hdr-nav a:nth-child(3) { top: 532px; }
+.hdr-nav a:nth-child(4) { top: 709px; }
+.hdr-nav a:hover, .hdr-nav a:focus-visible { color: var(--yellow); }
+.hdr a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+
+/* Touch screens have no hover: keep the hover zone out of the way for now (mobile menu comes later) */
+@media (hover: none) { .hdr-hot { display: none; } }
+
 /* Scroll cue */
 .cue {
   position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
