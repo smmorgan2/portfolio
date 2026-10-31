@@ -309,6 +309,9 @@
   links.forEach((a) => a.addEventListener('click', () => collapse()));
   hdr.querySelector('.hdr-badge').addEventListener('click', () => collapse());
 
+  // Other scripts can hide / bring back the bar (the case study footer hides it at the end of the page).
+  window.siteHeader = { reveal, conceal };
+
   /* ---------- When the header is available ---------- */
   hdr.inert = true;
   hdr.dataset.state = state;

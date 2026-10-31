@@ -27,20 +27,23 @@
   nextA.href = next.href;
   nextA.setAttribute('aria-label', 'Next project: ' + next.title);
 
-  /* ---------- Reveal: hidden until the end of the page, like the header ----------
-     The glass slides up from the bottom edge, then the two buttons pop in and rise, staggered.
-     Same timing as the header's reveal (js/header.js). Scrolling back up hides it again. */
+  /* ---------- Reveal: the header, mirrored ----------
+     Hidden below the screen until you reach the end of the page. Then the header slides away up top
+     while the footer slides up from the bottom, and the two buttons pop in and rise, staggered.
+     Scrolling back up reverses both. Same timing as the header (js/header.js). */
   if (!window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const OPEN = { duration: 0.7, ease: 'expo.out' };
   const CLOSE = 0.45;
-  const glass = foot.querySelector('.cs-foot-glass');
+  const space = document.getElementById('csFootSpace');
   const pills = [prevA, nextA];
+  const header = window.siteHeader;
 
   const tl = gsap.timeline({ paused: true });
-  gsap.set(glass, { yPercent: 101 });
-  tl.to(glass, { yPercent: 0, ...OPEN }, 0);
+  gsap.set(foot, { yPercent: 101 });
+  foot.style.visibility = 'visible';
+  tl.to(foot, { yPercent: 0, ...OPEN }, 0);
   pills.forEach((el, k) => {
     gsap.set(el, { autoAlpha: 0 });
     tl.set(el, { autoAlpha: 1 }, 0.12 + k * 0.05);
@@ -50,14 +53,16 @@
 
   const show = () => {
     foot.inert = false;
+    if (header) header.conceal();
     if (reduced) tl.progress(1); else tl.timeScale(1).play();
   };
   const hide = () => {
     foot.inert = true;
     if (document.activeElement && foot.contains(document.activeElement)) document.activeElement.blur();
+    if (header) header.reveal();
     if (reduced) tl.progress(0); else tl.timeScale(tl.duration() / CLOSE).reverse();
   };
 
-  // Shows once half the footer's space has scrolled into view, i.e. at the very end of the page.
-  ScrollTrigger.create({ trigger: foot, start: 'center bottom', onEnter: show, onLeaveBack: hide });
+  // Shows once half of the footer's space at the end of the page has scrolled into view.
+  ScrollTrigger.create({ trigger: space, start: 'center bottom', onEnter: show, onLeaveBack: hide });
 })();
