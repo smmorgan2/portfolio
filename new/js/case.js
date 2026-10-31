@@ -12,6 +12,32 @@
     return;
   }
 
+  /* ---------- Videos ----------
+     Each <video data-src> loads only as it nears the screen, then plays muted on a loop,
+     and pauses when it scrolls away. Phones get the lighter copy in videos/<project>/mobile/.
+     Reduced motion: nothing autoplays; the poster shows with play controls instead. */
+  (() => {
+    const vids = [...document.querySelectorAll('video[data-src]')];
+    if (!vids.length) return;
+    const small = matchMedia('(hover: none), (max-width: 820px)').matches;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const srcFor = (v) => small ? v.dataset.src.replace(/\/([^/]+\.mp4)$/, '/mobile/$1') : v.dataset.src;
+    const load = (v) => { if (!v.src) { v.src = srcFor(v); v.load(); } };
+    if (still) { vids.forEach((v) => { v.controls = true; v.loop = false; }); }
+    if (!('IntersectionObserver' in window)) { vids.forEach((v) => { load(v); if (!still) v.play().catch(() => {}); }); return; }
+    // Start loading a little before the video reaches the screen.
+    const loader = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { load(e.target); loader.unobserve(e.target); }
+    }), { rootMargin: '400px 0px' });
+    // Play while any part is on screen, pause when it leaves.
+    const player = new IntersectionObserver((entries) => entries.forEach((e) => {
+      const v = e.target;
+      if (still) return;
+      if (e.isIntersecting) { load(v); v.play().catch(() => {}); } else v.pause();
+    }), { threshold: 0.01 });
+    vids.forEach((v) => { loader.observe(v); player.observe(v); });
+  })();
+
   const foot = document.getElementById('csFoot');
   if (!foot) return;
   const live = all.filter((p) => p.live || p.id === id);
