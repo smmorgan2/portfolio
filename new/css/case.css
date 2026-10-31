@@ -71,13 +71,15 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs-beat.is-right .cs-caption { order: -1; margin-left: calc(20 * var(--u)); max-width: calc(408 * var(--u)); }
 
 /* ---------- Footer: Previous / Next on the shared glass ----------
-   Figma: footer 1920x207, top corners 50, two yellow pills 228x59 centred on 813 and 1108. */
+   Figma: footer 1920x207, top corners 50, two yellow pills 228x59 centred on 813 and 1108.
+   Works like the header, mirrored: fixed to the bottom of the screen, hidden below it, and slides up
+   when you reach the end of the page (js/case.js). The spacer keeps that last stretch of page clear. */
+.cs-foot-space { height: calc(207 * var(--u)); }
 .cs-foot {
-  position: relative;
-  overflow: hidden;   /* the glass slides up from below the page edge (js/case.js) */
-  max-width: 1920px; margin: 0 auto;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 100;
   height: calc(207 * var(--u));
   display: flex; align-items: center; justify-content: center; gap: calc(67 * var(--u));
+  visibility: hidden;   /* JS shows it once it's placed below the screen */
 }
 .cs-foot-glass {
   position: absolute; inset: 0;
@@ -124,7 +126,8 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-pair { grid-template-columns: 1fr; row-gap: 16px; }
   .cs-beat, .cs-beat.is-right { grid-template-columns: 1fr; row-gap: 12px; }
   .cs-beat .cs-caption, .cs-beat.is-right .cs-caption { order: 0; margin-left: 0; max-width: none; }
-  .cs-foot { height: 96px; gap: 16px; }
+  .cs-foot-space { height: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .cs-foot { height: calc(96px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); gap: 16px; }
   .cs-foot-glass { border-radius: 22px 22px 0 0; }
   .cs-foot a { width: 132px; height: 40px; font-size: 15px; border-radius: 20px; }
 }
