@@ -32,7 +32,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   width: var(--col); margin-left: auto; margin-right: auto;
   font-weight: 300; font-size: calc(40 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
 }
-.cs-detail, .cs-role, .cs-caption, .cs-credit {
+.cs-detail, .cs-role, .cs-caption {
   font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; line-height: 1.42;
 }
 .cs-role {
@@ -41,7 +41,6 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   color: var(--yellow);
 }
 .cs-role span:last-child { text-align: right; }
-.cs-credit { width: var(--col); margin-left: auto; margin-right: auto; color: var(--grey); }
 
 /* ---------- Media ----------
    Placeholder stills for now; each <img> becomes a <video> with the same box when the files arrive. */
@@ -120,7 +119,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-statement, .cs-h2 { font-size: 30px; }
   .cs-statement br { display: none; }
   .cs-body { font-size: 18px; }
-  .cs-detail, .cs-role, .cs-caption, .cs-credit { font-size: 14px; }
+  .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
   .cs-pair { grid-template-columns: 1fr; row-gap: 16px; }
   .cs-beat, .cs-beat.is-right { grid-template-columns: 1fr; row-gap: 12px; }
   .cs-beat .cs-caption, .cs-beat.is-right .cs-caption { order: 0; margin-left: 0; max-width: none; }
