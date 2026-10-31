@@ -6,11 +6,15 @@
    EXPANDED   Hovering the bar (or focusing into it, or tapping Menu on touch) grows it into the
               full navigation. Leaving the header, moving focus out, or Escape collapses it.
    Reveal (hidden <-> collapsed) is driven by scroll; expand (collapsed <-> expanded) by hover,
-   focus or the Menu button. They are separate timelines so they can't fight each other. */
+   focus or the Menu button. They are separate timelines so they can't fight each other.
+   PEEK       Once the visitor has scrolled through the whole intro (remembered for the visit),
+              moving the pointer to the top of the screen while back in the intro brings the bar
+              down; hovering it expands as usual, and leaving the header sends it back up. */
 (() => {
   const COLLAPSED_H = 207;    // artboard px (Figma header_colapsed_a)
   const EXPANDED_H = 1023;    // artboard px (Figma header_expanded_a)
   const CLOSE_DELAY = 150;    // ms after the pointer leaves before it collapses (prevents flicker)
+  const HOT_ZONE = 80;        // px from the top of the screen that brings the bar down (peek)
   const OPEN = { duration: 0.7, ease: 'expo.out' };
   const CLOSE = { duration: 0.45 };
 
@@ -139,7 +143,21 @@
     pointer.x = e.clientX; pointer.y = e.clientY; pointer.known = true;
     // Once the pointer has been somewhere outside the bar, the next entry counts as fresh.
     if (!armed && !inBar()) armed = true;
+    // Peek: after the intro has been seen once, the top edge of the screen brings the bar down.
+    if (unlocked && state === 'hidden' && pointer.y <= HOT_ZONE) peek();
+    // Once the peeked bar has arrived, keep hovering it to expand.
+    else if (peeking && peekReady && state === 'collapsed' && inBar()) expand();
   }, { passive: true });
+
+  // Has this visitor scrolled through the whole intro yet? (Remembered for the browser session.)
+  let unlocked = false;
+  try { unlocked = sessionStorage.getItem('sm-intro-seen') === '1'; } catch (e) { /* storage blocked */ }
+  function unlock() {
+    unlocked = true;
+    try { sessionStorage.setItem('sm-intro-seen', '1'); } catch (e) { /* storage blocked */ }
+  }
+  let peeking = false;   // bar is down because of a peek (not because we're past the intro)
+  let peekReady = false; // peek slide-in finished
 
   // Reveal: the bar slides down; badge, title and clock pop in (same motion as before).
   const tlReveal = gsap.timeline({ paused: true });
@@ -173,6 +191,7 @@
   tlExpand.eventCallback('onReverseComplete', () => { if (refr && maps) refr.use(maps.c, innerWidth, COLLAPSED_H * hs); });
 
   const inBar = () => pointer.y >= 0 && pointer.y <= COLLAPSED_H * hs;
+  tlReveal.eventCallback('onComplete', () => { if (peeking) peekReady = true; });
 
   function reveal() {
     if (state !== 'hidden') return;
@@ -187,6 +206,7 @@
     tlReveal.timeScale(1).play();
   }
   function conceal() {
+    peeking = false; peekReady = false;
     if (state === 'hidden') return;
     clearTimeout(closeTimer);
     if (state === 'expanded') { tlExpand.progress(0).pause(); setMenu(false); }
@@ -219,6 +239,22 @@
     tlExpand.timeScale(tlExpand.duration() / CLOSE.duration).reverse();
   }
   const collapseSoon = () => { clearTimeout(closeTimer); closeTimer = setTimeout(collapse, CLOSE_DELAY); };
+
+  function peek() {
+    peeking = true; peekReady = false;
+    reveal();
+    if (reduced) peekReady = true;
+  }
+  // Leaving a peeked header: collapse if open, then slide back up.
+  function endPeek() {
+    if (!peeking) return;
+    if (state === 'expanded') {
+      collapse();
+      closeTimer = setTimeout(() => { if (peeking && state === 'collapsed') conceal(); }, CLOSE.duration * 1000);
+    } else {
+      conceal();
+    }
+  }
   function setMenu(open) {
     menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     menuBtn.textContent = open ? 'Close' : 'Menu';
@@ -234,7 +270,9 @@
     if (e.pointerType === 'touch') return;
     armed = true;
     // Keyboard focus inside keeps it open; focus left behind by a mouse click doesn't.
-    if (state === 'expanded' && !hdr.querySelector(':focus-visible')) collapseSoon();
+    if (hdr.querySelector(':focus-visible')) return;
+    if (peeking) { clearTimeout(closeTimer); closeTimer = setTimeout(endPeek, CLOSE_DELAY); }
+    else if (state === 'expanded') collapseSoon();
   });
 
   /* ---------- Keyboard ---------- */
@@ -276,11 +314,12 @@
   hdr.dataset.state = state;
   if (isHome && window.introST) {
     // Appears once you scroll past the end of the intro animation (the end of its pinned
-    // scroll range), and hides again when you scroll back into it.
+    // scroll range), and hides again when you scroll back into it. After that first time,
+    // the top edge of the screen can bring it back while you're in the intro (peek).
     ScrollTrigger.create({
       start: () => window.introST.end + 1,
       end: 'max',
-      onEnter: reveal,
+      onEnter: () => { unlock(); peeking = false; reveal(); },
       onLeaveBack: conceal,
     });
   } else {
