@@ -135,9 +135,8 @@
   ScrollTrigger.create({
     trigger: '#intro',
     start: 'top top',
-    // Scroll distance for the whole build. Lower = more sentence per scroll.
-    // 1.44 screen heights (was 1.8) = 25% more sentence for the same scroll.
-    end: () => '+=' + Math.round(innerHeight * 1.44),
+    // Scroll distance for the whole build, in screen heights. Lower = more sentence per scroll.
+    end: () => '+=' + Math.round(innerHeight * 1.8),
     pin: true,
     scrub: 0.75, // seconds the animation takes to catch up to the scroll (was 0.6)
     animation: tlScroll,
