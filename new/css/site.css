@@ -1,0 +1,183 @@
+/* Sam Morgan 2027 — tokens */
+:root {
+  --black: #000000;
+  --white: #FFFFFF;
+  --yellow: #EDFF21;
+  --blue: #0494FC;
+  --grey: #8B8B8B;
+  --font: "halyard-text", "Hanken Grotesk", system-ui, sans-serif;
+}
+
+/* Fallback until Halyard loads (or if Adobe Fonts is unreachable) */
+@font-face { font-family: "Hanken Grotesk"; font-weight: 400; font-display: swap;
+  src: url("../fonts/hanken-grotesk-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Hanken Grotesk"; font-weight: 500; font-display: swap;
+  src: url("../fonts/hanken-grotesk-latin-500-normal.woff2") format("woff2"); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; background: var(--black); color: var(--white); }
+body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
+
+/* Lenis smooth scroll (from lenis.css) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Intro ---------- */
+.intro {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* 1920x1080 artboard, scaled to fit the viewport (set by JS as --s) */
+.stage {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--s, 0.5));
+  transform-origin: 50% 50%;
+}
+
+.layer { position: absolute; inset: 0; pointer-events: none; will-change: transform; }
+.obj { position: absolute; display: block; will-change: transform, opacity; }
+
+.photo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.words { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.words text {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 150px;
+  letter-spacing: -7.5px;            /* -5% */
+  fill: var(--white);
+}
+.words text.hl { fill: var(--yellow); }
+.words text.small {
+  font-weight: 400;
+  font-size: 26px;
+  letter-spacing: -1.3px;
+}
+
+/* ---------- Glass header ----------
+   Hidden above the screen. Slides down when the cursor enters .hdr-hot (top of screen).
+   Contents sit on a 1920x1023 artboard (Figma frame), scaled by --hs from JS. */
+.hdr-hot {
+  position: fixed; left: 0; right: 0; top: 0;
+  height: 80px;            /* hover zone; match HOT_ZONE in js/header.js */
+  z-index: 90;
+}
+.hdr {
+  position: fixed; left: 0; right: 0; top: 0;
+  height: calc(1023px * var(--hs, 0.5));
+  z-index: 100;
+  visibility: hidden; /* JS moves it above the screen, then shows it */
+}
+.hdr-glass {
+  position: absolute; inset: 0;
+  border-radius: 0 0 calc(50px * var(--hs, 0.5)) calc(50px * var(--hs, 0.5));
+  /* Clear glass: almost no fill, so the page shows through softened (Figma fill is 1%). */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%) brightness(1.08);
+  backdrop-filter: blur(14px) saturate(170%) brightness(1.08);
+  /* Edge light: a bright rim along the bottom and sides, fading inward, like the Figma glass edge */
+  box-shadow:
+    inset 0 -1.5px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -18px 30px -18px rgba(255, 255, 255, 0.18),
+    inset 1.5px 0 0 rgba(255, 255, 255, 0.18),
+    inset -1.5px 0 0 rgba(255, 255, 255, 0.18);
+}
+/* Chrome / Edge: bend the edges first, then the same blur (header.js adds .refract) */
+.hdr-glass.refract {
+  backdrop-filter: url(#hdrRefract) blur(14px) saturate(170%) brightness(1.08);
+}
+.hdr-art {
+  position: absolute; top: 0; left: 50%;
+  width: 1920px; height: 1023px;
+  transform: translateX(-50%) scale(var(--hs, 0.5));
+  transform-origin: 50% 0;
+}
+.hdr-art p { margin: 0; }
+.hdr a { color: inherit; text-decoration: none; }
+
+.hdr-badge {
+  position: absolute; left: 174px; top: 66px; width: 145px; height: 79px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hdr .hdr-badge { color: var(--black); }
+.hdr-badge svg { position: absolute; inset: 0; fill: var(--yellow); }
+.hdr-badge span {
+  position: relative;
+  font-weight: 500; font-size: 63.78px; letter-spacing: -6.38px; line-height: 1;
+  padding-right: 6px; /* offsets the trailing letter-spacing so S-M sits centered */
+}
+
+.hdr-title {
+  position: absolute; left: 670px; top: 48px; transform: translateX(-50%);
+  font-weight: 500; font-size: 80px; letter-spacing: -4px; line-height: 111px;
+  color: var(--white); white-space: nowrap;
+}
+
+.hdr-clock {
+  position: absolute; left: 1231px; top: 69px; width: 515px; height: 59px;
+  background: var(--yellow); border: 1px solid var(--white); border-radius: 40.7px;
+  color: var(--black);
+  font-weight: 300; font-size: 26px; letter-spacing: -1.3px; line-height: 57px;
+  font-variant-numeric: tabular-nums;
+}
+.hdr-clock span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.hdr-clock span:nth-child(1) { left: 92px; }
+.hdr-clock span:nth-child(2) { left: 243px; }
+.hdr-clock span:nth-child(3) { left: 409px; }
+
+.hdr-nav a {
+  position: absolute; left: 167px;
+  font-weight: 500; font-size: 150px; letter-spacing: -7.5px; line-height: 168px;
+  color: var(--white);
+  transition: color 0.15s;
+}
+.hdr-nav a:nth-child(1) { top: 178px; }
+.hdr-nav a:nth-child(2) { top: 355px; }
+.hdr-nav a:nth-child(3) { top: 532px; }
+.hdr-nav a:nth-child(4) { top: 709px; }
+.hdr-nav a:hover, .hdr-nav a:focus-visible { color: var(--yellow); }
+.hdr a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+
+/* Touch screens have no hover: keep the hover zone out of the way for now (mobile menu comes later) */
+@media (hover: none) { .hdr-hot { display: none; } }
+
+/* Scroll cue */
+.cue {
+  position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: var(--grey); font-size: 13px; letter-spacing: 0.02em;
+  opacity: 0;
+}
+.cue i {
+  display: block; width: 1px; height: 36px; background: var(--grey);
+  transform-origin: top; animation: cue 1.8s ease-in-out infinite;
+}
+@keyframes cue {
+  0%   { transform: scaleY(0); opacity: 1; }
+  60%  { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* Placeholder for the project selection section */
+.next {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.next-label { color: var(--grey); font-size: 26px; letter-spacing: -0.05em; margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cue i { animation: none; }
+}

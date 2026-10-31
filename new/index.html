@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sam Morgan</title>
+<!-- Test page at /new/ until launch: keep it out of search results. Remove at launch. -->
+<meta name="robots" content="noindex"><meta name="description" content="Sam Morgan collages culture through design and art direction.">
+<link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+
+<!-- Glass header: slides down when the cursor reaches the top of the screen (Figma: header 285:131) -->
+<div class="hdr-hot" id="hdrHot" aria-hidden="true"></div>
+<header class="hdr" id="hdr">
+  <div class="hdr-glass"></div>
+  <div class="hdr-art" id="hdrArt">
+    <a class="hdr-badge" href="#intro" aria-label="Sam Morgan, home">
+      <svg viewBox="0 0 4980 2712" width="145" height="79" aria-hidden="true"><path d="M4980.00 1356.00 C4980.00 1060.68 4974.01 730.17 4950.74 453.66 C4937.10 291.61 4920.91 194.69 4853.51 123.18 C4774.50 39.34 4660.68 31.52 4494.70 24.16 C3896.01 -2.39 3153.43 0.00 2490.00 0.00 C1826.57 0.00 1083.99 -2.39 485.30 24.16 C319.32 31.52 205.50 39.34 126.49 123.18 C59.09 194.69 42.90 291.61 29.26 453.66 C5.99 730.17 0.00 1060.68 0.00 1356.00 C0.00 1651.32 5.99 1981.83 29.26 2258.34 C42.90 2420.39 59.09 2517.31 126.49 2588.82 C205.50 2672.66 319.32 2680.48 485.30 2687.84 C1083.99 2714.39 1826.57 2712.00 2490.00 2712.00 C3153.43 2712.00 3896.01 2714.39 4494.70 2687.84 C4660.68 2680.48 4774.50 2672.66 4853.51 2588.82 C4920.91 2517.31 4937.10 2420.39 4950.74 2258.34 C4974.01 1981.83 4980.00 1651.32 4980.00 1356.00 Z"/></svg>
+      <span>S-M</span>
+    </a>
+    <p class="hdr-title">Home</p>
+    <p class="hdr-clock" aria-label="Sam's local time">
+      <span id="clkDay">Thursday</span><span id="clkDate">October 15th</span><span id="clkTime">10:00 AM PT</span>
+    </p>
+    <nav class="hdr-nav" aria-label="Main">
+      <a href="#intro">Home</a>
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+      <a href="mailto:smmorgan2@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="intro" id="intro">
+    <h1 class="sr-only">Hi! I'm Sam. I collage culture through design and art direction.</h1>
+
+    <div class="stage" id="stage" aria-hidden="true">
+      <!-- Layer order matches the AE demo, back to front:
+           yellow frame, Sam, collage, book, skateboard, then all words on top. -->
+      <div class="layer" data-depth="6">
+        <div class="obj photo" id="photo" style="left:455.7px;top:64.6px;width:542.8px;height:323.1px">
+          <img src="img/intro/frame.webp" alt="">
+          <img src="img/intro/sam.webp" alt="">
+        </div>
+      </div>
+
+      <!-- Rendered sequences. Position is set in js/intro.js (artboard px at 1920x1080). -->
+      <div class="layer" data-depth="10"><canvas class="obj seq" data-seq="collage"></canvas></div>
+      <div class="layer" data-depth="14"><canvas class="obj seq" data-seq="book"></canvas></div>
+      <div class="layer" data-depth="18"><canvas class="obj seq" data-seq="skate"></canvas></div>
+
+      <svg class="words" viewBox="0 0 1920 1080" width="1920" height="1080">
+        <text class="w"            x="284"  y="327">Hi!</text>
+        <text class="w"            x="1021" y="327">I’m</text>
+        <text class="w hl"         x="1229" y="327">Sam.</text>
+        <text class="w small"      x="1525" y="239">(he/they)</text>
+
+        <text class="w"            x="284"  y="491">I collage</text>
+        <text class="w"            x="1192" y="491">culture</text>
+
+        <text class="w"            x="284"  y="693">through</text>
+        <text class="w hl"         x="798"  y="693">design</text>
+        <text class="w"            x="1406" y="693">and</text>
+
+        <text class="w hl"         x="284"  y="871">art</text>
+        <text class="w hl"         x="912"  y="871">direction.</text>
+      </svg>
+    </div>
+
+    <div class="cue" id="cue" aria-hidden="true"><span>Scroll</span><i></i></div>
+  </section>
+
+  <section class="next" id="projects">
+    <p class="next-label">Projects</p>
+  </section>
+</main>
+
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/ScrollTrigger.min.js"></script>
+<script src="js/vendor/lenis.min.js"></script>
+<script src="js/smooth.js"></script>
+<script src="js/intro.js"></script>
+<script src="js/header.js"></script>
+</body>
+</html>
