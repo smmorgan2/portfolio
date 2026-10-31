@@ -35,7 +35,20 @@
       if (still) return;
       if (e.isIntersecting) { load(v); v.play().catch(() => {}); } else v.pause();
     }), { threshold: 0.01 });
-    vids.forEach((v) => { loader.observe(v); player.observe(v); });
+    // data-play="hover" (mouse/trackpad only): hold on the first frame (the Figma still),
+    // play in a loop while hovered, jump back to the first frame on hover-off.
+    // Phones have no hover, so these play on screen like the rest.
+    const hoverable = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    vids.forEach((v) => {
+      loader.observe(v);
+      if (v.dataset.play === 'hover' && hoverable && !still) {
+        const box = v.closest('.cs-media') || v;
+        box.addEventListener('pointerenter', () => { load(v); v.play().catch(() => {}); });
+        box.addEventListener('pointerleave', () => { v.pause(); if (v.readyState) v.currentTime = 0; });
+      } else {
+        player.observe(v);
+      }
+    });
   })();
 
   const foot = document.getElementById('csFoot');
