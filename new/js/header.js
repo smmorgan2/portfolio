@@ -102,6 +102,56 @@
     addEventListener('resize', () => { clearTimeout(t); t = setTimeout(buildMap, 150); });
   }
 
+  /* ---------- Logo hover animation ----------
+     Hovering the S-M badge plays the full 93-frame loop once (flat badge, chrome, back to flat).
+     If the cursor leaves early it still finishes, so it never stops mid-chrome.
+     Frames load the first time the header opens. */
+  const LOGO_FRAMES = 93;
+  const LOGO_FPS = 30;
+  const badge = hdr.querySelector('.hdr-badge');
+  const logo = document.getElementById('hdrLogo');
+  const lctx = logo.getContext('2d');
+  let logoImgs = null;
+  let logoPlaying = false;
+
+  function drawLogo(i) {
+    const im = logoImgs && logoImgs[i];
+    if (!im || !im.complete || !im.naturalWidth) return false;
+    lctx.clearRect(0, 0, logo.width, logo.height);
+    lctx.drawImage(im, 0, 0, logo.width, logo.height);
+    return true;
+  }
+  function loadLogo() {
+    if (logoImgs) return;
+    logoImgs = Array.from({ length: LOGO_FRAMES }, (_, i) => {
+      const im = new Image();
+      im.decoding = 'async';
+      if (i === 0) im.onload = () => { if (!logoPlaying) drawLogo(0); badge.classList.add('logo-ready'); };
+      im.src = `img/logo/${String(i).padStart(2, '0')}.webp`;
+      return im;
+    });
+  }
+  function playLogo() {
+    if (logoPlaying || reduced || !logoImgs || !badge.classList.contains('logo-ready')) return;
+    logoPlaying = true;
+    const start = performance.now();
+    let last = -1;
+    const step = (now) => {
+      const i = Math.min(LOGO_FRAMES - 1, Math.floor(((now - start) / 1000) * LOGO_FPS));
+      if (i !== last) {
+        // If a frame isn't loaded yet, hold the previous one rather than flashing empty.
+        if (drawLogo(i)) last = i;
+      }
+      if (i < LOGO_FRAMES - 1) requestAnimationFrame(step);
+      else { drawLogo(0); logoPlaying = false; }
+    };
+    requestAnimationFrame(step);
+  }
+  badge.addEventListener('mouseenter', playLogo);
+  badge.addEventListener('focus', playLogo);
+  // Load quietly once the page has settled, or right away if the header opens first.
+  addEventListener('load', () => setTimeout(loadLogo, 3000));
+
   /* ---------- Live clock (Pacific) ---------- */
   const tz = 'America/Los_Angeles';
   const fmtDay = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' });
@@ -145,6 +195,7 @@
     if (isOpen) return;
     isOpen = true;
     hdr.classList.add('is-open');
+    loadLogo();
     if (reduced) { tl.progress(1); return; }
     tl.timeScale(1).play();
   }
