@@ -6,6 +6,15 @@
   --blue: #0494FC;
   --grey: #8B8B8B;
   --font: "halyard-text", "Hanken Grotesk", system-ui, sans-serif;
+
+  /* Glass: one recipe for every glass object on the site (header, hover cards, footers).
+     Refraction strength and edge width live in js/glass.js (Glass.PRESET). */
+  --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  --glass-filter: blur(14px) saturate(170%) brightness(1.08);
+  --glass-rim: rgba(255, 255, 255, 0.45);       /* bright edge line */
+  --glass-rim-soft: rgba(255, 255, 255, 0.18);  /* fainter side edges */
+  --glass-glow: rgba(255, 255, 255, 0.18);      /* soft light just inside the edge */
+  --glass-solid: rgba(24, 24, 24, 0.94);        /* browsers with no backdrop blur */
 }
 
 /* Fallback until Halyard loads (or if Adobe Fonts is unreachable) */
@@ -84,19 +93,19 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; inset: 0;
   border-radius: 0 0 calc(50px * var(--hs, 0.5)) calc(50px * var(--hs, 0.5));
   /* Clear glass: almost no fill, so the page shows through softened (Figma fill is 1%). */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
-  -webkit-backdrop-filter: blur(14px) saturate(170%) brightness(1.08);
-  backdrop-filter: blur(14px) saturate(170%) brightness(1.08);
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
   /* Edge light: a bright rim along the bottom and sides, fading inward, like the Figma glass edge */
   box-shadow:
-    inset 0 -1.5px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -18px 30px -18px rgba(255, 255, 255, 0.18),
-    inset 1.5px 0 0 rgba(255, 255, 255, 0.18),
-    inset -1.5px 0 0 rgba(255, 255, 255, 0.18);
+    inset 0 -1.5px 0 var(--glass-rim),
+    inset 0 -18px 30px -18px var(--glass-glow),
+    inset 1.5px 0 0 var(--glass-rim-soft),
+    inset -1.5px 0 0 var(--glass-rim-soft);
 }
 /* Chrome / Edge: bend the edges first, then the same blur (js/glass.js adds .refract) */
 .hdr-glass.refract {
-  backdrop-filter: var(--refract) blur(14px) saturate(170%) brightness(1.08);
+  backdrop-filter: var(--refract) var(--glass-filter);
 }
 .hdr-art {
   position: absolute; top: 0; left: 50%;
@@ -191,11 +200,12 @@ html.lenis, html.lenis body { height: auto; }
   visibility: hidden; opacity: 0;
   pointer-events: none;        /* hidden cards never catch the pointer */
   clip-path: url(#wiiClip);    /* the ID badge shape */
-  background: rgba(64, 64, 64, 0.5);
-  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.05);
-  backdrop-filter: blur(24px) saturate(150%) brightness(1.05);
+  /* Same glass as the header */
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
 }
-.icard.refract { backdrop-filter: var(--refract) blur(24px) saturate(150%) brightness(1.05); }
+.icard.refract { backdrop-filter: var(--refract) var(--glass-filter); }
 .icard.is-open { pointer-events: auto; }
 .icard p {
   position: absolute; margin: 0;
@@ -204,7 +214,11 @@ html.lenis, html.lenis body { height: auto; }
 }
 /* Edge light along the badge outline */
 .icard-rim { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.icard-rim path { fill: none; stroke: rgba(255, 255, 255, 0.42); stroke-width: 3; vector-effect: non-scaling-stroke; }
+/* Edge light, drawn along the badge shape (a box-shadow would follow the square box, not the badge):
+   a soft glow band plus the same bright 1.5px rim line as the header. */
+.icard-rim path { fill: none; vector-effect: non-scaling-stroke; }
+.icard-rim .glow { stroke: var(--glass-glow); stroke-width: 22; filter: blur(8px); }
+.icard-rim .line { stroke: var(--glass-rim); stroke-width: 1.5; }
 
 /* Small screens: the artboard text would be too small to read, so the open card becomes a sheet
    along the bottom of the screen (js/cards.js adds .compact). */
@@ -217,7 +231,8 @@ html.lenis, html.lenis body { height: auto; }
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   width: auto !important; height: auto !important;
   clip-path: none; border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1.5px solid var(--glass-rim);
+  box-shadow: inset 0 0 24px -8px var(--glass-glow);
   padding: 18px 20px;
 }
 .icards.compact .icard p {
@@ -225,12 +240,11 @@ html.lenis, html.lenis body { height: auto; }
   font-size: 16px; letter-spacing: -0.01em; line-height: 1.45;
 }
 .icards.compact .icard-rim { display: none; }
-.icards.compact .icard.refract { backdrop-filter: blur(24px) saturate(150%) brightness(1.05); } /* map is sized for the artboard card */
+.icards.compact .icard.refract { backdrop-filter: var(--glass-filter); } /* map is sized for the artboard card */
 
 /* No backdrop blur at all (older browsers): solid enough to read */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .hdr-glass { background: rgba(24, 24, 24, 0.94); }
-  .icard { background: rgba(30, 30, 30, 0.95); }
+  .hdr-glass, .icard { background: var(--glass-solid); }
 }
 
 /* Scroll cue */

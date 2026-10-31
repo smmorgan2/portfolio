@@ -112,5 +112,9 @@
     return api;
   }
 
-  window.Glass = { supported, refract };
+  // Shared look for every glass object. Values are in 1920-wide artboard px:
+  // scale them by the page scale when the element itself isn't scaled (like the header).
+  const PRESET = { edge: 60, strength: 75 };
+
+  window.Glass = { supported, refract, PRESET };
 })();
