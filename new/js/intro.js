@@ -130,7 +130,7 @@
     start: 'top top',
     end: () => '+=' + Math.round(innerHeight * 1.8),
     pin: true,
-    scrub: 0.6,
+    scrub: 0.75, // seconds the animation takes to catch up to the scroll (was 0.6)
     animation: tlScroll,
     onUpdate: (self) => {
       if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); // skip ahead if they scroll early
