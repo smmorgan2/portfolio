@@ -1,0 +1,129 @@
+/* Case study pages (Figma: Google Ads_v1b, Composer_v1)
+   Built on the same 1920 artboard as Figma. --u is one Figma pixel at the current screen width,
+   so every size below reads straight from the Figma file: calc(<figma px> * var(--u)).
+   Shared type: Headline02 80/Medium, BodyCopy 40/Book, DetailText 26/Book, all -5% tracking. */
+/* --u lives on the body so the page and its footer share it */
+body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
+.cs {
+  --gap: calc(88 * var(--u));       /* space between blocks */
+  --gap-tight: calc(40 * var(--u)); /* a label or heading to its paragraph */
+  --media: calc(1766 * var(--u));   /* full-width media */
+  --col: calc(1338 * var(--u));     /* text column */
+  --radius: calc(40 * var(--u));
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: calc(317 * var(--u)) 0 var(--gap);
+}
+.cs > * + * { margin-top: var(--gap); }
+.cs > .sr-only + * { margin-top: 0; }   /* the hidden page title doesn't count as a block */
+.cs > .cs-role + .cs-body,
+.cs > .cs-h2 + .cs-body { margin-top: var(--gap-tight); }
+
+.cs p, .cs h1, .cs h2, .cs figure { margin-bottom: 0; }
+.cs h1, .cs h2 { font-weight: 500; }
+
+/* ---------- Type ---------- */
+.cs-statement, .cs-h2 {
+  font-weight: 500; font-size: calc(80 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
+}
+.cs-statement { width: fit-content; max-width: var(--media); margin-left: auto; margin-right: auto; }
+.cs-h2 { text-align: center; width: var(--col); margin-left: auto; margin-right: auto; }
+.cs-body {
+  width: var(--col); margin-left: auto; margin-right: auto;
+  font-weight: 300; font-size: calc(40 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
+}
+.cs-detail, .cs-role, .cs-caption {
+  font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; line-height: 1.42;
+}
+.cs-role {
+  width: var(--col); margin-left: auto; margin-right: auto;
+  display: flex; justify-content: space-between; gap: 1em;
+  color: var(--yellow);
+}
+.cs-role span:last-child { text-align: right; }
+
+/* ---------- Media ----------
+   Placeholder stills for now; each <img> becomes a <video> with the same box when the files arrive. */
+.cs-media {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  border-radius: var(--radius); overflow: hidden; background: #111;
+}
+.cs-media img, .cs-media video { display: block; width: 100%; height: auto; }
+
+/* Two media side by side, top-aligned (Google Ads: 900 + 62 + 804) */
+.cs-pair {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  display: grid; grid-template-columns: 900fr 804fr; column-gap: calc(62 * var(--u)); align-items: start;
+}
+.cs-pair .cs-media { width: auto; }
+
+/* Story beats (Composer): 1184-wide media alternating sides, caption beside it, vertically centred.
+   Left beat: media x77, caption x1358. Right beat: caption x97, media x659. */
+.cs-beat {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  display: grid; align-items: center;
+  grid-template-columns: calc(1184 * var(--u)) 1fr;
+}
+.cs-beat .cs-media { width: auto; }
+/* Caption widths from Figma: 431 to 463 on the right of the media, 408 on the left */
+.cs-beat .cs-caption { margin-left: calc(97 * var(--u)); max-width: calc(463 * var(--u)); }
+.cs-beat.is-right { grid-template-columns: 1fr calc(1184 * var(--u)); }
+.cs-beat.is-right .cs-caption { order: -1; margin-left: calc(20 * var(--u)); max-width: calc(408 * var(--u)); }
+
+/* ---------- Footer: Previous / Next on the shared glass ----------
+   Figma: footer 1920x207, top corners 50, two yellow pills 228x59 centred on 813 and 1108. */
+.cs-foot {
+  position: relative;
+  max-width: 1920px; margin: 0 auto;
+  height: calc(207 * var(--u));
+  display: flex; align-items: center; justify-content: center; gap: calc(67 * var(--u));
+}
+.cs-foot-glass {
+  position: absolute; inset: 0;
+  border-radius: calc(50 * var(--u)) calc(50 * var(--u)) 0 0;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  box-shadow:
+    inset 0 1.5px 0 var(--glass-rim),
+    inset 0 18px 30px -18px var(--glass-glow),
+    inset 1.5px 0 0 var(--glass-rim-soft),
+    inset -1.5px 0 0 var(--glass-rim-soft);
+}
+.cs-foot a {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: calc(228 * var(--u)); height: calc(59 * var(--u));
+  background: var(--yellow); color: var(--black); border: 1px solid var(--white);
+  border-radius: calc(40.7 * var(--u));
+  font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+.cs-foot a:hover { background: var(--white); }
+.cs-foot a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+.cs-foot[hidden] { display: none; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cs-foot-glass { background: var(--glass-solid); }
+}
+
+/* ---------- Phones and narrow windows ----------
+   The artboard scale would make text unreadably small, so switch to fixed sizes and a single column. */
+@media (max-width: 820px) {
+  .cs {
+    --gap: 48px; --gap-tight: 20px;
+    --media: calc(100vw - 32px); --col: calc(100vw - 32px);
+    --radius: 14px;
+    padding-top: calc(207 * var(--hs, 0.2) * 1px + 24px);
+  }
+  .cs-statement, .cs-h2 { font-size: 30px; }
+  .cs-statement br { display: none; }
+  .cs-body { font-size: 18px; }
+  .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
+  .cs-pair { grid-template-columns: 1fr; row-gap: 16px; }
+  .cs-beat, .cs-beat.is-right { grid-template-columns: 1fr; row-gap: 12px; }
+  .cs-beat .cs-caption, .cs-beat.is-right .cs-caption { order: 0; margin-left: 0; max-width: none; }
+  .cs-foot { height: 96px; gap: 16px; }
+  .cs-foot-glass { border-radius: 22px 22px 0 0; }
+  .cs-foot a { width: 132px; height: 40px; font-size: 15px; border-radius: 20px; }
+}

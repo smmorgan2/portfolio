@@ -39,7 +39,7 @@
      Maps for the collapsed and expanded sizes are built once (and again after a resize),
      then swapped, so nothing heavy runs during the animation. */
   const glass = hdr.querySelector('.hdr-glass');
-  const refr = window.Glass ? Glass.refract(glass, { flatTop: true, edge: () => 60 * hs, strength: 75 }) : null;
+  const refr = window.Glass ? Glass.refract(glass, { flatTop: true, edge: () => Glass.PRESET.edge * hs, strength: Glass.PRESET.strength }) : null;
   let maps = null;
   function buildMaps() {
     if (!refr || !Glass.supported) return;

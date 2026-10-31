@@ -40,10 +40,13 @@
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(placeTriggers);
   placeTriggers();
 
-  /* ---------- Glass refraction on each card (Chrome / Edge) ---------- */
+  /* ---------- Glass refraction on each card (Chrome / Edge), same preset as the header ----------
+     Cards sit on the scaled artboard, so artboard px values apply as they are. */
   pairs.forEach(({ card }) => {
     const w = parseFloat(card.style.width), h = parseFloat(card.style.height);
-    const g = window.Glass && Glass.refract(card, { radius: Math.min(w * 0.097, h * 0.167), edge: 34, strength: 40 });
+    const g = window.Glass && Glass.refract(card, {
+      radius: Math.min(w * 0.097, h * 0.167), edge: Glass.PRESET.edge, strength: Glass.PRESET.strength,
+    });
     if (g) g.rebuild(w, h);
   });
 
