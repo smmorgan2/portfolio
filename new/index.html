@@ -15,33 +15,36 @@
     <h1 class="sr-only">Hi! I'm Sam. I collage culture through design and art direction.</h1>
 
     <div class="stage" id="stage" aria-hidden="true">
-      <!-- Placeholder photo cut from the AE demo. Swap for the real cutout + frame. -->
+      <!-- Layer order matches the AE demo, back to front:
+           yellow frame, Sam, collage, book, skateboard, then all words on top. -->
       <div class="layer" data-depth="6">
-        <img class="obj photo" id="photo" src="img/intro/photo-placeholder.webp" alt=""
-             style="left:450px;top:50px;width:555px;height:348px">
+        <div class="obj photo" id="photo" style="left:455.7px;top:64.6px;width:542.8px;height:323.1px">
+          <img src="img/intro/frame.webp" alt="">
+          <img src="img/intro/sam.webp" alt="">
+        </div>
       </div>
 
-      <svg class="words" viewBox="0 0 1920 1080" width="1920" height="1080">
-        <text class="w"            x="287"  y="327">Hi!</text>
-        <text class="w"            x="1024" y="327">I’m</text>
-        <text class="w hl"         x="1229" y="327">Sam.</text>
-        <text class="w small"      x="1527" y="239">(he/they)</text>
-
-        <text class="w"            x="285"  y="491">I collage</text>
-        <text class="w"            x="1151" y="491">culture</text>
-
-        <text class="w"            x="278"  y="693">through</text>
-        <text class="w hl"         x="798"  y="693">design</text>
-        <text class="w"            x="1402" y="693">and</text>
-
-        <text class="w hl"         x="280"  y="871">art</text>
-        <text class="w hl"         x="912"  y="871">direction.</text>
-      </svg>
-
-      <!-- Rendered sequences. Position comes from img/intro/layout.json (stage px at 1920x1080). -->
+      <!-- Rendered sequences. Position is set in js/intro.js (artboard px at 1920x1080). -->
       <div class="layer" data-depth="10"><canvas class="obj seq" data-seq="collage"></canvas></div>
       <div class="layer" data-depth="14"><canvas class="obj seq" data-seq="book"></canvas></div>
       <div class="layer" data-depth="18"><canvas class="obj seq" data-seq="skate"></canvas></div>
+
+      <svg class="words" viewBox="0 0 1920 1080" width="1920" height="1080">
+        <text class="w"            x="284"  y="327">Hi!</text>
+        <text class="w"            x="1021" y="327">I’m</text>
+        <text class="w hl"         x="1229" y="327">Sam.</text>
+        <text class="w small"      x="1525" y="239">(he/they)</text>
+
+        <text class="w"            x="284"  y="491">I collage</text>
+        <text class="w"            x="1192" y="491">culture</text>
+
+        <text class="w"            x="284"  y="693">through</text>
+        <text class="w hl"         x="798"  y="693">design</text>
+        <text class="w"            x="1406" y="693">and</text>
+
+        <text class="w hl"         x="284"  y="871">art</text>
+        <text class="w hl"         x="912"  y="871">direction.</text>
+      </svg>
     </div>
 
     <div class="cue" id="cue" aria-hidden="true"><span>Scroll</span><i></i></div>
