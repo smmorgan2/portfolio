@@ -12,7 +12,8 @@
   /* ---------- Fit the 1920x1080 artboard to the viewport ---------- */
   function fit() {
     const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-    stage.style.setProperty('--s', s);
+    // Set on the intro section so the stage and the hover-card artboards share one scale.
+    stage.parentElement.style.setProperty('--s', s);
   }
   fit();
   addEventListener('resize', fit);
@@ -132,7 +133,8 @@
     gsap.to(cue, { opacity: on ? 1 : 0, duration: on ? 0.6 : 0.25, overwrite: true });
   };
 
-  ScrollTrigger.create({
+  // Exposed so the header can appear exactly when this scroll animation ends (js/header.js).
+  window.introST = ScrollTrigger.create({
     trigger: '#intro',
     start: 'top top',
     // Scroll distance for the whole build, in screen heights. Lower = more sentence per scroll.

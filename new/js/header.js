@@ -1,118 +1,63 @@
-/* Glass header
-   - Cursor enters the top HOT_ZONE px of the screen: the glass panel slides down.
-   - Cursor leaves the panel: it slides back up (after a short grace period).
-   - Keyboard: Tab into a link opens it, Escape closes it.
-   - The clock pill shows Sam's local time (Pacific) and ticks live. */
+/* Glass header — three states (Figma: header_colapsed_a / header_expanded_a)
+   HIDDEN     Home page only, while the intro's scroll animation is in progress. Not visible,
+              not hoverable, not focusable (inert).
+   COLLAPSED  The 207px bar: logo, page title, clock. On the home page it slides in once you
+              scroll past the end of the intro animation; on other pages it's there from the start.
+   EXPANDED   Hovering the bar (or focusing into it, or tapping Menu on touch) grows it into the
+              full navigation. Leaving the header, moving focus out, or Escape collapses it.
+   Reveal (hidden <-> collapsed) is driven by scroll; expand (collapsed <-> expanded) by hover,
+   focus or the Menu button. They are separate timelines so they can't fight each other. */
 (() => {
-  const HOT_ZONE = 80;        // px from the top that opens the header (also in site.css .hdr-hot)
-  const CLOSE_DELAY = 0.2;    // seconds after the cursor leaves before it slides away
+  const COLLAPSED_H = 207;    // artboard px (Figma header_colapsed_a)
+  const EXPANDED_H = 1023;    // artboard px (Figma header_expanded_a)
+  const CLOSE_DELAY = 150;    // ms after the pointer leaves before it collapses (prevents flicker)
   const OPEN = { duration: 0.7, ease: 'expo.out' };
-  const CLOSE = { duration: 0.45, ease: 'power3.in' };
+  const CLOSE = { duration: 0.45 };
 
   const hdr = document.getElementById('hdr');
-  const hot = document.getElementById('hdrHot');
+  const menuBtn = document.getElementById('hdrMenu');
   const links = [...hdr.querySelectorAll('.hdr-nav a')];
-  const top = [...hdr.querySelectorAll('.hdr-badge, .hdr-title, .hdr-clock')];
+  const top = [...hdr.querySelectorAll('.hdr-badge, .hdr-title, .hdr-clock, .hdr-menu')];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const touch = matchMedia('(hover: none)').matches;
+  const isHome = document.body.dataset.page === 'home';
 
   /* ---------- Scale the 1920x1023 artboard like the intro stage ---------- */
+  let hs = 1;
   function fit() {
-    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-    document.documentElement.style.setProperty('--hs', s);
+    hs = Math.min(innerWidth / 1920, innerHeight / 1080);
+    document.documentElement.style.setProperty('--hs', hs);
   }
   fit();
   addEventListener('resize', fit);
-  hot.style.height = HOT_ZONE + 'px';
 
-  /* ---------- Refraction (Chrome / Edge only) ----------
-     An SVG displacement map bends whatever is behind the glass near its edges, like the
-     Figma glass effect. Other browsers can't apply SVG filters to backdrop-filter, so they
-     keep the clear blur from site.css. */
-  const REFRACT = {
-    edge: 0.07,   // width of the bending band, as a share of the panel height
-    strength: 75, // how far (px) the image bends at the very rim
-  };
+  /* ---------- Refraction (Chrome / Edge; js/glass.js) ----------
+     Maps for the collapsed and expanded sizes are built once (and again after a resize),
+     then swapped, so nothing heavy runs during the animation. */
   const glass = hdr.querySelector('.hdr-glass');
-  const brands = (navigator.userAgentData && navigator.userAgentData.brands) || [];
-  const canRefract = brands.some((b) => /Chromium/.test(b.brand)) && !reduced;
-
-  if (canRefract) {
-    const NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width', '0');
-    svg.setAttribute('height', '0');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.style.position = 'absolute';
-    svg.innerHTML =
-      '<filter id="hdrRefract" color-interpolation-filters="sRGB">' +
-      '<feImage id="hdrRefractMap" x="0" y="0" preserveAspectRatio="none" result="map"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G"/>' +
-      '</filter>';
-    document.body.appendChild(svg);
-    const feImage = svg.querySelector('#hdrRefractMap');
-    const feDisp = svg.querySelector('feDisplacementMap');
-
-    // Build the map: neutral grey in the middle; near the rim, pixels point inward
-    // so the edge samples from further inside (the glass "lens" bend).
-    function buildMap() {
-      const box = glass.getBoundingClientRect();
-      const W = Math.max(2, Math.round(box.width)), H = Math.max(2, Math.round(box.height));
-      const k = 0.5; // build at half resolution; the filter stretches it back up
-      const w = Math.round(W * k), h = Math.round(H * k);
-      const r = parseFloat(getComputedStyle(glass).borderBottomLeftRadius) * k || 1;
-      const E = Math.max(4, h * REFRACT.edge);
-      const c = document.createElement('canvas');
-      c.width = w; c.height = h;
-      const ctx = c.getContext('2d');
-      const img = ctx.createImageData(w, h);
-      const d = img.data;
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          let dist, nx = 0, ny = 0;
-          // Bottom corners are rounded; the top edge sits flush with the screen, so it doesn't bend.
-          if (x < r && y > h - r) {
-            const vx = x - r, vy = y - (h - r), len = Math.hypot(vx, vy) || 1;
-            dist = r - len; nx = vx / len; ny = vy / len;
-          } else if (x > w - r && y > h - r) {
-            const vx = x - (w - r), vy = y - (h - r), len = Math.hypot(vx, vy) || 1;
-            dist = r - len; nx = vx / len; ny = vy / len;
-          } else {
-            const dl = x, dr = w - 1 - x, db = h - 1 - y;
-            dist = Math.min(dl, dr, db);
-            if (dist === db) ny = 1; else if (dist === dl) nx = -1; else nx = 1;
-          }
-          const f = Math.max(0, Math.min(1, 1 - dist / E));
-          const m = f * f;
-          const i = (y * w + x) * 4;
-          d[i] = 128 + Math.round(-nx * m * 127);
-          d[i + 1] = 128 + Math.round(-ny * m * 127);
-          d[i + 2] = 128;
-          d[i + 3] = 255;
-        }
-      }
-      ctx.putImageData(img, 0, 0);
-      feImage.setAttribute('width', W);
-      feImage.setAttribute('height', H);
-      feImage.setAttribute('href', c.toDataURL());
-      feDisp.setAttribute('scale', REFRACT.strength);
-    }
-    buildMap();
-    glass.classList.add('refract');
-    let t;
-    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(buildMap, 150); });
+  const refr = window.Glass ? Glass.refract(glass, { flatTop: true, edge: () => 60 * hs, strength: 75 }) : null;
+  let maps = null;
+  function buildMaps() {
+    if (!refr || !Glass.supported) return;
+    const W = innerWidth;
+    maps = { c: refr.build(W, COLLAPSED_H * hs), e: refr.build(W, EXPANDED_H * hs) };
+    refr.use(state === 'expanded' ? maps.e : maps.c, W, (state === 'expanded' ? EXPANDED_H : COLLAPSED_H) * hs);
   }
+  let rT;
+  addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(buildMaps, 150); });
 
   /* ---------- Logo hover animation ----------
-     Hovering the S-M badge plays the full 93-frame loop once (flat badge, chrome, back to flat).
-     If the cursor leaves early it still finishes, so it never stops mid-chrome.
-     Frames load the first time the header opens. */
+     Hovering the S-M badge loops the 93-frame sequence (flat badge, chrome, back to flat)
+     for as long as the pointer stays on it. On leave it finishes the current loop and rests
+     on frame 0, so it never stops mid-chrome. Frames load the first time the header opens. */
   const LOGO_FRAMES = 93;
-  const LOGO_FPS = 30;
+  const LOGO_FPS = 30 * 1.15; // 15% faster than the 30fps render
   const badge = hdr.querySelector('.hdr-badge');
   const logo = document.getElementById('hdrLogo');
   const lctx = logo.getContext('2d');
   let logoImgs = null;
   let logoPlaying = false;
+  let logoHover = false;
 
   function drawLogo(i) {
     const im = logoImgs && logoImgs[i];
@@ -132,23 +77,31 @@
     });
   }
   function playLogo() {
+    logoHover = true;
     if (logoPlaying || reduced || !logoImgs || !badge.classList.contains('logo-ready')) return;
     logoPlaying = true;
-    const start = performance.now();
+    let start = performance.now();
     let last = -1;
     const step = (now) => {
-      const i = Math.min(LOGO_FRAMES - 1, Math.floor(((now - start) / 1000) * LOGO_FPS));
-      if (i !== last) {
-        // If a frame isn't loaded yet, hold the previous one rather than flashing empty.
-        if (drawLogo(i)) last = i;
+      let i = Math.floor(((now - start) / 1000) * LOGO_FPS);
+      if (i >= LOGO_FRAMES - 1) {
+        if (logoHover) {            // still hovered: start the next loop
+          start = now; i = 0;
+        } else {                    // left: rest on the first frame
+          drawLogo(0); logoPlaying = false; return;
+        }
       }
-      if (i < LOGO_FRAMES - 1) requestAnimationFrame(step);
-      else { drawLogo(0); logoPlaying = false; }
+      // If a frame isn't loaded yet, hold the previous one rather than flashing empty.
+      if (i !== last && drawLogo(i)) last = i;
+      requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }
+  const stopLogo = () => { logoHover = false; };
   badge.addEventListener('mouseenter', playLogo);
+  badge.addEventListener('mouseleave', stopLogo);
   badge.addEventListener('focus', playLogo);
+  badge.addEventListener('blur', stopLogo);
   // Load quietly once the page has settled, or right away if the header opens first.
   addEventListener('load', () => setTimeout(loadLogo, 3000));
 
@@ -175,52 +128,163 @@
   tick();
   setInterval(tick, 1000);
 
-  /* ---------- Open / close ---------- */
-  let isOpen = false;
+  /* ---------- States ---------- */
+  let state = 'hidden';
+  let armed = true;          // false = the pointer was already over the bar when it appeared
   let closeTimer = null;
-  const tl = gsap.timeline({ paused: true });
+  let expandTrigger = null;  // where focus goes back to on Escape
+  const pointer = { x: -1, y: -1, known: false };
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.known = true;
+    // Once the pointer has been somewhere outside the bar, the next entry counts as fresh.
+    if (!armed && !inBar()) armed = true;
+  }, { passive: true });
 
-  // Panel slides down; content pops in (no fade) and rises, staggered, like the intro words.
+  // Reveal: the bar slides down; badge, title and clock pop in (same motion as before).
+  const tlReveal = gsap.timeline({ paused: true });
   gsap.set(hdr, { yPercent: -101 });
   hdr.style.visibility = 'visible';
-  tl.to(hdr, { yPercent: 0, ...OPEN }, 0);
-  [...top, ...links].forEach((el, i) => {
+  tlReveal.to(hdr, { yPercent: 0, ...OPEN }, 0);
+  top.forEach((el, i) => {
     gsap.set(el, { autoAlpha: 0 });
-    tl.set(el, { autoAlpha: 1 }, 0.12 + i * 0.05);
-    tl.fromTo(el, { y: 40 }, { y: 0, duration: 0.5, ease: 'expo.out' }, 0.12 + i * 0.05);
+    tlReveal.set(el, { autoAlpha: 1 }, 0.12 + i * 0.05);
+    tlReveal.fromTo(el, { y: 40 }, { y: 0, duration: 0.5, ease: 'expo.out' }, 0.12 + i * 0.05);
   });
 
-  function open() {
+  // Expand: the glass grows to full height; nav links pop in and rise, staggered.
+  // Links become focusable at the start (visible at 0 opacity) so Tab can reach them right away.
+  const tlExpand = gsap.timeline({ paused: true });
+  const hh = { v: COLLAPSED_H };
+  tlExpand.fromTo(hh, { v: COLLAPSED_H }, {
+    v: EXPANDED_H, ...OPEN,
+    onUpdate: () => {
+      hdr.style.setProperty('--hh', hh.v);
+      if (refr) refr.setSize(innerWidth, hh.v * hs);
+    },
+  }, 0);
+  gsap.set(links, { autoAlpha: 0 });
+  tlExpand.set(links, { visibility: 'visible' }, 0);
+  links.forEach((el, i) => {
+    tlExpand.set(el, { opacity: 1 }, 0.12 + i * 0.05);
+    tlExpand.fromTo(el, { y: 40 }, { y: 0, duration: 0.5, ease: 'expo.out' }, 0.12 + i * 0.05);
+  });
+  tlExpand.eventCallback('onStart', () => { if (refr && maps) refr.use(maps.e, innerWidth, hh.v * hs); });
+  tlExpand.eventCallback('onReverseComplete', () => { if (refr && maps) refr.use(maps.c, innerWidth, COLLAPSED_H * hs); });
+
+  const inBar = () => pointer.y >= 0 && pointer.y <= COLLAPSED_H * hs;
+
+  function reveal() {
+    if (state !== 'hidden') return;
+    state = 'collapsed';
+    hdr.inert = false;
+    hdr.dataset.state = state;
+    // Pointer already over the bar (or not known yet, e.g. no mouse movement since load)?
+    // Then don't expand until it's been outside the bar and comes back.
+    armed = pointer.known && !inBar();
+    if (!maps) buildMaps();
+    if (reduced) { tlReveal.progress(1); return; }
+    tlReveal.timeScale(1).play();
+  }
+  function conceal() {
+    if (state === 'hidden') return;
     clearTimeout(closeTimer);
-    if (isOpen) return;
-    isOpen = true;
-    hdr.classList.add('is-open');
+    if (state === 'expanded') { tlExpand.progress(0).pause(); setMenu(false); }
+    state = 'hidden';
+    hdr.dataset.state = state;
+    if (hdr.contains(document.activeElement)) document.activeElement.blur();
+    hdr.inert = true;
+    if (reduced) { tlReveal.progress(0); return; }
+    tlReveal.timeScale(tlReveal.duration() / CLOSE.duration).reverse();
+  }
+  function expand(trigger) {
+    clearTimeout(closeTimer);
+    if (state !== 'collapsed') return;
+    state = 'expanded';
+    hdr.dataset.state = state;
+    expandTrigger = trigger || null;
+    setMenu(true);
     loadLogo();
-    if (reduced) { tl.progress(1); return; }
-    tl.timeScale(1).play();
+    if (reduced) { tlExpand.progress(1); return; }
+    tlExpand.timeScale(1).play();
   }
-  function close() {
+  function collapse() {
     clearTimeout(closeTimer);
-    if (!isOpen) return;
-    isOpen = false;
-    hdr.classList.remove('is-open');
-    if (reduced) { tl.progress(0); return; }
-    // Reverse runs the slide-in backwards; speed it up so closing matches CLOSE duration.
-    tl.timeScale(tl.duration() / CLOSE.duration).reverse();
+    if (state !== 'expanded') return;
+    state = 'collapsed';
+    hdr.dataset.state = state;
+    setMenu(false);
+    if (reduced) { tlExpand.progress(0); return; }
+    // Reverse runs the expand backwards; speed it up so collapsing takes CLOSE.duration.
+    tlExpand.timeScale(tlExpand.duration() / CLOSE.duration).reverse();
   }
-  const closeSoon = () => { clearTimeout(closeTimer); closeTimer = setTimeout(close, CLOSE_DELAY * 1000); };
+  const collapseSoon = () => { clearTimeout(closeTimer); closeTimer = setTimeout(collapse, CLOSE_DELAY); };
+  function setMenu(open) {
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.textContent = open ? 'Close' : 'Menu';
+  }
 
-  hot.addEventListener('mouseenter', open);
-  hdr.addEventListener('mouseenter', () => clearTimeout(closeTimer));
-  hdr.addEventListener('mouseleave', closeSoon);
-  // If the cursor touches the hot zone but never enters the panel, close again.
-  hot.addEventListener('mouseleave', (e) => { if (!hdr.contains(e.relatedTarget)) closeSoon(); });
+  /* ---------- Pointer (mouse / pen) ---------- */
+  hdr.addEventListener('pointerenter', (e) => {
+    if (e.pointerType === 'touch') return;
+    clearTimeout(closeTimer);
+    if (state === 'collapsed' && armed) expand();
+  });
+  hdr.addEventListener('pointerleave', (e) => {
+    if (e.pointerType === 'touch') return;
+    armed = true;
+    // Keyboard focus inside keeps it open; focus left behind by a mouse click doesn't.
+    if (state === 'expanded' && !hdr.querySelector(':focus-visible')) collapseSoon();
+  });
 
-  hdr.addEventListener('focusin', open);
-  hdr.addEventListener('focusout', (e) => { if (!hdr.contains(e.relatedTarget)) close(); });
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  /* ---------- Keyboard ---------- */
+  let restoringFocus = false; // true while Escape hands focus back, so that doesn't re-open it
+  hdr.addEventListener('focusin', (e) => {
+    clearTimeout(closeTimer);
+    if (restoringFocus) return;
+    // Keyboard focus only; a mouse click on the logo shouldn't count as a "fresh hover entry".
+    if (state === 'collapsed' && e.target !== menuBtn && e.target.matches(':focus-visible')) expand(e.target);
+  });
+  hdr.addEventListener('focusout', (e) => {
+    if (!hdr.contains(e.relatedTarget) && state === 'expanded') collapse();
+  });
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || state !== 'expanded') return;
+    const back = touch ? menuBtn : (expandTrigger && expandTrigger.isConnected ? expandTrigger : hdr.querySelector('.hdr-badge'));
+    collapse();
+    // Return focus to the trigger without re-opening.
+    restoringFocus = true;
+    back.focus({ preventScroll: true });
+    restoringFocus = false;
+  });
 
-  // Clicking a link closes the panel.
-  links.forEach((a) => a.addEventListener('click', () => close()));
-  hdr.querySelector('.hdr-badge').addEventListener('click', () => close());
+  /* ---------- Touch: Menu / Close ---------- */
+  menuBtn.addEventListener('click', () => {
+    if (state === 'expanded') collapse();
+    else expand(menuBtn);
+  });
+  document.addEventListener('click', (e) => {
+    if (touch && state === 'expanded' && !hdr.contains(e.target)) collapse();
+  });
+
+  // Choosing a link (or the logo) collapses the menu.
+  links.forEach((a) => a.addEventListener('click', () => collapse()));
+  hdr.querySelector('.hdr-badge').addEventListener('click', () => collapse());
+
+  /* ---------- When the header is available ---------- */
+  hdr.inert = true;
+  hdr.dataset.state = state;
+  if (isHome && window.introST) {
+    // Appears once you scroll past the end of the intro animation (the end of its pinned
+    // scroll range), and hides again when you scroll back into it.
+    ScrollTrigger.create({
+      start: () => window.introST.end + 1,
+      end: 'max',
+      onEnter: reveal,
+      onLeaveBack: conceal,
+    });
+  } else {
+    // Other pages (and the home page with reduced motion, which has no intro animation).
+    reveal();
+  }
 })();
