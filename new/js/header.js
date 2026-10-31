@@ -24,6 +24,84 @@
   addEventListener('resize', fit);
   hot.style.height = HOT_ZONE + 'px';
 
+  /* ---------- Refraction (Chrome / Edge only) ----------
+     An SVG displacement map bends whatever is behind the glass near its edges, like the
+     Figma glass effect. Other browsers can't apply SVG filters to backdrop-filter, so they
+     keep the clear blur from site.css. */
+  const REFRACT = {
+    edge: 0.07,   // width of the bending band, as a share of the panel height
+    strength: 75, // how far (px) the image bends at the very rim
+  };
+  const glass = hdr.querySelector('.hdr-glass');
+  const brands = (navigator.userAgentData && navigator.userAgentData.brands) || [];
+  const canRefract = brands.some((b) => /Chromium/.test(b.brand)) && !reduced;
+
+  if (canRefract) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', '0');
+    svg.setAttribute('height', '0');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.style.position = 'absolute';
+    svg.innerHTML =
+      '<filter id="hdrRefract" color-interpolation-filters="sRGB">' +
+      '<feImage id="hdrRefractMap" x="0" y="0" preserveAspectRatio="none" result="map"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G"/>' +
+      '</filter>';
+    document.body.appendChild(svg);
+    const feImage = svg.querySelector('#hdrRefractMap');
+    const feDisp = svg.querySelector('feDisplacementMap');
+
+    // Build the map: neutral grey in the middle; near the rim, pixels point inward
+    // so the edge samples from further inside (the glass "lens" bend).
+    function buildMap() {
+      const box = glass.getBoundingClientRect();
+      const W = Math.max(2, Math.round(box.width)), H = Math.max(2, Math.round(box.height));
+      const k = 0.5; // build at half resolution; the filter stretches it back up
+      const w = Math.round(W * k), h = Math.round(H * k);
+      const r = parseFloat(getComputedStyle(glass).borderBottomLeftRadius) * k || 1;
+      const E = Math.max(4, h * REFRACT.edge);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(w, h);
+      const d = img.data;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let dist, nx = 0, ny = 0;
+          // Bottom corners are rounded; the top edge sits flush with the screen, so it doesn't bend.
+          if (x < r && y > h - r) {
+            const vx = x - r, vy = y - (h - r), len = Math.hypot(vx, vy) || 1;
+            dist = r - len; nx = vx / len; ny = vy / len;
+          } else if (x > w - r && y > h - r) {
+            const vx = x - (w - r), vy = y - (h - r), len = Math.hypot(vx, vy) || 1;
+            dist = r - len; nx = vx / len; ny = vy / len;
+          } else {
+            const dl = x, dr = w - 1 - x, db = h - 1 - y;
+            dist = Math.min(dl, dr, db);
+            if (dist === db) ny = 1; else if (dist === dl) nx = -1; else nx = 1;
+          }
+          const f = Math.max(0, Math.min(1, 1 - dist / E));
+          const m = f * f;
+          const i = (y * w + x) * 4;
+          d[i] = 128 + Math.round(-nx * m * 127);
+          d[i + 1] = 128 + Math.round(-ny * m * 127);
+          d[i + 2] = 128;
+          d[i + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      feImage.setAttribute('width', W);
+      feImage.setAttribute('height', H);
+      feImage.setAttribute('href', c.toDataURL());
+      feDisp.setAttribute('scale', REFRACT.strength);
+    }
+    buildMap();
+    glass.classList.add('refract');
+    let t;
+    addEventListener('resize', () => { clearTimeout(t); t = setTimeout(buildMap, 150); });
+  }
+
   /* ---------- Live clock (Pacific) ---------- */
   const tz = 'America/Los_Angeles';
   const fmtDay = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' });
