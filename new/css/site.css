@@ -113,6 +113,14 @@ html.lenis, html.lenis body { height: auto; }
   display: flex; align-items: center; justify-content: center;
 }
 .hdr .hdr-badge { color: var(--black); }
+/* Logo animation canvas: larger than the badge because the chrome version grows past it.
+   Hover is still measured on the badge's own 145x79 box. */
+.hdr-logo {
+  position: absolute; left: -48.8px; top: -36.8px; width: 241.9px; height: 152.2px;
+  pointer-events: none; visibility: hidden;
+}
+.hdr-badge.logo-ready .hdr-logo { visibility: visible; }
+.hdr-badge.logo-ready svg, .hdr-badge.logo-ready span { visibility: hidden; }
 .hdr-badge svg { position: absolute; inset: 0; fill: var(--yellow); }
 .hdr-badge span {
   position: relative;
