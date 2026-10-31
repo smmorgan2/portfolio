@@ -143,8 +143,9 @@
     pointer.x = e.clientX; pointer.y = e.clientY; pointer.known = true;
     // Once the pointer has been somewhere outside the bar, the next entry counts as fresh.
     if (!armed && !inBar()) armed = true;
-    // Peek: after the intro has been seen once, the top edge of the screen brings the bar down.
-    if (unlocked && state === 'hidden' && pointer.y <= HOT_ZONE) peek();
+    // Peek: after the intro has been seen once (or while the bar is resting out of the way),
+    // the top edge of the screen brings the bar down.
+    if ((unlocked || restHidden) && state === 'hidden' && pointer.y <= HOT_ZONE) peek();
     // Once the peeked bar has arrived, keep hovering it to expand.
     else if (peeking && peekReady && state === 'collapsed' && inBar()) expand();
   }, { passive: true });
@@ -255,6 +256,32 @@
       conceal();
     }
   }
+  /* ---------- Rest: out of the way while you look ----------
+     When the page wants the bar (past the intro, on case studies) and you stop scrolling for
+     REST_MS, it slides up out of view. Scrolling again brings it straight back; so does moving
+     the pointer to the top edge (peek). It never hides while open, hovered or holding focus. */
+  const REST_MS = 3000;
+  let wanted = false;      // the page wants the bar shown (not during the intro or under the footer)
+  let restHidden = false;  // hidden only because you stopped scrolling
+  let restTimer = null;
+  const armRest = () => { clearTimeout(restTimer); restTimer = setTimeout(rest, REST_MS); };
+  function rest() {
+    if (!wanted || state === 'hidden') return;
+    const busy = state === 'expanded' || (pointer.known && inBar()) || hdr.contains(document.activeElement);
+    if (busy) { armRest(); return; }   // try again later
+    restHidden = true;
+    conceal();
+  }
+  addEventListener('scroll', () => {
+    if (!wanted) return;
+    if (peeking) { peeking = false; peekReady = false; }   // scrolling makes a peeked bar a normal one
+    if (restHidden) { restHidden = false; reveal(); }
+    armRest();
+  }, { passive: true });
+  // What the page logic calls (intro end, case study footer): show / hide for real.
+  function pageShow() { wanted = true; restHidden = false; reveal(); armRest(); }
+  function pageHide() { wanted = false; restHidden = false; clearTimeout(restTimer); conceal(); }
+
   function setMenu(open) {
     menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     menuBtn.textContent = open ? 'Close' : 'Menu';
@@ -310,7 +337,7 @@
   hdr.querySelector('.hdr-badge').addEventListener('click', () => collapse());
 
   // Other scripts can hide / bring back the bar (the case study footer hides it at the end of the page).
-  window.siteHeader = { reveal, conceal };
+  window.siteHeader = { reveal: pageShow, conceal: pageHide };
 
   /* ---------- When the header is available ---------- */
   hdr.inert = true;
@@ -322,11 +349,11 @@
     ScrollTrigger.create({
       start: () => window.introST.end + 1,
       end: 'max',
-      onEnter: () => { unlock(); peeking = false; reveal(); },
-      onLeaveBack: conceal,
+      onEnter: () => { unlock(); peeking = false; pageShow(); },
+      onLeaveBack: pageHide,
     });
   } else {
     // Other pages (and the home page with reduced motion, which has no intro animation).
-    reveal();
+    pageShow();
   }
 })();
