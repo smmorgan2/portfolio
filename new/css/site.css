@@ -68,19 +68,18 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 /* ---------- Glass header ----------
-   Hidden above the screen. Slides down when the cursor enters .hdr-hot (top of screen).
-   Contents sit on a 1920x1023 artboard (Figma frame), scaled by --hs from JS. */
-.hdr-hot {
-  position: fixed; left: 0; right: 0; top: 0;
-  height: 80px;            /* hover zone; match HOT_ZONE in js/header.js */
-  z-index: 90;
-}
+   Figma: Website Design > Components > header_colapsed_a (1920x207) / header_expanded_a (1920x1023).
+   Contents sit on a 1920x1023 artboard scaled by --hs. The panel height (--hh, artboard px)
+   animates 207 -> 1023 to expand; js/header.js drives the states (hidden / collapsed / expanded). */
 .hdr {
   position: fixed; left: 0; right: 0; top: 0;
-  height: calc(1023px * var(--hs, 0.5));
+  --hh: 207;
+  height: calc(var(--hh) * 1px * var(--hs, 0.5));
+  overflow: hidden;            /* nav links stay clipped while collapsed */
   z-index: 100;
-  visibility: hidden; /* JS moves it above the screen, then shows it */
+  visibility: hidden;          /* JS shows it once it's placed above the screen */
 }
+.hdr[inert] { pointer-events: none; }
 .hdr-glass {
   position: absolute; inset: 0;
   border-radius: 0 0 calc(50px * var(--hs, 0.5)) calc(50px * var(--hs, 0.5));
@@ -95,9 +94,9 @@ html.lenis, html.lenis body { height: auto; }
     inset 1.5px 0 0 rgba(255, 255, 255, 0.18),
     inset -1.5px 0 0 rgba(255, 255, 255, 0.18);
 }
-/* Chrome / Edge: bend the edges first, then the same blur (header.js adds .refract) */
+/* Chrome / Edge: bend the edges first, then the same blur (js/glass.js adds .refract) */
 .hdr-glass.refract {
-  backdrop-filter: url(#hdrRefract) blur(14px) saturate(170%) brightness(1.08);
+  backdrop-filter: var(--refract) blur(14px) saturate(170%) brightness(1.08);
 }
 .hdr-art {
   position: absolute; top: 0; left: 50%;
@@ -129,7 +128,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 .hdr-title {
-  position: absolute; left: 670px; top: 48px; transform: translateX(-50%);
+  position: absolute; left: 668px; top: 48px; transform: translateX(-50%);
   font-weight: 500; font-size: 80px; letter-spacing: -4px; line-height: 111px;
   color: var(--white); white-space: nowrap;
 }
@@ -157,10 +156,82 @@ html.lenis, html.lenis body { height: auto; }
 .hdr-nav a:nth-child(3) { top: 532px; }
 .hdr-nav a:nth-child(4) { top: 709px; }
 .hdr-nav a:hover, .hdr-nav a:focus-visible { color: var(--yellow); }
-.hdr a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+.hdr a:focus-visible, .hdr button:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
 
-/* Touch screens have no hover: keep the hover zone out of the way for now (mobile menu comes later) */
-@media (hover: none) { .hdr-hot { display: none; } }
+/* Menu / Close button: touch screens only (no hover there). Sits between the title and the clock. */
+.hdr-menu {
+  display: none;
+  position: absolute; left: 1000px; top: 69px; width: 190px; height: 59px;
+  border: 1px solid var(--white); border-radius: 40.7px; background: transparent;
+  color: var(--white); font: 300 26px/57px var(--font); letter-spacing: -1.3px;
+  cursor: pointer;
+}
+@media (hover: none) { .hdr-menu { display: block; } }
+
+/* ---------- Intro hover cards ----------
+   Figma: Intro Statement_v5_alt_a. Triggers and cards live on 1920x1080 artboards that match the stage. */
+.artboard {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--s, 0.5));
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+.itrig {
+  position: absolute; padding: 0; margin: 0; border: 0; border-radius: 18px;
+  background: transparent; color: transparent; font-size: 1px; overflow: hidden;
+  cursor: pointer; pointer-events: auto;
+  visibility: hidden;          /* shown once its word has appeared */
+}
+.itrig.is-live { visibility: visible; }
+.itrig:focus-visible { outline: 6px solid var(--blue); outline-offset: 8px; }
+
+.icard {
+  position: absolute;
+  visibility: hidden; opacity: 0;
+  pointer-events: none;        /* hidden cards never catch the pointer */
+  clip-path: url(#wiiClip);    /* the ID badge shape */
+  background: rgba(64, 64, 64, 0.5);
+  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.05);
+  backdrop-filter: blur(24px) saturate(150%) brightness(1.05);
+}
+.icard.refract { backdrop-filter: var(--refract) blur(24px) saturate(150%) brightness(1.05); }
+.icard.is-open { pointer-events: auto; }
+.icard p {
+  position: absolute; margin: 0;
+  font-weight: 300; font-size: 38.386px; letter-spacing: -1.919px; line-height: 1.4;
+  color: var(--white);
+}
+/* Edge light along the badge outline */
+.icard-rim { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.icard-rim path { fill: none; stroke: rgba(255, 255, 255, 0.42); stroke-width: 3; vector-effect: non-scaling-stroke; }
+
+/* Small screens: the artboard text would be too small to read, so the open card becomes a sheet
+   along the bottom of the screen (js/cards.js adds .compact). */
+.icards { z-index: 3; }   /* above the scroll cue */
+.icards.compact { left: 0; top: 0; width: 100%; height: 100%; transform: none; }
+.icards.compact .icard {
+  left: max(16px, env(safe-area-inset-left, 0px)) !important;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  top: auto !important;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: auto !important; height: auto !important;
+  clip-path: none; border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 18px 20px;
+}
+.icards.compact .icard p {
+  position: static; width: auto !important;
+  font-size: 16px; letter-spacing: -0.01em; line-height: 1.45;
+}
+.icards.compact .icard-rim { display: none; }
+.icards.compact .icard.refract { backdrop-filter: blur(24px) saturate(150%) brightness(1.05); } /* map is sized for the artboard card */
+
+/* No backdrop blur at all (older browsers): solid enough to read */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hdr-glass { background: rgba(24, 24, 24, 0.94); }
+  .icard { background: rgba(30, 30, 30, 0.95); }
+}
 
 /* Scroll cue */
 .cue {
