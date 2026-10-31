@@ -260,7 +260,7 @@
      When the page wants the bar (past the intro, on case studies) and you stop scrolling for
      REST_MS, it slides up out of view. Scrolling again brings it straight back; so does moving
      the pointer to the top edge (peek). It never hides while open, hovered or holding focus. */
-  const REST_MS = 1750; // Sam: 1.5 to 2 seconds
+  const REST_MS = 1000; // Sam: 1 second
   let wanted = false;      // the page wants the bar shown (not during the intro or under the footer)
   let restHidden = false;  // hidden only because you stopped scrolling
   let restTimer = null;
