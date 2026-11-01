@@ -1,4 +1,4 @@
-/* Case study page wiring
+/* Case study (and Contact) page wiring
    - Previous / Next follow the live projects in js/projects.js, wrapping around at the ends.
    - If this project is switched off (live: false), the page sends visitors to the homepage. */
 (() => {
@@ -53,18 +53,21 @@
 
   const foot = document.getElementById('csFoot');
   if (!foot) return;
-  const live = all.filter((p) => p.live || p.id === id);
-  const i = live.findIndex((p) => p.id === id);
-  if (live.length < 2 || i < 0) { foot.hidden = true; return; }
-
-  const prev = live[(i - 1 + live.length) % live.length];
-  const next = live[(i + 1) % live.length];
+  // Case studies: Previous / Next point at the neighbouring live projects.
+  // Other pages (Contact) carry their own fixed buttons, e.g. Home.
   const prevA = foot.querySelector('[data-dir="prev"]');
   const nextA = foot.querySelector('[data-dir="next"]');
-  prevA.href = prev.href;
-  prevA.setAttribute('aria-label', 'Previous project: ' + prev.title);
-  nextA.href = next.href;
-  nextA.setAttribute('aria-label', 'Next project: ' + next.title);
+  if (prevA && nextA) {
+    const live = all.filter((p) => p.live || p.id === id);
+    const i = live.findIndex((p) => p.id === id);
+    if (live.length < 2 || i < 0) { foot.hidden = true; return; }
+    const prev = live[(i - 1 + live.length) % live.length];
+    const next = live[(i + 1) % live.length];
+    prevA.href = prev.href;
+    prevA.setAttribute('aria-label', 'Previous project: ' + prev.title);
+    nextA.href = next.href;
+    nextA.setAttribute('aria-label', 'Next project: ' + next.title);
+  }
 
   /* ---------- Reveal: the header, mirrored ----------
      Hidden below the screen until you reach the end of the page. Then the header slides away up top
@@ -76,7 +79,7 @@
   const OPEN = { duration: 0.7, ease: 'expo.out' };
   const CLOSE = 0.45;
   const space = document.getElementById('csFootSpace');
-  const pills = [prevA, nextA];
+  const pills = [...foot.querySelectorAll('a')];
   const header = window.siteHeader;
 
   const tl = gsap.timeline({ paused: true });
@@ -103,5 +106,14 @@
   };
 
   // Shows once half of the footer's space at the end of the page has scrolled into view.
-  ScrollTrigger.create({ trigger: space, start: 'center bottom', onEnter: show, onLeaveBack: hide });
+  // A page that fits on one screen (Contact on most laptops) has no end to scroll to: the footer
+  // slides up as the page opens and stays, and the header keeps its usual behaviour above it.
+  // "Fits" = less than a footer's height left to scroll, so there's no real end of page to reach.
+  const fits = () => document.documentElement.scrollHeight - innerHeight < space.offsetHeight;
+  if (fits()) {
+    foot.inert = false;
+    if (reduced) tl.progress(1); else gsap.delayedCall(0.15, () => tl.play());
+  } else {
+    ScrollTrigger.create({ trigger: space, start: 'center bottom', onEnter: show, onLeaveBack: hide });
+  }
 })();
