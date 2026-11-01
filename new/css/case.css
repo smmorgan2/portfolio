@@ -131,3 +131,27 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-foot-glass { border-radius: 22px 22px 0 0; }
   .cs-foot a { width: 132px; height: 40px; font-size: 15px; border-radius: 20px; }
 }
+
+/* ---------- Contact (Figma: Contact_page, 1920x1174) ----------
+   Three big links at x644, from y185, Headline01 (150 Medium, -5%). The footer takes the last 207. */
+.ct {
+  max-width: 1920px; margin: 0 auto;
+  min-height: max(calc(967 * var(--u)), calc(100svh - 207 * var(--u)));
+  padding: calc(185 * var(--u)) 0 0 calc(644 * var(--u));
+}
+.ct-links { list-style: none; margin: 0; padding: 0; }
+.ct-links a {
+  display: inline-block;
+  font-weight: 500; font-size: calc(150 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
+  color: var(--white); text-decoration: none;
+  transition: color 0.15s;
+}
+.ct-links a:hover, .ct-links a:focus-visible { color: var(--yellow); }
+.ct-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+/* The Home button on Contact has a black rim in Figma (case studies use white) */
+.cs-foot a.is-dark-rim { border-color: var(--black); }
+
+@media (max-width: 820px) {
+  .ct { padding: calc(207 * var(--hs, 0.2) * 1px + 48px) 16px 0; min-height: calc(100svh - 96px); }
+  .ct-links a { font-size: 56px; }
+}
