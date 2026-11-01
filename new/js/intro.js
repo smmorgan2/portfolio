@@ -167,7 +167,8 @@
     document.fonts ? document.fonts.ready : Promise.resolve(),
     new Promise((r) => setTimeout(r, 1500)),
   ]);
-  fontsReady.then(() => {
+  // Arriving through the page transition: start once the tiles have lifted.
+  Promise.all([fontsReady, window.txWait]).then(() => {
     if (scrollY > 10) { tlAuto.progress(1); return; } // reloaded mid-page
     tlAuto.play().then(() => {
       if (ScrollTrigger.getAll()[0].progress < 0.02) showCue(true);

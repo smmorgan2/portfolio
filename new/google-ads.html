@@ -3,18 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Arriving through the page transition: cover the page before it paints (js/transition.js) */
+try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.classList.add("tx-in");window.txWait=new Promise(function(r){window.__txDone=r;});}}catch(e){}</script>
 <title>Google Ads | Sam Morgan</title>
 <!-- Test page at /new/ until launch: keep it out of search results. Remove at launch. -->
 <meta name="robots" content="noindex">
 <meta name="description" content="Google Ads social campaign: an asset suite that scales across every platform. Motion and design by Sam Morgan.">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261101c">
-<link rel="stylesheet" href="css/case.css?v=20261101c">
+<link rel="stylesheet" href="css/site.css?v=20261101i">
+<link rel="stylesheet" href="css/case.css?v=20261101i">
 <!-- Hide this page right away if the project is switched off (js/projects.js) -->
-<script src="js/projects.js?v=20261101c"></script>
+<script src="js/projects.js?v=20261101i"></script>
 </head>
 <body data-page="case" data-project="google-ads">
+<!-- Page transition screen (js/transition.js) -->
+<div class="tx" id="tx" aria-hidden="true"><div class="tx-grid"><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span></div></div>
+<!-- Shared shapes: the ID badge (Wii-channel) outline, used as a clip for the glass cards -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <clipPath id="wiiClip" clipPathUnits="objectBoundingBox">
+    <path transform="scale(0.00020080321 0.00036873156)" d="M4980.00 1356.00 C4980.00 1060.68 4974.01 730.17 4950.74 453.66 C4937.10 291.61 4920.91 194.69 4853.51 123.18 C4774.50 39.34 4660.68 31.52 4494.70 24.16 C3896.01 -2.39 3153.43 0.00 2490.00 0.00 C1826.57 0.00 1083.99 -2.39 485.30 24.16 C319.32 31.52 205.50 39.34 126.49 123.18 C59.09 194.69 42.90 291.61 29.26 453.66 C5.99 730.17 0.00 1060.68 0.00 1356.00 C0.00 1651.32 5.99 1981.83 29.26 2258.34 C42.90 2420.39 59.09 2517.31 126.49 2588.82 C205.50 2672.66 319.32 2680.48 485.30 2687.84 C1083.99 2714.39 1826.57 2712.00 2490.00 2712.00 C3153.43 2712.00 3896.01 2714.39 4494.70 2687.84 C4660.68 2680.48 4774.50 2672.66 4853.51 2588.82 C4920.91 2517.31 4937.10 2420.39 4950.74 2258.34 C4974.01 1981.83 4980.00 1651.32 4980.00 1356.00 Z"/>
+  </clipPath>
+</svg>
 
 <header class="hdr" id="hdr" inert>
   <div class="hdr-glass"></div>
@@ -66,12 +76,13 @@
   <a data-dir="next" href="index.html">Next</a>
 </footer>
 
-<script src="js/vendor/gsap.min.js?v=20261101c"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261101c"></script>
-<script src="js/vendor/lenis.min.js?v=20261101c"></script>
-<script src="js/smooth.js?v=20261101c"></script>
-<script src="js/glass.js?v=20261101c"></script>
-<script src="js/header.js?v=20261101c"></script>
-<script src="js/case.js?v=20261101c"></script>
+<script src="js/vendor/gsap.min.js?v=20261101i"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261101i"></script>
+<script src="js/vendor/lenis.min.js?v=20261101i"></script>
+<script src="js/smooth.js?v=20261101i"></script>
+<script src="js/glass.js?v=20261101i"></script>
+<script src="js/header.js?v=20261101i"></script>
+<script src="js/case.js?v=20261101i"></script>
+<script src="js/transition.js?v=20261101i"></script>
 </body>
 </html>

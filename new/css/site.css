@@ -269,3 +269,47 @@ html.lenis, html.lenis body { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .cue i { animation: none; }
 }
+
+/* ---------- Page transition (js/transition.js) ----------
+   Black screen with a 4x3 grid of channel tiles (the ID badge shape), each with the S-M logo
+   pressed in. Measured from the Wii reference at 1920 wide: tiles 371x209, gaps 34 across, 20 down.
+   --k scales the grid so it fits the screen; portrait screens get 3 columns. */
+.tx {
+  position: fixed; inset: 0; z-index: 1000;
+  display: grid; place-items: start center;   /* grid sits high, as on the Wii (87 down at 1080) */
+  background: #000;
+  visibility: hidden; opacity: 0;
+  pointer-events: none;
+}
+.tx.is-on { pointer-events: auto; }
+.tx-grid {
+  --k: min(calc(100vw / 1920), calc(100vh / 1080));
+  display: grid;
+  grid-template-columns: repeat(4, calc(371 * var(--k)));
+  grid-auto-rows: calc(209 * var(--k));
+  column-gap: calc(34 * var(--k)); row-gap: calc(20 * var(--k));
+  margin-top: calc(87 * var(--k) + (100vh - 1080 * var(--k)) / 2);
+}
+.tx-tile {
+  display: flex; align-items: center; justify-content: center;
+  clip-path: url(#wiiClip);
+  background: #2d2d2d;
+  opacity: 0; visibility: hidden;
+}
+/* The logo is pressed into the tile: a shade darker, with a faint lit lower edge */
+.tx-tile b {
+  font-weight: 500; font-size: calc(58 * var(--k)); letter-spacing: -0.1em; line-height: 1;
+  padding-right: 0.1em;  /* offsets the trailing letter-spacing so S-M sits centred */
+  color: #191919;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.07), 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+@media (max-aspect-ratio: 1/1) {
+  .tx-grid {
+    --k: calc((100vw - 48px) / (3 * 371 + 2 * 34));
+    grid-template-columns: repeat(3, calc(371 * var(--k)));
+    margin-top: calc((100vh - 4 * 209 * var(--k) - 3 * 20 * var(--k)) / 2);   /* portrait: centred */
+  }
+}
+/* Arriving from another page: covered from the very first paint (set in each page's <head>) */
+html.tx-in .tx { visibility: visible; opacity: 1; }
+html.tx-in .tx-tile { visibility: visible; opacity: 1; }
