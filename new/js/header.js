@@ -278,9 +278,17 @@
     if (restHidden) { restHidden = false; reveal(); }
     armRest();
   }, { passive: true });
+  // Keyboard: Tab brings a resting bar straight back (no slide, so its links can take focus at once).
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !wanted || !restHidden) return;
+    restHidden = false;
+    reveal();
+    tlReveal.progress(1);
+    armRest();
+  });
   // What the page logic calls (intro end, case study footer): show / hide for real.
   function pageShow() { wanted = true; restHidden = false; reveal(); armRest(); }
-  function pageHide() { wanted = false; restHidden = false; clearTimeout(restTimer); conceal(); }
+  function pageHide() { wanted = false; restHidden = false; clearTimeout(restTimer); conceal(); hdr.inert = true; }
 
   function setMenu(open) {
     menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -354,6 +362,7 @@
     });
   } else {
     // Other pages (and the home page with reduced motion, which has no intro animation).
-    pageShow();
+    // Arriving through the page transition: slide in once the tiles have lifted.
+    (window.txWait || Promise.resolve()).then(pageShow);
   }
 })();

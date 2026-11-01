@@ -112,7 +112,8 @@
   const fits = () => document.documentElement.scrollHeight - innerHeight < space.offsetHeight;
   if (fits()) {
     foot.inert = false;
-    if (reduced) tl.progress(1); else gsap.delayedCall(0.15, () => tl.play());
+    if (reduced) tl.progress(1);
+    else (window.txWait || Promise.resolve()).then(() => gsap.delayedCall(0.15, () => tl.play()));
   } else {
     ScrollTrigger.create({ trigger: space, start: 'center bottom', onEnter: show, onLeaveBack: hide });
   }

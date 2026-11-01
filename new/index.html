@@ -3,14 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* Arriving through the page transition: cover the page before it paints (js/transition.js) */
+try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.classList.add("tx-in");window.txWait=new Promise(function(r){window.__txDone=r;});}}catch(e){}</script>
 <title>Sam Morgan</title>
 <!-- Test page at /new/ until launch: keep it out of search results. Remove at launch. -->
 <meta name="robots" content="noindex"><meta name="description" content="Sam Morgan collages culture through design and art direction.">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261101c">
+<link rel="stylesheet" href="css/site.css?v=20261101i">
 </head>
 <body data-page="home">
+<!-- Page transition screen (js/transition.js) -->
+<div class="tx" id="tx" aria-hidden="true"><div class="tx-grid"><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span><span class="tx-tile"><b>S-M</b></span></div></div>
 
 <!-- Shared shapes: the ID badge (Wii-channel) outline, used as a clip for the glass cards -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -117,13 +121,14 @@
   </section>
 </main>
 
-<script src="js/vendor/gsap.min.js?v=20261101c"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261101c"></script>
-<script src="js/vendor/lenis.min.js?v=20261101c"></script>
-<script src="js/smooth.js?v=20261101c"></script>
-<script src="js/intro.js?v=20261101c"></script>
-<script src="js/glass.js?v=20261101c"></script>
-<script src="js/cards.js?v=20261101c"></script>
-<script src="js/header.js?v=20261101c"></script>
+<script src="js/vendor/gsap.min.js?v=20261101i"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261101i"></script>
+<script src="js/vendor/lenis.min.js?v=20261101i"></script>
+<script src="js/smooth.js?v=20261101i"></script>
+<script src="js/intro.js?v=20261101i"></script>
+<script src="js/glass.js?v=20261101i"></script>
+<script src="js/cards.js?v=20261101i"></script>
+<script src="js/header.js?v=20261101i"></script>
+<script src="js/transition.js?v=20261101i"></script>
 </body>
 </html>
