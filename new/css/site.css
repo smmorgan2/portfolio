@@ -313,3 +313,66 @@ html.lenis, html.lenis body { height: auto; }
 /* Arriving from another page: covered from the very first paint (set in each page's <head>) */
 html.tx-in .tx { visibility: visible; opacity: 1; }
 html.tx-in .tx-tile { visibility: visible; opacity: 1; }
+
+/* ---------- Project scroll (Figma: ProjectSelection_v1a; js/project-scroll.js) ----------
+   A 1920x1080 artboard scaled to fit (--ps), like the intro. Frame: the ID badge shape,
+   1727x941 at (96.5, 55.7), 5px yellow outline. Glass panel at y774, name + three pills on it. */
+.ps { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--black); }
+.ps-stage {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--ps, 0.5));
+  transform-origin: 50% 50%;
+}
+.ps canvas { position: absolute; display: block; will-change: transform; }
+.ps-clip {
+  position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px;
+  clip-path: url(#wiiClip);
+}
+.ps-objs { position: absolute; inset: 0; }
+/* Same glass as the header and footers, built directly: Chrome samples backdrop-filter from the
+   wrong place inside a scaled, clipped box, so the panel blurs its own copy of the objects with the
+   shared glass filter instead. The blur is divided by the stage scale to match on-screen glass. */
+.ps-glass {
+  position: absolute; left: -33.5px; top: 718.26px; width: 1792px; height: 249px;
+  overflow: hidden; background: var(--black);
+}
+.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
+.ps-glass::after {
+  content: ""; position: absolute; inset: 0;
+  background: var(--glass-fill);
+  box-shadow: inset 0 1.5px 0 var(--glass-rim), inset 0 18px 30px -18px var(--glass-glow);
+}
+.ps-frame { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; overflow: visible; pointer-events: none; }
+.ps-frame path { fill: none; stroke: var(--yellow); stroke-width: calc(5px * var(--ps, 0.5)); vector-effect: non-scaling-stroke; }
+/* Breakout copy: everything above y62 (just under the top outline) draws over the frame */
+.ps-break {
+  position: absolute; inset: 0; pointer-events: none;
+  clip-path: polygon(-4000px -8000px, 6000px -8000px, 6000px 62px, -4000px 62px);
+}
+.ps-info { position: absolute; inset: 0; pointer-events: none; }
+.ps-name {
+  position: absolute; left: 168px; top: 757px; margin: 0;
+  font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: 1.4;
+  color: var(--white); white-space: nowrap;
+}
+.ps-tags { position: absolute; left: 1010px; top: 846px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
+.ps-tags li {
+  width: 228px; height: 59px; display: flex; align-items: center; justify-content: center;
+  background: var(--yellow); color: var(--black); border: 1px solid var(--black); border-radius: 40.7px;
+  font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
+}
+.ps-link { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; clip-path: url(#wiiClip); }
+.ps-link:focus-visible { outline: none; }
+.ps-link:focus-visible::after {
+  content: ""; position: absolute; inset: 0; border: 6px solid var(--blue); border-radius: 160px;
+}
+/* Phones: the artboard gets small, so the name and pills move below the frame at readable sizes
+   (sizes divided by the stage scale so they come out in real screen px) */
+.ps.compact .ps-info {
+  inset: auto; left: 96.5px; top: calc(996px + 18px / var(--ps)); width: 1727px;
+  display: flex; flex-direction: column; gap: calc(10px / var(--ps));
+}
+.ps.compact .ps-name { position: static; font-size: calc(34px / var(--ps)); line-height: 1.1; }
+.ps.compact .ps-tags { position: static; gap: calc(6px / var(--ps)); flex-wrap: wrap; }
+.ps.compact .ps-tags li { width: auto; height: calc(30px / var(--ps)); padding: 0 calc(12px / var(--ps)); font-size: calc(13px / var(--ps)); border-radius: calc(15px / var(--ps)); }
