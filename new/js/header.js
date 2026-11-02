@@ -344,6 +344,14 @@
   links.forEach((a) => a.addEventListener('click', () => collapse()));
   hdr.querySelector('.hdr-badge').addEventListener('click', () => collapse());
 
+  // Homepage past the intro (mouse/trackpad): Tab peeks the bar in, straight away, so its links can take focus.
+  let pastIntro = false;
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !pastIntro || touch || state !== 'hidden') return;
+    peek();
+    tlReveal.progress(1);
+  });
+
   // Other scripts can hide / bring back the bar (the case study footer hides it at the end of the page).
   window.siteHeader = { reveal: pageShow, conceal: pageHide };
 
@@ -357,8 +365,10 @@
     ScrollTrigger.create({
       start: () => window.introST.end + 1,
       end: 'max',
-      onEnter: () => { unlock(); peeking = false; pageShow(); },
-      onLeaveBack: pageHide,
+      // Past the intro the bar stays out of the way: it only comes down when the pointer goes to
+      // the top edge (peek) or someone Tabs to it. Touch screens have no pointer, so there it shows.
+      onEnter: () => { unlock(); pastIntro = true; if (touch) { peeking = false; pageShow(); } },
+      onLeaveBack: () => { pastIntro = false; pageHide(); },
     });
   } else {
     // Other pages (and the home page with reduced motion, which has no intro animation).
