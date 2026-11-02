@@ -62,33 +62,21 @@
     };
     const cs = [mk(objsLayer, q.x - FRAME.x, q.y - FRAME.y), mk(breakLayer, q.x, q.y),
       mk(glassLayer, q.x - FRAME.x - PANEL.x, q.y - FRAME.y - PANEL.y)];
-    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: 0, mix: 0,
+    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: 0, got: 0, ready: false,
       y: 0, angle: 0, spin: 0, back: null, loaded: false };
     const ok = (im) => im && im.complete && im.naturalWidth > 0;
-    // Draws the frame for the current angle, blended with the next frame by the leftover fraction,
-    // so the turn moves smoothly even at very slow speeds (no 2-degree clicks).
+    // Draws exactly one rendered frame (no blending: the see-through parts would flicker).
     o.draw = () => {
-      const n = q.frames;
-      let i = o.want, j = (i + 1) % n, m = o.mix;
-      if (!ok(o.imgs[i])) { i = ok(o.imgs[0]) ? 0 : -1; m = 0; }   // missing frame: fall back to the rest pose
-      if (i < 0) return;
-      if (m > 0 && !ok(o.imgs[j])) m = 0;
-      const key = i + ':' + Math.round(m * 24);
-      if (key === o.cur) return;
-      o.cur = key;
-      o.ctx.forEach((ctx) => {
-        ctx.clearRect(0, 0, q.w, q.h);
-        ctx.globalAlpha = 1;
-        ctx.drawImage(o.imgs[i], 0, 0, q.w, q.h);
-        if (m > 0.02) { ctx.globalAlpha = m; ctx.drawImage(o.imgs[j], 0, 0, q.w, q.h); ctx.globalAlpha = 1; }
-      });
+      const i = o.want;
+      if (!ok(o.imgs[i]) || String(i) === o.cur) return;   // not loaded yet: keep what's on screen
+      o.cur = String(i);
+      o.ctx.forEach((ctx) => { ctx.clearRect(0, 0, q.w, q.h); ctx.drawImage(o.imgs[i], 0, 0, q.w, q.h); });
     };
-    // angle in degrees -> frame of the turn + how far towards the next one
+    // angle in degrees -> nearest frame of the turn
     o.setAngle = (a) => {
       o.angle = a;
-      const n = q.frames, f = a / (360 / n), fl = Math.floor(f);
-      o.want = ((fl % n) + n) % n;
-      o.mix = f - fl;
+      const n = q.frames;
+      o.want = ((Math.round(a / (360 / n)) % n) + n) % n;
       o.draw();
     };
     o.place = () => { const t = `translate3d(0, ${o.y}px, 0)`; cs.forEach((c) => { c.style.transform = t; }); };
@@ -101,10 +89,11 @@
     objs.forEach((o) => {
       if (o.loaded) return;
       o.loaded = true;
+      o.got = 0; o.ready = false;
       const get = (i) => {
         const im = new Image();
         im.decoding = 'async';
-        im.onload = () => { if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } };
+        im.onload = () => { o.ready = ++o.got >= o.q.frames; if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } };
         im.src = `${o.q.path}/${String(i).padStart(3, '0')}.webp`;
         o.imgs[i] = im;
       };
@@ -208,8 +197,8 @@
   /* ---------- Turning: a slow full turn whenever the active object is at rest ---------- */
   if (reduced) return;
   const IDLE_AFTER = 450;   // ms without scrolling before turning starts
-  const TURN = 10;          // seconds per full turn at full speed
-  const RAMP = 2.6;         // seconds to ease up to full speed (gentle start)
+  const TURN = 6;           // seconds per full turn: the speed of Sam's render (180 frames at 30fps)
+  const RAMP = 0.6;         // a short ease up to speed so it doesn't kick
   let idleSince = 0, prev = performance.now();
   const inView = () => { const r = section.getBoundingClientRect(); return r.top < innerHeight * 0.3 && r.bottom > innerHeight * 0.7; };
   // Back to the rest pose the short way round, quicker for small angles.
@@ -224,7 +213,7 @@
     const now = performance.now(), dt = Math.min(0.1, (now - prev) / 1000);
     prev = now;
     const o = objs[active];
-    const resting = o && Math.abs(o.y) < 2 && inView() && now - lastScroll > IDLE_AFTER;
+    const resting = o && o.ready && Math.abs(o.y) < 2 && inView() && now - lastScroll > IDLE_AFTER;
     objs.forEach((x) => { if (x !== o || !resting) { x.spin = 0; settle(x); } });
     if (!resting) { idleSince = 0; return; }
     if (o.back) { o.back.kill(); o.back = null; }
