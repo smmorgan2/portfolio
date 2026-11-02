@@ -62,18 +62,35 @@
     };
     const cs = [mk(objsLayer, q.x - FRAME.x, q.y - FRAME.y), mk(breakLayer, q.x, q.y),
       mk(glassLayer, q.x - FRAME.x - PANEL.x, q.y - FRAME.y - PANEL.y)];
-    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: -1, want: 0,
+    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: 0, mix: 0,
       y: 0, angle: 0, spin: 0, back: null, loaded: false };
     const ok = (im) => im && im.complete && im.naturalWidth > 0;
+    // Draws the frame for the current angle, blended with the next frame by the leftover fraction,
+    // so the turn moves smoothly even at very slow speeds (no 2-degree clicks).
     o.draw = () => {
-      let i = o.want;
-      if (!ok(o.imgs[i])) i = ok(o.imgs[0]) ? 0 : -1;   // missing frame: fall back to the rest pose
-      if (i === o.cur || i < 0) return;
-      o.cur = i;
-      o.ctx.forEach((ctx) => { ctx.clearRect(0, 0, q.w, q.h); ctx.drawImage(o.imgs[i], 0, 0, q.w, q.h); });
+      const n = q.frames;
+      let i = o.want, j = (i + 1) % n, m = o.mix;
+      if (!ok(o.imgs[i])) { i = ok(o.imgs[0]) ? 0 : -1; m = 0; }   // missing frame: fall back to the rest pose
+      if (i < 0) return;
+      if (m > 0 && !ok(o.imgs[j])) m = 0;
+      const key = i + ':' + Math.round(m * 24);
+      if (key === o.cur) return;
+      o.cur = key;
+      o.ctx.forEach((ctx) => {
+        ctx.clearRect(0, 0, q.w, q.h);
+        ctx.globalAlpha = 1;
+        ctx.drawImage(o.imgs[i], 0, 0, q.w, q.h);
+        if (m > 0.02) { ctx.globalAlpha = m; ctx.drawImage(o.imgs[j], 0, 0, q.w, q.h); ctx.globalAlpha = 1; }
+      });
     };
-    // angle in degrees -> nearest frame of the turn
-    o.setAngle = (a) => { o.angle = a; const n = q.frames; o.want = ((Math.round(a / (360 / n)) % n) + n) % n; o.draw(); };
+    // angle in degrees -> frame of the turn + how far towards the next one
+    o.setAngle = (a) => {
+      o.angle = a;
+      const n = q.frames, f = a / (360 / n), fl = Math.floor(f);
+      o.want = ((fl % n) + n) % n;
+      o.mix = f - fl;
+      o.draw();
+    };
     o.place = () => { const t = `translate3d(0, ${o.y}px, 0)`; cs.forEach((c) => { c.style.transform = t; }); };
     o.show = (v) => cs.forEach((c) => { c.style.visibility = v ? 'visible' : 'hidden'; });
     return o;
@@ -87,7 +104,7 @@
       const get = (i) => {
         const im = new Image();
         im.decoding = 'async';
-        im.onload = () => { if (i === 0 || i === o.want) { o.cur = -1; o.draw(); } };
+        im.onload = () => { if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } };
         im.src = `${o.q.path}/${String(i).padStart(3, '0')}.webp`;
         o.imgs[i] = im;
       };
@@ -192,7 +209,7 @@
   if (reduced) return;
   const IDLE_AFTER = 450;   // ms without scrolling before turning starts
   const TURN = 10;          // seconds per full turn at full speed
-  const RAMP = 1.2;         // seconds to ease up to full speed
+  const RAMP = 2.6;         // seconds to ease up to full speed (gentle start)
   let idleSince = 0, prev = performance.now();
   const inView = () => { const r = section.getBoundingClientRect(); return r.top < innerHeight * 0.3 && r.bottom > innerHeight * 0.7; };
   // Back to the rest pose the short way round, quicker for small angles.
@@ -200,7 +217,7 @@
     if (o.back || o.angle === 0) return;
     const a = ((o.angle % 360) + 540) % 360 - 180;   // same pose, as -180..180
     o.setAngle(a);
-    o.back = gsap.to(o, { angle: 0, duration: 0.35 + (Math.abs(a) / 360) * 0.9, ease: 'power2.out',
+    o.back = gsap.to(o, { angle: 0, duration: 0.45 + (Math.abs(a) / 360) * 1.1, ease: 'sine.out',
       onUpdate: () => o.setAngle(o.angle), onComplete: () => { o.back = null; o.setAngle(0); } });
   }
   gsap.ticker.add(() => {
@@ -213,7 +230,7 @@
     if (o.back) { o.back.kill(); o.back = null; }
     if (!idleSince) idleSince = now;
     const k = Math.min(1, (now - idleSince) / 1000 / RAMP);
-    o.spin = (360 / TURN) * k * k * (3 - 2 * k);   // smooth speed-up
+    o.spin = (360 / TURN) * (1 - Math.cos(Math.PI * k)) / 2;   // speed eases in from zero, no kick
     o.setAngle(o.angle + o.spin * dt);
   });
 })();
