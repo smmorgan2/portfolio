@@ -13,8 +13,8 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 <meta name="robots" content="noindex"><meta name="description" content="Sam Morgan collages culture through design and art direction.">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261103j">
-<link rel="stylesheet" href="css/mobile.css?v=20261103j">
+<link rel="stylesheet" href="css/site.css?v=20261103m">
+<link rel="stylesheet" href="css/mobile.css?v=20261103m">
 </head>
 <body data-page="home">
 <!-- Page transition screen (js/transition.js) -->
@@ -61,14 +61,14 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
   </div>
 </header>
 <!-- Light / dark toggle (js/theme.js) -->
-<button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Light mode"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
+<button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Light mode"><span class="tt-knob" aria-hidden="true"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></span></button>
 
 <main>
   <!-- Phones and tablets only (css/mobile.css, js/mobile-home.js). Figma: Mobile - Home+ProjectSelection -->
   <div class="m-home" id="mHome">
     <p class="m-greet" aria-hidden="true"><span class="mw">Hi!</span> <span class="mw">I’m</span> <span class="mw hl">Sam<i>.</i></span></p>
     <p class="m-pron mw" aria-hidden="true">(he/they)</p>
-    <div class="m-photo" aria-hidden="true"><img src="img/intro/frame.webp" alt=""><img src="img/intro/sam.webp" alt=""></div>
+    <div class="m-photo" aria-hidden="true"><img class="frame-dark" src="img/intro/frame.webp" alt=""><img class="frame-light" src="img/intro/frame-light.webp" alt="" loading="lazy"><img src="img/intro/sam.webp" alt=""></div>
     <p class="m-state" aria-hidden="true"><span class="mw">I</span> <span class="mw">collage</span> <span class="mw">culture</span> <span class="mw">through</span> <span class="mw">design</span> <span class="mw">and</span> <span class="mw">art</span> <span class="mw">direction.</span></p>
     <section class="m-ps" id="mProjects" aria-label="Projects. Swipe sideways for more."><div class="m-track" id="mTrack"></div></section>
   </div>
@@ -80,7 +80,8 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
            yellow frame, Sam, collage, book, skateboard, then all words on top. -->
       <div class="layer" data-depth="6">
         <div class="obj photo" id="photo" style="left:455.7px;top:64.6px;width:542.8px;height:323.1px">
-          <img src="img/intro/frame.webp" alt="">
+          <img class="frame-dark" src="img/intro/frame.webp" alt="">
+          <img class="frame-light" src="img/intro/frame-light.webp" alt="" loading="lazy">
           <img src="img/intro/sam.webp" alt="">
         </div>
       </div>
@@ -156,19 +157,19 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
   </section>
 </main>
 
-<script src="js/vendor/gsap.min.js?v=20261103j"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261103j"></script>
-<script src="js/vendor/lenis.min.js?v=20261103j"></script>
-<script src="js/smooth.js?v=20261103j"></script>
-<script src="js/intro.js?v=20261103j"></script>
-<script src="js/projects.js?v=20261103j"></script>
-<script src="js/project-scroll.js?v=20261103j"></script>
-<script src="js/glass.js?v=20261103j"></script>
-<script src="js/cards.js?v=20261103j"></script>
-<script src="js/header.js?v=20261103j"></script>
-<script src="js/transition.js?v=20261103j"></script>
-<script src="js/theme.js?v=20261103j"></script>
-<script src="js/mobile-menu.js?v=20261103j"></script>
-<script src="js/mobile-home.js?v=20261103j"></script>
+<script src="js/vendor/gsap.min.js?v=20261103m"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261103m"></script>
+<script src="js/vendor/lenis.min.js?v=20261103m"></script>
+<script src="js/smooth.js?v=20261103m"></script>
+<script src="js/intro.js?v=20261103m"></script>
+<script src="js/projects.js?v=20261103m"></script>
+<script src="js/project-scroll.js?v=20261103m"></script>
+<script src="js/glass.js?v=20261103m"></script>
+<script src="js/cards.js?v=20261103m"></script>
+<script src="js/header.js?v=20261103m"></script>
+<script src="js/transition.js?v=20261103m"></script>
+<script src="js/theme.js?v=20261103m"></script>
+<script src="js/mobile-menu.js?v=20261103m"></script>
+<script src="js/mobile-home.js?v=20261103m"></script>
 </body>
 </html>

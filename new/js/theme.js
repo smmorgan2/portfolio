@@ -9,7 +9,7 @@
   if (!btn) return;
   const isLight = () => root.dataset.theme === 'light';
   function sync() {
-    btn.setAttribute('aria-pressed', String(isLight()));
+    btn.setAttribute('aria-checked', String(isLight()));   // a switch: on = light mode
     btn.setAttribute('aria-label', 'Light mode');
     btn.title = isLight() ? 'Switch to dark mode' : 'Switch to light mode';
     const meta = document.querySelector('meta[name="theme-color"]');
@@ -19,6 +19,7 @@
     if (isLight()) delete root.dataset.theme; else root.dataset.theme = 'light';
     try { localStorage.setItem(KEY, isLight() ? 'light' : 'dark'); } catch (e) { /* storage blocked: applies for this page only */ }
     sync();
+    document.dispatchEvent(new CustomEvent('sm-theme', { detail: isLight() ? 'light' : 'dark' }));
   });
   sync();
 })();
