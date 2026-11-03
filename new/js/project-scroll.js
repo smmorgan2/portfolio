@@ -22,6 +22,7 @@
    Scroll drives vertical position only. A project always arrives at its landing pose (frame 000).
    Reduced motion: no travel, the active project simply swaps (rotation by hand still works). */
 (() => {
+  if (matchMedia('(hover: none)').matches) return;   // phones and tablets: js/mobile-home.js
   const section = document.getElementById('projects');
   if (!section || !window.PROJECTS || !window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
@@ -40,6 +41,7 @@
   const rot = document.getElementById('psRot');
   // Rotation input state (declared early: setActive clears it).
   let lastX = null;           // pointer baseline; null = not tracking
+  let spin = 0, movedAt = 0, prevMoveT = 0;   // rotation momentum (see FRICTION below)
   let touch = null;           // { id, x, y, mode: 'pending' | 'swipe' | 'scroll' }
   let swipedAt = 0;
 
@@ -241,10 +243,31 @@
      pointer was a moment ago (not its screen position), so it continues from the current pose.
      Stopping or leaving holds the pose exactly; coming back starts a fresh baseline (no jump). */
   const DEG_PER_PX = 0.5;     // pointer/swipe sensitivity: degrees of turn per screen px moved
+  // Momentum (Sam, Nov 3: "a living 3D object"): the object follows the pointer while it moves, and
+  // when the pointer stops it keeps turning at the speed it was given, slowing down on its own.
+  // A fast flick spins it; a slow move turns it slowly and it stops almost at once.
+  const FRICTION = 2.4;       // how quickly a spin dies down (higher = stops sooner; 2.4 = about a second)
+  const MAX_SPIN = 1440;      // degrees per second, so a wild flick doesn't blur the turn
+  const COAST_AFTER = 45;     // ms without pointer movement before the object coasts on its own
   const KEY_STEP = 10;        // degrees per arrow-key press (Shift: x3)
   const SWIPE_START = 10;     // px a touch must travel sideways before it counts as a swipe
   const area = link;          // the frame's hit area (it is also the case study link)
-  function endTracking() { lastX = null; touch = null; }
+  function endTracking() { lastX = null; touch = null; spin = 0; }
+  // Track how fast the pointer is turning the object (smoothed over the last few moves).
+  function sample(deg) {
+    const now = performance.now(), dt = Math.max(8, now - (prevMoveT || now - 16)) / 1000;
+    const v = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, deg / dt));
+    spin = now - prevMoveT > 120 ? v * 0.5 : spin * 0.4 + v * 0.6;   // a fresh move starts from rest
+    prevMoveT = movedAt = now;
+  }
+  gsap.ticker.add((time, deltaMs) => {
+    if (reduced || !spin) return;
+    if (performance.now() - movedAt < COAST_AFTER) return;   // the pointer is still driving it
+    const dt = Math.min(deltaMs, 50) / 1000;
+    spin *= Math.exp(-FRICTION * dt);
+    if (Math.abs(spin) < 4) { spin = 0; return; }
+    turnBy(spin * dt);
+  });
   function current() { return objs[active]; }
   function turnBy(deg) {
     const o = current();
@@ -284,6 +307,7 @@
     const dx = e.clientX - lastX;
     lastX = e.clientX;
     turnBy(dx * DEG_PER_PX);
+    sample(dx * DEG_PER_PX);
   });
   area.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') { lastX = null; section.classList.remove('is-rotating'); cue.classList.remove('is-on'); } });
 
@@ -303,6 +327,7 @@
     }
     if (touch.mode !== 'swipe') return;
     turnBy(dx * DEG_PER_PX);
+    sample(dx * DEG_PER_PX);
     touch.x = e.clientX; touch.y = e.clientY;
     swipedAt = performance.now();
   });

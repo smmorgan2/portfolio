@@ -1,0 +1,150 @@
+/* Phones and tablets (no hover). Figma: Website Design > Mobile - Home+ProjectSelection (439:1076,
+   453:267), _menunav (453:205), mobile_header_expanded (453:192), Mobile - Contact (455:457).
+   The frames are 402 wide; --mu is one Figma px at the current width (capped for tablets),
+   so every size below reads straight from Figma: calc(<figma px> * var(--mu)).
+   Desktop never sees any of this: everything that shows is inside @media (hover: none). */
+.m-home, .m-logo, .m-menu { display: none; }
+
+@media (hover: none) {
+  :root { --mu: calc(min(100vw, 560px) / 402); }
+  html, body { overflow-x: clip; }
+
+  /* The desktop pieces step aside (their scripts also stop early on touch) */
+  .hdr, #intro, #projects { display: none !important; }
+
+  /* ---------- S-M logo button: sits at its Figma spot, then stays 12px under the top edge ---------- */
+  .m-logo {
+    display: block; position: fixed; z-index: 120; left: 50%;
+    top: max(calc(12px + env(safe-area-inset-top, 0px)), calc(78 * var(--mu) - var(--m-scroll, 0px)));
+    width: calc(82 * var(--mu)); height: calc(50.9 * var(--mu)); margin-left: calc(-41 * var(--mu));
+    padding: 0; border: 0; background: none; color: var(--on-accent); cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .m-logo svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--accent); }
+  .m-logo span {
+    position: relative; display: block; text-align: center;
+    font-weight: 500; font-size: calc(36.07 * var(--mu)); letter-spacing: -0.1em; line-height: calc(50.9 * var(--mu));
+    padding-bottom: calc(2 * var(--pill-lift)); padding-right: 0.08em;
+  }
+  .m-logo:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; border-radius: 12px; }
+
+  /* ---------- Glass menu (mobile_header_expanded: 400 x 564, radius 50, at x1 y44) ---------- */
+  .m-menu {
+    display: block; position: fixed; z-index: 110; left: 50%; top: var(--m-panel-top, calc(44 * var(--mu)));
+    width: calc(400 * var(--mu)); height: calc(564 * var(--mu)); margin-left: calc(-200 * var(--mu));
+    visibility: hidden; pointer-events: none;
+  }
+  .m-menu.is-open { visibility: visible; pointer-events: auto; }
+  .m-menu-glass {
+    position: absolute; inset: 0;
+    /* opened by js/mobile-menu.js: the glass grows out of the logo. The shape and the blur sit on the
+       same element (a clipped parent would stop the blur seeing the page behind). */
+    clip-path: inset(var(--m-t, 0px) var(--m-r, 0px) var(--m-b, 0px) var(--m-l, 0px) round var(--m-rad, 50px));
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4);
+    box-shadow: inset 0 1.5px 0 var(--glass-rim), inset 0 18px 30px -18px var(--glass-glow),
+      inset 1.5px 0 0 var(--glass-rim-soft), inset -1.5px 0 0 var(--glass-rim-soft);
+  }
+  .m-menu nav { position: absolute; inset: 0; }
+  .m-menu a {
+    position: absolute; left: 1.75%; right: 1.75%; display: block; text-align: center;
+    font-weight: 500; font-size: calc(80 * var(--mu)); letter-spacing: -0.05em; line-height: 1.2;
+    color: var(--fg); text-decoration: none; -webkit-tap-highlight-color: transparent;
+  }
+  .m-menu a:nth-child(1) { top: 14.72%; }
+  .m-menu a:nth-child(2) { top: 34.04%; }
+  .m-menu a:nth-child(3) { top: 53.37%; }
+  .m-menu a:nth-child(4) { top: 72.7%; }
+  .m-menu a:active { color: var(--accent); }
+  .m-menu a:focus-visible { outline: 3px solid var(--blue); outline-offset: -2px; border-radius: 16px; }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .m-menu-glass { background: var(--glass-solid); }
+  }
+  html.m-menu-open { overflow: hidden; }
+
+  /* Theme toggle: top right, level with the logo */
+  .theme-toggle {
+    --sz: 36px; top: calc(78 * var(--mu) + 25.45 * var(--mu) - 18px); left: auto;
+    right: max(14px, env(safe-area-inset-right, 0px));
+  }
+
+  /* ---------- Home: intro + project card ---------- */
+  .m-home {
+    display: block; position: relative; margin: 0 auto;
+    width: calc(402 * var(--mu)); height: calc(1271 * var(--mu));
+  }
+  .m-greet {
+    position: absolute; left: calc(43.5 * var(--mu)); top: calc(143 * var(--mu)); width: calc(315 * var(--mu)); margin: 0;
+    text-align: center; font-weight: 500; font-size: calc(64 * var(--mu)); letter-spacing: -0.05em; line-height: 1.08;
+    color: var(--fg); white-space: nowrap;
+  }
+  .m-greet .hl { color: var(--accent); }
+  .m-greet .hl i { font-style: normal; color: var(--fg); }
+  .m-pron {
+    position: absolute; left: calc(308 * var(--mu)); top: calc(152 * var(--mu)); margin: 0;
+    font-weight: 300; font-size: calc(13 * var(--mu)); letter-spacing: -0.05em; line-height: 1.2; color: var(--fg);
+  }
+  /* Portrait: the same frame + cutout pair as the desktop intro (Figma "Portrait collage" 339 wide at x12 y227) */
+  .m-photo { position: absolute; left: calc(12 * var(--mu)); top: calc(227 * var(--mu)); width: calc(339 * var(--mu)); aspect-ratio: 650 / 387; }
+  .m-photo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .m-state {
+    position: absolute; left: calc(20 * var(--mu)); top: calc(474 * var(--mu)); width: calc(362 * var(--mu)); margin: 0;
+    text-align: center; font-weight: 300; font-size: calc(26 * var(--mu)); letter-spacing: -0.05em; line-height: 1.3;
+    color: var(--fg);
+  }
+  /* Word pop colour: accent fading into the text colour as --flash goes 1 -> 0 (js/mobile-home.js) */
+  .mw { display: inline-block; --flash: 0; color: color-mix(in srgb, var(--accent) calc(var(--flash) * 100%), var(--fg)); }
+  .m-greet .mw.hl { color: var(--accent); }
+
+  /* ---------- Project card (outline 350 x 622 at x26 y604) ---------- */
+  .m-ps { position: absolute; left: 0; right: 0; top: calc(560 * var(--mu)); height: calc(711 * var(--mu)); touch-action: pan-y; }
+  .m-track { position: absolute; inset: 0; }
+  .m-slide { position: absolute; inset: 0; visibility: hidden; }
+  .m-slide.is-on, .m-slide.is-near { visibility: visible; }
+  .m-card {
+    position: absolute; left: calc(26 * var(--mu)); top: calc(44.4 * var(--mu));
+    width: calc(350.25 * var(--mu)); height: calc(622.33 * var(--mu));
+    display: block; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent;
+  }
+  .m-card:focus-visible { outline: none; }
+  .m-card:focus-visible .m-outline { filter: drop-shadow(0 0 0 var(--blue)) drop-shadow(0 0 3px var(--blue)); }
+  /* Outline: drawn twice, under the object (so the object breaks out over it) and over the glass */
+  .m-outline { position: absolute; left: -1.13%; top: -0.64%; width: 102.26%; height: 101.28%; display: block; pointer-events: none; }
+  .m-outline.is-front { z-index: 3; clip-path: inset(71.7% 0 0 0); }
+  /* The still: free above and beside the card, cut off at the card's bottom edge */
+  .m-obj { position: absolute; z-index: 1; clip-path: inset(-200% -200% 0.6% -200%); pointer-events: none; }
+  .m-obj img { position: absolute; display: block; max-width: none; }
+  /* Glass band behind the caption: the card's lower 28%, its bottom edge cut to the card's shape.
+     The blur and the clip sit on the same element: a clipped parent would stop the blur seeing the still. */
+  .m-glass {
+    position: absolute; left: 0; right: 0; bottom: 0; top: 71.7%; z-index: 2; pointer-events: none;
+    clip-path: url(#mCardBandClip);
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .m-glass { background: var(--glass-solid); }
+  }
+  .m-cap {
+    position: absolute; z-index: 4; left: calc(16.3 * var(--mu)); top: calc(478.5 * var(--mu)); width: calc(317.7 * var(--mu));
+    display: flex; flex-direction: column; gap: calc(24.3 * var(--mu)); pointer-events: none;
+  }
+  .m-name {
+    margin: 0; text-align: center; color: #fff; white-space: nowrap;
+    font-weight: 500; font-size: calc(56.66 * var(--mu)); letter-spacing: -0.05em; line-height: 1.1;
+  }
+  .m-tags { display: flex; gap: calc(8.09 * var(--mu)); margin: 0; padding: 0; list-style: none; }
+  .m-tags li {
+    width: calc(100.16 * var(--mu)); height: calc(34.4 * var(--mu)); flex: none;
+    display: flex; align-items: center; justify-content: center; white-space: nowrap;
+    padding-bottom: calc(2 * var(--pill-lift));
+    background: var(--accent); color: var(--on-accent); border: 0.5px solid var(--pill-rim); border-radius: calc(20.2 * var(--mu));
+    font-weight: 300; font-size: calc(16.19 * var(--mu)); letter-spacing: -0.05em;
+  }
+
+  /* ---------- Contact (Figma Mobile - Contact: three 80px links, centred, from y200) ---------- */
+  body[data-page="case"] .ct { padding: calc(193 * var(--mu)) 0 0; text-align: center; min-height: calc(100svh - 96px); }
+  body[data-page="case"] .ct-links a { font-size: calc(80 * var(--mu)); line-height: 1.4; }
+  /* Case studies: clear the logo instead of the desktop header */
+  body[data-page="case"] .cs { padding-top: calc(160 * var(--mu)); }
+}
