@@ -201,10 +201,6 @@
   const SEG = 0.8;          // screens of scroll between project stops
   const TRIGGER = 0.12;     // share of SEG that sets off the hand-off
   const SLIDE = 0.8;        // seconds for one hand-off
-  const SETTLE = 250;       // ms input stays held after arriving, at least...
-  const QUIET = 160;        // ...and until the wheel/trackpad has been still this long (momentum over)
-  let lastWheel = 0;
-  addEventListener('wheel', () => { lastWheel = performance.now(); }, { passive: true, capture: true });
   const LINGER = 0.4;       // screens of scroll on the last project before the page moves on
   const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time with project i at rest
   const segPx = () => Math.round(innerHeight * SEG);
@@ -234,22 +230,8 @@
     stop = i; busy = true;
     if (slideTw) slideTw.kill();
     slideTw = gsap.to(tl, { time: restT(i), duration: reduced ? 0 : SLIDE, ease: 'none', onUpdate: syncActive,
-      onComplete: () => { syncActive(); if (!window.lenis) busy = false; } });
-    const y = st.start + i * segPx();
-    if (window.lenis) {
-      window.lenis.scrollTo(y, { duration: reduced ? 0 : SLIDE, lock: true, force: true,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
-        onComplete: () => {
-          window.lenis.stop();                                   // swallow leftover momentum
-          const t0 = performance.now();
-          const release = () => {                                // wait until the swipe has died down
-            const now = performance.now();
-            if (now - t0 < SETTLE || now - lastWheel < QUIET) { setTimeout(release, 50); return; }
-            window.lenis.start(); busy = false;
-          };
-          release();
-        } });
-    }
+      onComplete: () => { syncActive(); if (!window.glideTo) busy = false; } });
+    if (window.glideTo) window.glideTo(st.start + i * segPx(), { duration: SLIDE }).then(() => { busy = false; });
   }
   tl.eventCallback('onUpdate', syncActive);
   window.projectsST = st;
