@@ -142,7 +142,7 @@
     width: calc(100.16 * var(--mu)); height: calc(34.4 * var(--mu)); flex: none;
     display: flex; align-items: center; justify-content: center; white-space: nowrap;
     padding-bottom: calc(2 * var(--pill-lift));
-    background: var(--accent); color: var(--on-accent); border: 0.5px solid var(--pill-rim); border-radius: calc(20.2 * var(--mu));
+    background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: calc(20.2 * var(--mu));
     font-weight: 300; font-size: calc(16.19 * var(--mu)); letter-spacing: -0.05em;
   }
 
