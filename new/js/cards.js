@@ -6,6 +6,7 @@
    - Touch: tapping the word toggles its card; tapping anywhere else closes it.
    - A word's trigger only works once that word has appeared in the intro. */
 (() => {
+  if (matchMedia('(hover: none)').matches) return;   // phones and tablets: js/mobile-home.js
   const CLOSE_DELAY = 120; // ms; bridges tiny gaps between word and card so it never flickers
   const IN = { duration: 0.22, ease: 'power2.out' };
   const OUT = { duration: 0.16, ease: 'power2.in' };

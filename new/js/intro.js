@@ -1,15 +1,14 @@
 /* Homepage intro
    - First line ("Hi! I'm Sam.") plays on load.
    - The rest of the sentence and the 3D objects are scrubbed by scroll (and reverse on scroll up).
-     Phones and tablets (no hover): the whole sentence plays on its own, no pin (Sam, Nov 3).
    - Objects drift slightly with the mouse on desktop.
    Timing comes from Sam's AE demo (Intro_demo_v1), in demo seconds minus 1.8s. */
 (() => {
+  if (matchMedia('(hover: none)').matches) return;   // phones and tablets: their own intro plays on its own (js/mobile-home.js)
   const stage = document.getElementById('stage');
   const cue = document.getElementById('cue');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const autoplay = matchMedia('(hover: none)').matches;   // touch screens: no scroll-driven intro
 
   /* ---------- Fit the 1920x1080 artboard to the viewport ---------- */
   function fit() {
@@ -135,30 +134,19 @@
   };
 
   // Exposed so the header can appear exactly when this scroll animation ends (js/header.js).
-  if (autoplay) {
-    // Touch: nothing to scrub. The intro is a normal screen; scrolling early just shows the full sentence.
-    window.introST = ScrollTrigger.create({
-      trigger: '#intro', start: 'top top', end: 'bottom top',
-      onUpdate: (self) => {
-        if (self.progress > 0 && tlScroll.progress() < 1) { tlAuto.progress(1); tlScroll.progress(1); }
-        showCue(self.progress < 0.02 && tlScroll.progress() === 1);
-      },
-    });
-  } else {
-    window.introST = ScrollTrigger.create({
-      trigger: '#intro',
-      start: 'top top',
-      // Scroll distance for the whole build, in screen heights. Lower = more sentence per scroll.
-      end: () => '+=' + Math.round(innerHeight * 1.5), // 1.5 screens (Sam, Oct 30: 1.8 too stiff, 1.0 too sensitive)
-      pin: true,
-      scrub: 0.6, // seconds the animation takes to catch up to the scroll (Lenis adds its own glide on top)
-      animation: tlScroll,
-      onUpdate: (self) => {
-        if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); // skip ahead if they scroll early
-        showCue(self.progress < 0.02 && tlAuto.progress() === 1);
-      },
-    });
-  }
+  window.introST = ScrollTrigger.create({
+    trigger: '#intro',
+    start: 'top top',
+    // Scroll distance for the whole build, in screen heights. Lower = more sentence per scroll.
+    end: () => '+=' + Math.round(innerHeight * 1.5), // 1.5 screens (Sam, Oct 30: 1.8 too stiff, 1.0 too sensitive)
+    pin: true,
+    scrub: 0.6, // seconds the animation takes to catch up to the scroll (Lenis adds its own glide on top)
+    animation: tlScroll,
+    onUpdate: (self) => {
+      if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); // skip ahead if they scroll early
+      showCue(self.progress < 0.02 && tlAuto.progress() === 1);
+    },
+  });
 
   /* ---------- Mouse parallax (desktop only) ---------- */
   if (finePointer) {
@@ -181,11 +169,7 @@
   ]);
   // Arriving through the page transition: start once the tiles have lifted.
   Promise.all([fontsReady, window.txWait]).then(() => {
-    if (scrollY > 10) { tlAuto.progress(1); if (autoplay) tlScroll.progress(1); return; } // reloaded mid-page
-    if (autoplay) {
-      tlAuto.play().then(() => tlScroll.play()).then(() => { if (window.introST.progress < 0.02) showCue(true); });
-      return;
-    }
+    if (scrollY > 10) { tlAuto.progress(1); return; } // reloaded mid-page
     tlAuto.play().then(() => {
       if (ScrollTrigger.getAll()[0].progress < 0.02) showCue(true);
     });

@@ -11,6 +11,7 @@
               moving the pointer to the top of the screen while back in the intro brings the bar
               down; hovering it expands as usual, and leaving the header sends it back up. */
 (() => {
+  if (matchMedia('(hover: none)').matches) return;   // phones and tablets: the S-M logo menu (js/mobile-menu.js)
   const COLLAPSED_H = 207;    // artboard px (Figma header_colapsed_a)
   const EXPANDED_H = 1023;    // artboard px (Figma header_expanded_a)
   const CLOSE_DELAY = 150;    // ms after the pointer leaves before it collapses (prevents flicker)

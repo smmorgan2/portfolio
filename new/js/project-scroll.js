@@ -22,6 +22,7 @@
    Scroll drives vertical position only. A project always arrives at its landing pose (frame 000).
    Reduced motion: no travel, the active project simply swaps (rotation by hand still works). */
 (() => {
+  if (matchMedia('(hover: none)').matches) return;   // phones and tablets: js/mobile-home.js
   const section = document.getElementById('projects');
   if (!section || !window.PROJECTS || !window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
