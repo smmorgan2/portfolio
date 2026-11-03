@@ -6,6 +6,7 @@
      client + tags = the three pills, in order: agency, design type 1, design type 2
                      (from Figma ProjectSelection_v1a and Sam's demos).
      seq           = the object's full turn from Sam's AE export (frame 000 = rest pose).
+                     loop = frames in one seamless turn, when the last frame repeats the first.
      x, y, w, h    = where those frames sit on the 1920x1080 frame artboard at the rest pose
                      (y is negative when the object already pokes over the top edge).
 
@@ -16,5 +17,5 @@ window.PROJECTS = [
     seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 } },
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
-    seq: { path: 'img/projects/google-ads', frames: 180, x: 414, y: -66, w: 1044, h: 1082 } },
+    seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 } },
 ];

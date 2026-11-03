@@ -1,9 +1,12 @@
 /* Homepage project scroll (Figma: ProjectSelection_v1a; motion refs: Project scroll_demo_v2.1 / v2.2)
    One framed viewport (the ID badge outline) with a glass panel along the bottom.
-   The first project is already resting in the frame, turning slowly, when you arrive.
-   Scrolling slides it up and out over the top outline while the next one rises in behind it,
-   a fixed gap apart (they move together, so they never overlap). The new one settles at rest,
-   then starts turning once you stop scrolling.
+   The first project is already resting in the frame when you arrive. Scrolling slides it up and
+   out over the top outline while the next one rises in behind it, a fixed gap apart (they move
+   together, so they never overlap).
+
+   Rotation is in the visitor's hands, never automatic: moving the pointer left/right over the
+   frame turns the active object (no button needed), a sideways one-finger swipe does it on touch,
+   and the arrow keys do it when the rotate control has focus. It holds exactly where it's left.
 
    Layers, bottom to top:
      .ps-clip   object copy + glass panel, clipped to the badge shape: hidden below the frame.
@@ -13,10 +16,11 @@
                 outline). Above that line it draws over the outline, so the object breaks through
                 the top instead of being chopped by it. All copies share one position: no seam.
      .ps-info   project name + three pills, which pop on with the intro's word animation.
-     .ps-link   the whole frame links to the active project's case study.
+     .ps-link   the whole frame links to the active project's case study (a click; moving never navigates).
+     .ps-rot    keyboard rotate control over the same area (role="slider"), plus the "Move to rotate" hint.
 
-   Scroll drives vertical position only; objects hold their rest pose (frame 000) while moving.
-   Reduced motion: no travel or turning, the active project simply swaps. */
+   Scroll drives vertical position only. A project always arrives at its landing pose (frame 000).
+   Reduced motion: no travel, the active project simply swaps (rotation by hand still works). */
 (() => {
   const section = document.getElementById('projects');
   if (!section || !window.PROJECTS || !window.gsap || !window.ScrollTrigger) return;
@@ -33,6 +37,11 @@
   const tagEls = [...document.querySelectorAll('#psTags li')];
   const link = document.getElementById('psLink');
   const linkLabel = link.querySelector('.sr-only');
+  const rot = document.getElementById('psRot');
+  // Rotation input state (declared early: setActive clears it).
+  let lastX = null;           // pointer baseline; null = not tracking
+  let touch = null;           // { id, x, y, mode: 'pending' | 'swipe' | 'scroll' }
+  let swipedAt = 0;
 
   /* ---------- Geometry (artboard px, from Figma) ---------- */
   const FRAME = { x: 96.5, y: 55.74, w: 1727, h: 940.53 };
@@ -75,7 +84,7 @@
     // angle in degrees -> nearest frame of the turn
     o.setAngle = (a) => {
       o.angle = a;
-      const n = q.frames;
+      const n = q.loop || q.frames;   // frames in one seamless turn (Google Ads repeats frame 000 at the end)
       o.want = ((Math.round(a / (360 / n)) % n) + n) % n;
       o.draw();
     };
@@ -129,13 +138,12 @@
 
   /* ---------- Active project: name + pills ---------- */
   // Intro word motion (js/intro.js wordIn): pop in with no fade, rise 56px (expo.out 0.45s),
-  // flash yellow then settle to white. Pills pop and rise the same way, a beat after the name.
-  const YELLOW = '#EDFF21', WHITE = '#FFFFFF';
+  // flash the accent colour then settle to the text colour (theme-aware, via --flash). Pills pop and rise the same way, a beat after the name.
   function wordIn(t, el, at, flash) {
     t.set(el, { autoAlpha: 0 }, 0);
     t.set(el, { autoAlpha: 1 }, at);
     t.fromTo(el, { y: 56 }, { y: 0, duration: 0.45, ease: 'expo.out' }, at);
-    if (flash) t.fromTo(el, { color: YELLOW }, { color: WHITE, duration: 0.35, ease: 'power1.out' }, at + 0.15);
+    if (flash) t.fromTo(el, { '--flash': 1 }, { '--flash': 0, duration: 0.35, ease: 'power1.out' }, at + 0.15);
   }
   let active = -1, shown = false, popTl = null;
   function fill(i) {
@@ -147,7 +155,7 @@
   }
   function pop() {
     if (popTl) popTl.kill();
-    if (reduced) { gsap.set([nameEl, ...tagEls], { autoAlpha: 1, y: 0 }); gsap.set(nameEl, { color: WHITE }); return; }
+    if (reduced) { gsap.set([nameEl, ...tagEls], { autoAlpha: 1, y: 0 }); gsap.set(nameEl, { '--flash': 0 }); return; }
     popTl = gsap.timeline();
     wordIn(popTl, nameEl, 0, true);
     tagEls.forEach((el, k) => wordIn(popTl, el, 0.12 + k * 0.05, false));
@@ -155,7 +163,11 @@
   function setActive(i) {
     if (i === active) return;
     active = i;
+    endTracking();
+    objs[i].setAngle(0);              // every arrival (and revisit) starts from the landing pose
     fill(i);
+    rot.setAttribute('aria-label', `Rotate the ${objs[i].p.title} object`);
+    syncRot();
     if (reduced) objs.forEach((o, k) => o.show(k === i));
     if (shown) pop();
   }
@@ -179,47 +191,142 @@
     setActive(i);
   }
 
-  /* ---------- Pin + scrub, like the intro ---------- */
-  let lastScroll = performance.now();
+  /* ---------- Pin + one swipe per project ----------
+     The section is pinned with one stop per project, SEG screens apart. The hand-off is not
+     scrubbed: once the scroll moves TRIGGER of the way toward the next stop, the whole hand-off
+     plays on its own (SLIDE seconds) and the page glides to that stop, so one swipe is enough
+     (Sam, Nov 3: "swipe once and it all slides in", like the intro). Input is held for SETTLE
+     after arriving so a trackpad's leftover momentum can't skip a project.
+     Touch screens keep native scrolling: the hand-off still plays on its own, the page is not moved. */
+  const SEG = 0.8;          // screens of scroll between project stops
+  const TRIGGER = 0.12;     // share of SEG that sets off the hand-off
+  const SLIDE = 0.8;        // seconds for one hand-off
+  const LINGER = 0.4;       // screens of scroll on the last project before the page moves on
+  const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time with project i at rest
+  const segPx = () => Math.round(innerHeight * SEG);
+  let stop = 0, busy = false, slideTw = null;
   const st = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: () => '+=' + Math.round(innerHeight * total * 0.85),
+    end: () => '+=' + (segPx() * (objs.length - 1) + Math.round(innerHeight * LINGER)),
     pin: true,
-    scrub: reduced ? true : 0.6,
-    animation: tl,
     invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      if (busy) return;
+      const at = (self.scroll() - self.start) / segPx();   // position in stops (0 = first project)
+      if (self.direction > 0 && stop < objs.length - 1 && at > stop + TRIGGER) goTo(stop + 1);
+      else if (self.direction < 0 && stop > 0 && at < stop - TRIGGER) goTo(stop - 1);
+    },
+    // Arriving from below (scrolling back up) or jumping in from a link: sit on the matching stop.
+    onEnterBack: () => jumpTo(objs.length - 1),
+    onRefresh: (self) => { if (self.isActive || self.progress === 1) jumpTo(Math.min(objs.length - 1, Math.round((self.scroll() - self.start) / segPx()))); },
   });
-  addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
+  function jumpTo(i) {
+    if (slideTw) slideTw.kill();
+    busy = false; stop = Math.max(0, i);
+    tl.time(restT(stop)); syncActive();
+  }
+  function goTo(i) {
+    stop = i; busy = true;
+    if (slideTw) slideTw.kill();
+    slideTw = gsap.to(tl, { time: restT(i), duration: reduced ? 0 : SLIDE, ease: 'none', onUpdate: syncActive,
+      onComplete: () => { syncActive(); if (!window.glideTo) busy = false; } });
+    if (window.glideTo) window.glideTo(st.start + i * segPx(), { duration: SLIDE }).then(() => { busy = false; });
+  }
   tl.eventCallback('onUpdate', syncActive);
   window.projectsST = st;
 
-  /* ---------- Turning: a slow full turn whenever the active object is at rest ---------- */
-  if (reduced) return;
-  const IDLE_AFTER = 450;   // ms without scrolling before turning starts
-  const TURN = 6;           // seconds per full turn: the speed of Sam's render (180 frames at 30fps)
-  const RAMP = 0.6;         // a short ease up to speed so it doesn't kick
-  let idleSince = 0, prev = performance.now();
-  const inView = () => { const r = section.getBoundingClientRect(); return r.top < innerHeight * 0.3 && r.bottom > innerHeight * 0.7; };
-  // Back to the rest pose the short way round, quicker for small angles.
-  function settle(o) {
-    if (o.back || o.angle === 0) return;
-    const a = ((o.angle % 360) + 540) % 360 - 180;   // same pose, as -180..180
-    o.setAngle(a);
-    o.back = gsap.to(o, { angle: 0, duration: 0.45 + (Math.abs(a) / 360) * 1.1, ease: 'sine.out',
-      onUpdate: () => o.setAngle(o.angle), onComplete: () => { o.back = null; o.setAngle(0); } });
+  /* ---------- Rotation by hand ----------
+     Pointer: sideways movement over the frame turns the active object, measured from where the
+     pointer was a moment ago (not its screen position), so it continues from the current pose.
+     Stopping or leaving holds the pose exactly; coming back starts a fresh baseline (no jump). */
+  const DEG_PER_PX = 0.5;     // pointer/swipe sensitivity: degrees of turn per screen px moved
+  const KEY_STEP = 10;        // degrees per arrow-key press (Shift: x3)
+  const SWIPE_START = 10;     // px a touch must travel sideways before it counts as a swipe
+  const area = link;          // the frame's hit area (it is also the case study link)
+  function endTracking() { lastX = null; touch = null; }
+  function current() { return objs[active]; }
+  function turnBy(deg) {
+    const o = current();
+    if (!o || !deg) return;
+    o.setAngle(o.angle + deg);
+    syncRot();
   }
+  function syncRot() {
+    const o = current();
+    if (!o) return;
+    const a = Math.round((((o.angle % 360) + 360) % 360));
+    rot.setAttribute('aria-valuenow', String(a));
+    rot.setAttribute('aria-valuetext', `${a} degrees`);
+  }
+
+  // Mouse / pen: hover, no button.
+  // Rotation cue: a small glass badge that follows the pointer, with an orbit icon that turns with the object.
+  const cue = document.createElement('div');
+  cue.className = 'ps-cue';
+  cue.setAttribute('aria-hidden', 'true');
+  cue.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+    + '<ellipse cx="12" cy="12" rx="9" ry="3.6"/><path d="M12 4.5v15" opacity=".45"/><path d="M18.6 7.6l2.4.8-.9 2.3"/></svg>'
+    + '<span>Move mouse to rotate</span>';
+  document.body.appendChild(cue);
+  const cueIcon = cue.querySelector('svg');
+  const moveCue = (e) => { cue.style.transform = `translate3d(${e.clientX + 22}px, ${e.clientY + 22}px, 0)`; };
+  area.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') { lastX = e.clientX; moveCue(e); section.classList.add('is-rotating'); cue.classList.add('is-on'); } });
+  const panel = section.querySelector('.ps-glass');
+  area.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    moveCue(e);
+    const o = current(); if (o) cueIcon.style.transform = `rotate(${(o.angle * 0.25).toFixed(1)}deg)`;
+    // Edge light on the glass panel follows the pointer (see .ps-glass::before).
+    const r = panel.getBoundingClientRect();
+    section.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+    if (lastX === null) { lastX = e.clientX; return; }
+    const dx = e.clientX - lastX;
+    lastX = e.clientX;
+    turnBy(dx * DEG_PER_PX);
+  });
+  area.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') { lastX = null; section.classList.remove('is-rotating'); cue.classList.remove('is-on'); } });
+
+  // Touch: a sideways one-finger swipe turns; anything mostly vertical is left to the page scroll.
+  // (CSS gives the area touch-action: pan-y, so the browser keeps vertical scrolling native.)
+  area.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'touch' || !e.isPrimary) return;
+    touch = { id: e.pointerId, x: e.clientX, y: e.clientY, mode: 'pending' };
+  });
+  area.addEventListener('pointermove', (e) => {
+    if (!touch || e.pointerId !== touch.id) return;
+    const dx = e.clientX - touch.x, dy = e.clientY - touch.y;
+    if (touch.mode === 'pending') {
+      if (Math.abs(dx) >= SWIPE_START && Math.abs(dx) > Math.abs(dy) * 1.2) touch.mode = 'swipe';
+      else if (Math.abs(dy) >= SWIPE_START) { touch.mode = 'scroll'; return; }
+      else return;
+    }
+    if (touch.mode !== 'swipe') return;
+    turnBy(dx * DEG_PER_PX);
+    touch.x = e.clientX; touch.y = e.clientY;
+    swipedAt = performance.now();
+  });
+  const endTouch = (e) => { if (touch && e.pointerId === touch.id) touch = null; };
+  area.addEventListener('pointerup', endTouch);
+  area.addEventListener('pointercancel', endTouch);
+  // A tap still opens the case study; the click a browser fires at the end of a swipe does not.
+  area.addEventListener('click', (e) => { if (performance.now() - swipedAt < 450) e.preventDefault(); }, true);
+
+  // Keyboard: only while the rotate control has focus.
+  rot.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? KEY_STEP * 3 : KEY_STEP;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); turnBy(step); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); turnBy(-step); }
+    else if (e.key === 'Home') { e.preventDefault(); const o = current(); if (o) { o.setAngle(0); syncRot(); } }
+    else if (e.key === 'Enter') { e.preventDefault(); link.click(); }
+  });
+
+  // Losing the page or the window drops any tracking, so stale input can't turn anything.
+  addEventListener('blur', endTracking);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) endTracking(); });
+
+  // An object that has left the screen is set back to its landing pose, out of sight.
   gsap.ticker.add(() => {
-    const now = performance.now(), dt = Math.min(0.1, (now - prev) / 1000);
-    prev = now;
-    const o = objs[active];
-    const resting = o && o.ready && Math.abs(o.y) < 2 && inView() && now - lastScroll > IDLE_AFTER;
-    objs.forEach((x) => { if (x !== o || !resting) { x.spin = 0; settle(x); } });
-    if (!resting) { idleSince = 0; return; }
-    if (o.back) { o.back.kill(); o.back = null; }
-    if (!idleSince) idleSince = now;
-    const k = Math.min(1, (now - idleSince) / 1000 / RAMP);
-    o.spin = (360 / TURN) * (1 - Math.cos(Math.PI * k)) / 2;   // speed eases in from zero, no kick
-    o.setAngle(o.angle + o.spin * dt);
+    objs.forEach((o, k) => { if (k !== active && o.angle !== 0 && Math.abs(o.y) > 700) o.setAngle(0); });
   });
 })();
