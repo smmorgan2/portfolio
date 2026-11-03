@@ -38,7 +38,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs-role {
   width: var(--col); margin-left: auto; margin-right: auto;
   display: flex; justify-content: space-between; gap: 1em;
-  color: var(--yellow);
+  color: var(--accent);
 }
 .cs-role span:last-child { text-align: right; }
 
@@ -97,13 +97,14 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   position: relative;
   display: flex; align-items: center; justify-content: center;
   width: calc(228 * var(--u)); height: calc(59 * var(--u));
-  background: var(--yellow); color: var(--black); border: 1px solid var(--white);
+  padding-bottom: calc(2 * var(--pill-lift));   /* centres the capitals (see --pill-lift in site.css) */
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent-rim);
   border-radius: calc(40.7 * var(--u));
   font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em;
   text-decoration: none;
   transition: background-color 0.15s, color 0.15s;
 }
-.cs-foot a:hover { background: var(--white); }
+.cs-foot a:hover { background: var(--fg); color: var(--bg); }
 .cs-foot a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
 .cs-foot[hidden] { display: none; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -143,15 +144,64 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .ct-links a {
   display: inline-block;
   font-weight: 500; font-size: calc(150 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
-  color: var(--white); text-decoration: none;
+  color: var(--fg); text-decoration: none;
   transition: color 0.15s;
 }
-.ct-links a:hover, .ct-links a:focus-visible { color: var(--yellow); }
+.ct-links a:hover, .ct-links a:focus-visible { color: var(--accent); }
 .ct-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
 /* The Home button on Contact has a black rim in Figma (case studies use white) */
-.cs-foot a.is-dark-rim { border-color: var(--black); }
+.cs-foot a.is-dark-rim { border-color: var(--pill-rim); }
 
 @media (max-width: 820px) {
   .ct { padding: calc(207 * var(--hs, 0.2) * 1px + 48px) 16px 0; min-height: calc(100svh - 96px); }
   .ct-links a { font-size: 56px; }
 }
+
+/* Light theme: white-background media would merge into the white page; a hairline keeps the edge.
+   (Not in Figma; flagged for Sam to confirm.) */
+html[data-theme="light"] .cs-media { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08); }
+
+/* ---------- Media viewer (js/media-viewer.js) ---------- */
+.cs-media { position: relative; }
+/* "View larger" trigger: covers the media; a small glass badge in the corner shows on hover and focus */
+.cs-zoom {
+  position: absolute; inset: 0; z-index: 1;
+  margin: 0; padding: 0; border: 0; background: transparent;
+  cursor: zoom-in; color: var(--fg);
+}
+.cs-zoom svg {
+  position: absolute; top: max(12px, calc(24 * var(--u))); right: max(12px, calc(24 * var(--u)));
+  width: 40px; height: 40px; padding: 10px; box-sizing: border-box;
+  border-radius: 50%; border: 1px solid var(--glass-rim);
+  background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-filter); backdrop-filter: var(--glass-filter);
+  opacity: 0; transition: opacity 0.15s ease;
+}
+.cs-zoom:hover svg, .cs-zoom:focus-visible svg { opacity: 1; }
+.cs-zoom:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; border-radius: inherit; }
+/* Video showing its own controls: only the corner badge is the button, so the controls stay usable */
+.cs-zoom.is-corner { inset: auto; top: 0; right: 0; width: 72px; height: 72px; }
+.cs-zoom.is-corner svg { opacity: 1; }
+@media (hover: none) { .cs-zoom svg { opacity: 1; } }   /* no hover on touch: always show the badge */
+
+html.mv-open { overflow: hidden; }
+.mv {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+  margin: 0; border: 0; background: transparent; color: var(--fg);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  box-sizing: border-box;
+}
+.mv[open] { display: grid; place-items: center; }
+.mv::backdrop { background: rgba(0, 0, 0, 0.97); }
+html[data-theme="light"] .mv::backdrop { background: rgba(255, 255, 255, 0.97); }
+.mv-stage { display: grid; place-items: center; width: 100%; height: 100%; }
+.mv-media { display: block; object-fit: contain; background: #111; border-radius: 14px; }
+.mv-close {
+  position: fixed; top: max(16px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  width: 44px; height: 44px; padding: 11px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid var(--glass-rim); background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-filter); backdrop-filter: var(--glass-filter);
+  color: var(--fg); cursor: pointer;
+}
+.mv-close svg { width: 100%; height: 100%; }
+.mv-close:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .cs-zoom svg { transition: none; } }

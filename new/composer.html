@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<script>/* Saved theme, applied before paint (js/theme.js). Dark unless the visitor chose light. */
+try{if(localStorage.getItem("sm-theme")==="light"){document.documentElement.dataset.theme="light";document.querySelector('meta[name="theme-color"]').content="#FFFFFF";}}catch(e){}</script>
 <script>/* Arriving through the page transition: cover the page before it paints (js/transition.js) */
 try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.classList.add("tx-in");window.txWait=new Promise(function(r){window.__txDone=r;});}}catch(e){}</script>
 <title>Composer | Sam Morgan</title>
@@ -11,10 +14,10 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 <meta name="description" content="Composer for Whipsaw: branding, product design and motion, told in under thirty seconds.">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261101p">
-<link rel="stylesheet" href="css/case.css?v=20261101p">
+<link rel="stylesheet" href="css/site.css?v=20261103d">
+<link rel="stylesheet" href="css/case.css?v=20261103d">
 <!-- Hide this page right away if the project is switched off (js/projects.js) -->
-<script src="js/projects.js?v=20261101p"></script>
+<script src="js/projects.js?v=20261103d"></script>
 </head>
 <body data-page="case" data-project="composer">
 <!-- Page transition screen (js/transition.js) -->
@@ -49,6 +52,8 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
     </nav>
   </div>
 </header>
+<!-- Light / dark toggle (js/theme.js) -->
+<button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Light mode"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
 
 <main class="cs" id="main">
   <h1 class="sr-only">Composer, for Whipsaw</h1>
@@ -88,13 +93,15 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
   <a data-dir="next" href="index.html">Next</a>
 </footer>
 
-<script src="js/vendor/gsap.min.js?v=20261101p"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261101p"></script>
-<script src="js/vendor/lenis.min.js?v=20261101p"></script>
-<script src="js/smooth.js?v=20261101p"></script>
-<script src="js/glass.js?v=20261101p"></script>
-<script src="js/header.js?v=20261101p"></script>
-<script src="js/case.js?v=20261101p"></script>
-<script src="js/transition.js?v=20261101p"></script>
+<script src="js/vendor/gsap.min.js?v=20261103d"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261103d"></script>
+<script src="js/vendor/lenis.min.js?v=20261103d"></script>
+<script src="js/smooth.js?v=20261103d"></script>
+<script src="js/glass.js?v=20261103d"></script>
+<script src="js/header.js?v=20261103d"></script>
+<script src="js/case.js?v=20261103d"></script>
+<script src="js/media-viewer.js?v=20261103d"></script>
+<script src="js/transition.js?v=20261103d"></script>
+<script src="js/theme.js?v=20261103d"></script>
 </body>
 </html>

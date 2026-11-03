@@ -62,8 +62,6 @@
 
   /* ---------- Animation helpers ---------- */
   gsap.registerPlugin(ScrollTrigger);
-  const YELLOW = '#EDFF21';
-  const WHITE = '#FFFFFF';
   const word = (t) => [...document.querySelectorAll('.words text')].find((el) => el.textContent === t);
   const photo = document.getElementById('photo');
 
@@ -73,13 +71,14 @@
     tl.set(el, { autoAlpha: 1 }, at);
   }
 
-  // Word: pops in, rises ~56px with a strong ease out, flashes yellow, then settles to white
-  // (highlight words stay yellow).
+  // Word: pops in, rises ~56px with a strong ease out, flashes the accent colour, then settles to the
+  // text colour (highlight words stay accent).
   function wordIn(tl, el, at) {
     popIn(tl, el, at);
     tl.fromTo(el, { y: 56 }, { y: 0, duration: 0.45, ease: 'expo.out' }, at);
     if (!el.classList.contains('hl')) {
-      tl.fromTo(el, { fill: YELLOW }, { fill: WHITE, duration: 0.35, ease: 'power1.out' }, at + 0.15);
+      // --flash 1 -> 0: accent colour fading into the text colour (both follow the theme; see .words in site.css)
+      tl.fromTo(el, { '--flash': 1 }, { '--flash': 0, duration: 0.35, ease: 'power1.out' }, at + 0.15);
     }
   }
 

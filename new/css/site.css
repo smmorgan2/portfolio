@@ -1,10 +1,24 @@
 /* Sam Morgan 2027 — tokens */
 :root {
+  /* Halyard sits low in its line box (ascent 31 : descent 9 at 26.8px), so a label centred in a pill
+     reads low. Measured in Chrome with Halyard loaded: capitals 18px from the top, baseline 14px from
+     the bottom. Every pill label is raised by this much to centre the capitals optically. */
+  --pill-lift: 0.1em;
   --black: #000000;
   --white: #FFFFFF;
   --yellow: #EDFF21;
   --blue: #0494FC;
   --grey: #8B8B8B;
+
+  /* Theme roles (dark is the default). Light values come from the Figma "_b" components
+     (Brand ID > Components: header_colapsed_b, Button_1b, footer_collapsed_b): black titles,
+     blue #0494FC accents with white text and rims. See html[data-theme="light"] below. */
+  --bg: var(--black);
+  --fg: var(--white);
+  --accent: var(--yellow);
+  --on-accent: var(--black);
+  --accent-rim: var(--white);   /* rim on clock pill and case-study footer buttons */
+  --pill-rim: var(--black);     /* rim on project pills and the Contact Home button */
   --font: "halyard-text", "Hanken Grotesk", system-ui, sans-serif;
 
   /* Glass: one recipe for every glass object on the site (header, hover cards, footers).
@@ -17,6 +31,24 @@
   --glass-solid: rgba(24, 24, 24, 0.94);        /* browsers with no backdrop blur */
 }
 
+/* Light theme (chosen with the toggle; saved per visitor; never automatic) */
+html[data-theme="light"] {
+  --bg: var(--white);
+  --fg: var(--black);
+  --accent: var(--blue);
+  --on-accent: var(--white);
+  --accent-rim: var(--white);
+  --pill-rim: var(--white);
+  /* Glass on a white page: the dark-mode white rims vanish, so the edge light turns to soft shade.
+     Not specified in Figma; flagged for Sam to confirm. */
+  --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.35) 100%);
+  --glass-rim: rgba(0, 0, 0, 0.14);
+  --glass-rim-soft: rgba(0, 0, 0, 0.08);
+  --glass-glow: rgba(0, 0, 0, 0.05);
+  --glass-solid: rgba(245, 245, 245, 0.95);
+  color-scheme: light;
+}
+
 /* Fallback until Halyard loads (or if Adobe Fonts is unreachable) */
 @font-face { font-family: "Hanken Grotesk"; font-weight: 400; font-display: swap;
   src: url("../fonts/hanken-grotesk-latin-400-normal.woff2") format("woff2"); }
@@ -24,7 +56,7 @@
   src: url("../fonts/hanken-grotesk-latin-500-normal.woff2") format("woff2"); }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; background: var(--black); color: var(--white); }
+html, body { margin: 0; background: var(--bg); color: var(--fg); }
 body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 
 /* Lenis smooth scroll (from lenis.css) */
@@ -44,7 +76,7 @@ html.lenis, html.lenis body { height: auto; }
   height: 100vh;
   height: 100svh;
   overflow: hidden;
-  background: var(--black);
+  background: var(--bg);
 }
 
 /* 1920x1080 artboard, scaled to fit the viewport (set by JS as --s) */
@@ -67,9 +99,10 @@ html.lenis, html.lenis body { height: auto; }
   font-weight: 500;
   font-size: 150px;
   letter-spacing: -7.5px;            /* -5% */
-  fill: var(--white);
+  /* --flash (0..1) is the brief accent flash as a word pops in (js/intro.js) */
+  fill: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));
 }
-.words text.hl { fill: var(--yellow); }
+.words text.hl { fill: var(--accent); }
 .words text.small {
   font-weight: 400;
   font-size: 26px;
@@ -120,7 +153,7 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; left: 174px; top: 66px; width: 145px; height: 79px;
   display: flex; align-items: center; justify-content: center;
 }
-.hdr .hdr-badge { color: var(--black); }
+.hdr .hdr-badge { color: var(--on-accent); }
 /* Logo animation canvas: larger than the badge because the chrome version grows past it.
    Hover is still measured on the badge's own 145x79 box. */
 .hdr-logo {
@@ -129,7 +162,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 .hdr-badge.logo-ready .hdr-logo { visibility: visible; }
 .hdr-badge.logo-ready svg, .hdr-badge.logo-ready span { visibility: hidden; }
-.hdr-badge svg { position: absolute; inset: 0; fill: var(--yellow); }
+.hdr-badge svg { position: absolute; inset: 0; fill: var(--accent); }
 .hdr-badge span {
   position: relative;
   font-weight: 500; font-size: 63.78px; letter-spacing: -6.38px; line-height: 1;
@@ -139,17 +172,17 @@ html.lenis, html.lenis body { height: auto; }
 .hdr-title {
   position: absolute; left: 668px; top: 48px; transform: translateX(-50%);
   font-weight: 500; font-size: 80px; letter-spacing: -4px; line-height: 111px;
-  color: var(--white); white-space: nowrap;
+  color: var(--fg); white-space: nowrap;
 }
 
 .hdr-clock {
   position: absolute; left: 1231px; top: 69px; width: 515px; height: 59px;
-  background: var(--yellow); border: 1px solid var(--white); border-radius: 40.7px;
-  color: var(--black);
+  background: var(--accent); border: 1px solid var(--accent-rim); border-radius: 40.7px;
+  color: var(--on-accent);
   font-weight: 300; font-size: 26px; letter-spacing: -1.3px; line-height: 57px;
   font-variant-numeric: tabular-nums;
 }
-.hdr-clock span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.hdr-clock span { position: absolute; top: 0; transform: translate(-50%, calc(-1 * var(--pill-lift))); white-space: nowrap; }
 .hdr-clock span:nth-child(1) { left: 92px; }
 .hdr-clock span:nth-child(2) { left: 243px; }
 .hdr-clock span:nth-child(3) { left: 409px; }
@@ -157,22 +190,23 @@ html.lenis, html.lenis body { height: auto; }
 .hdr-nav a {
   position: absolute; left: 167px;
   font-weight: 500; font-size: 150px; letter-spacing: -7.5px; line-height: 168px;
-  color: var(--white);
+  color: var(--fg);
   transition: color 0.15s;
 }
 .hdr-nav a:nth-child(1) { top: 178px; }
 .hdr-nav a:nth-child(2) { top: 355px; }
 .hdr-nav a:nth-child(3) { top: 532px; }
 .hdr-nav a:nth-child(4) { top: 709px; }
-.hdr-nav a:hover, .hdr-nav a:focus-visible { color: var(--yellow); }
+.hdr-nav a:hover, .hdr-nav a:focus-visible { color: var(--accent); }
 .hdr a:focus-visible, .hdr button:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
 
 /* Menu / Close button: touch screens only (no hover there). Sits between the title and the clock. */
 .hdr-menu {
   display: none;
   position: absolute; left: 1000px; top: 69px; width: 190px; height: 59px;
-  border: 1px solid var(--white); border-radius: 40.7px; background: transparent;
-  color: var(--white); font: 300 26px/57px var(--font); letter-spacing: -1.3px;
+  border: 1px solid var(--fg); border-radius: 40.7px; background: transparent;
+  color: var(--fg); font: 300 26px/57px var(--font); letter-spacing: -1.3px;
+  padding: 0 0 calc(2 * var(--pill-lift)); line-height: calc(57px - 2 * var(--pill-lift));
   cursor: pointer;
 }
 @media (hover: none) { .hdr-menu { display: block; } }
@@ -210,7 +244,7 @@ html.lenis, html.lenis body { height: auto; }
 .icard p {
   position: absolute; margin: 0;
   font-weight: 300; font-size: 38.386px; letter-spacing: -1.919px; line-height: 1.4;
-  color: var(--white);
+  color: var(--fg);
 }
 /* Edge light along the badge outline */
 .icard-rim { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -317,7 +351,7 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* ---------- Project scroll (Figma: ProjectSelection_v1a; js/project-scroll.js) ----------
    A 1920x1080 artboard scaled to fit (--ps), like the intro. Frame: the ID badge shape,
    1727x941 at (96.5, 55.7), 5px yellow outline. Glass panel at y774, name + three pills on it. */
-.ps { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--black); }
+.ps { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
 .ps-stage {
   position: absolute; left: 50%; top: 50%;
   width: 1920px; height: 1080px;
@@ -335,7 +369,7 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
    shared glass filter instead. The blur is divided by the stage scale to match on-screen glass. */
 .ps-glass {
   position: absolute; left: -33.5px; top: 718.26px; width: 1792px; height: 249px;
-  overflow: hidden; background: var(--black);
+  overflow: hidden; background: var(--bg);
 }
 .ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
 .ps-glass::after {
@@ -343,8 +377,19 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
   background: var(--glass-fill);
   box-shadow: inset 0 1.5px 0 var(--glass-rim), inset 0 18px 30px -18px var(--glass-glow);
 }
+/* Light catching the panel's top edge, following the pointer while it's over the frame
+   (after Compass "Liquid Glass": reflections that respond to the pointer). Text and artwork untouched. */
+.ps-glass::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(18% 2px at var(--mx, 50%) 0, rgba(255, 255, 255, 0.95), transparent),
+    radial-gradient(26% 90px at var(--mx, 50%) 0, rgba(255, 255, 255, 0.16), transparent 70%);
+  opacity: 0; transition: opacity 0.25s ease;
+}
+.ps.is-rotating .ps-glass::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ps-glass::before { transition: none; } }
 .ps-frame { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; overflow: visible; pointer-events: none; }
-.ps-frame path { fill: none; stroke: var(--yellow); stroke-width: calc(5px * var(--ps, 0.5)); vector-effect: non-scaling-stroke; }
+.ps-frame path { fill: none; stroke: var(--accent); stroke-width: calc(5px * var(--ps, 0.5)); vector-effect: non-scaling-stroke; }
 /* Breakout copy: everything above y62 (just under the top outline) draws over the frame */
 .ps-break {
   position: absolute; inset: 0; pointer-events: none;
@@ -354,15 +399,34 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 .ps-name {
   position: absolute; left: 168px; top: 757px; margin: 0;
   font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: 1.4;
-  color: var(--white); white-space: nowrap;
+  color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
+  white-space: nowrap;
 }
 .ps-tags { position: absolute; left: 1010px; top: 846px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
 .ps-tags li {
   width: 228px; height: 59px; display: flex; align-items: center; justify-content: center;
-  background: var(--yellow); color: var(--black); border: 1px solid var(--black); border-radius: 40.7px;
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
   font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
+  padding-bottom: calc(2 * var(--pill-lift));   /* centres the capitals (see --pill-lift) */
 }
-.ps-link { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; clip-path: url(#wiiClip); }
+.ps-link {
+  position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; clip-path: url(#wiiClip);
+  cursor: ew-resize;     /* moving left/right turns the object; a click opens the case study */
+  touch-action: pan-y;   /* vertical swipes scroll the page natively; sideways ones turn the object */
+}
+/* Keyboard rotate control: same area as the frame, takes no pointer input, shows a ring when focused */
+.ps-rot { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; pointer-events: none; border-radius: 160px; }
+.ps-rot:focus { outline: none; }
+.ps-rot:focus-visible { box-shadow: 0 0 0 calc(4px / var(--ps, 0.5)) var(--blue); }
+/* "Move to rotate": shown while hovering the frame or focusing the rotate control */
+.ps-hint {
+  position: absolute; left: 168px; top: 108px; margin: 0; pointer-events: none;
+  font-weight: 300; font-size: 26px; letter-spacing: -0.05em; line-height: 1;
+  color: var(--grey); opacity: 0; transition: opacity 0.2s ease;
+}
+.ps.is-rotating .ps-hint, .ps-rot:focus-visible ~ .ps-hint { opacity: 1; }
+.ps.compact .ps-hint { display: none; }
+@media (prefers-reduced-motion: reduce) { .ps-hint { transition: none; } }
 .ps-link:focus-visible { outline: none; }
 .ps-link:focus-visible::after {
   content: ""; position: absolute; inset: 0; border: 6px solid var(--blue); border-radius: 160px;
@@ -375,4 +439,33 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps.compact .ps-name { position: static; font-size: calc(34px / var(--ps)); line-height: 1.1; }
 .ps.compact .ps-tags { position: static; gap: calc(6px / var(--ps)); flex-wrap: wrap; }
-.ps.compact .ps-tags li { width: auto; height: calc(30px / var(--ps)); padding: 0 calc(12px / var(--ps)); font-size: calc(13px / var(--ps)); border-radius: calc(15px / var(--ps)); }
+.ps.compact .ps-tags li { width: auto; height: calc(30px / var(--ps)); padding: 0 calc(12px / var(--ps)) calc(2 * var(--pill-lift)); font-size: calc(13px / var(--ps)); border-radius: calc(15px / var(--ps)); }
+
+/* Light theme: the chrome logo animation is rendered in yellow, so the drawn badge (blue) stays */
+html[data-theme="light"] .hdr-badge.logo-ready .hdr-logo { visibility: hidden; }
+html[data-theme="light"] .hdr-badge.logo-ready svg, html[data-theme="light"] .hdr-badge.logo-ready span { visibility: visible; }
+
+/* ---------- Theme toggle (js/theme.js) ----------
+   A small round glass button in the header's free right-hand corner (artboard x1833, y98),
+   fixed so it stays reachable while the header is tucked away. Below the header on phones. */
+.theme-toggle {
+  --sz: max(36px, calc(59px * var(--hs, 0.5)));
+  position: fixed; z-index: 101;
+  top: calc(98px * var(--hs, 0.5) - var(--sz) / 2);
+  left: calc(50% + 873px * var(--hs, 0.5) - var(--sz) / 2);
+  width: var(--sz); height: var(--sz); padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--glass-rim); border-radius: 50%;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-filter); backdrop-filter: var(--glass-filter);
+  color: var(--fg); cursor: pointer;
+}
+.theme-toggle svg { width: 52%; height: 52%; display: block; }
+.theme-toggle .moon { display: none; }
+html[data-theme="light"] .theme-toggle .sun { display: none; }
+html[data-theme="light"] .theme-toggle .moon { display: block; }
+.theme-toggle:hover { color: var(--accent); }
+.theme-toggle:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 820px) {
+  .theme-toggle { top: calc(207px * var(--hs, 0.2) + 10px); left: auto; right: max(12px, env(safe-area-inset-right, 0px)); }
+}
