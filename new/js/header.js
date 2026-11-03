@@ -60,6 +60,10 @@
   const badge = hdr.querySelector('.hdr-badge');
   const logo = document.getElementById('hdrLogo');
   const lctx = logo.getContext('2d');
+  // Two sets: the yellow badge (dark mode) and the blue one (light mode, img/logo-light).
+  // Each loads the first time its theme needs it; switching theme redraws the resting frame.
+  const sets = {};
+  const logoTheme = () => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
   let logoImgs = null;
   let logoPlaying = false;
   let logoHover = false;
@@ -71,16 +75,25 @@
     lctx.drawImage(im, 0, 0, logo.width, logo.height);
     return true;
   }
+  let wantLogo = false;   // set once the page has settled (or the header opened)
   function loadLogo() {
-    if (logoImgs) return;
-    logoImgs = Array.from({ length: LOGO_FRAMES }, (_, i) => {
-      const im = new Image();
-      im.decoding = 'async';
-      if (i === 0) im.onload = () => { if (!logoPlaying) drawLogo(0); badge.classList.add('logo-ready'); };
-      im.src = `img/logo/${String(i).padStart(2, '0')}.webp`;
-      return im;
-    });
+    wantLogo = true;
+    const t = logoTheme();
+    if (!sets[t]) {
+      const dir = t === 'light' ? 'img/logo-light' : 'img/logo';
+      sets[t] = Array.from({ length: LOGO_FRAMES }, (_, i) => {
+        const im = new Image();
+        im.decoding = 'async';
+        if (i === 0) im.onload = () => { if (logoTheme() === t) { logoImgs = sets[t]; if (!logoPlaying) drawLogo(0); badge.classList.add('logo-ready'); } };
+        im.src = `${dir}/${String(i).padStart(2, '0')}.webp`;
+        return im;
+      });
+    }
+    logoImgs = sets[t];
+    if (logoImgs[0].complete && logoImgs[0].naturalWidth) { if (!logoPlaying) drawLogo(0); badge.classList.add('logo-ready'); }
+    else badge.classList.remove('logo-ready');   // drawn badge shows until the new set's first frame is in
   }
+  document.addEventListener('sm-theme', () => { if (wantLogo) loadLogo(); });
   function playLogo() {
     logoHover = true;
     if (logoPlaying || reduced || !logoImgs || !badge.classList.contains('logo-ready')) return;

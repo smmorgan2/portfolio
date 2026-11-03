@@ -11,17 +11,17 @@
                      (y is negative when the object already pokes over the top edge).
 
    Phones and tablets (js/mobile-home.js, Figma Mobile - Home+ProjectSelection):
-     m = the still shown on the project card: frame number from seq, its centre (cx, cy) and
-         width (w) in Figma px measured from the card's top-left corner, and a tilt (rot, degrees).
+     m = the still on the project card: Sam's export (src), placed like the Figma frame: top-left
+         corner (x, y) and size (w, h) in Figma px, measured from the card's top-left corner.
 
    Composer: cleared by Whipsaw for the site (Oct 30, 2026). */
 window.PROJECTS = [
   { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 },
-    m: { frame: 0, cx: 160, cy: 305, w: 505, rot: 24 } },
+    m: { src: 'img/mobile/composer.webp', x: -30, y: -31, w: 415, h: 651 } },
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },
-    m: { frame: 0, cx: 188, cy: 300, w: 560, rot: -4 } },
+    m: { src: 'img/mobile/google-ads.webp', x: -129.8, y: -19.1, w: 604, h: 638 } },
 ];

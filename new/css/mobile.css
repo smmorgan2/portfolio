@@ -36,10 +36,9 @@
   }
   .m-menu.is-open { visibility: visible; pointer-events: auto; }
   .m-menu-glass {
-    position: absolute; inset: 0;
-    /* opened by js/mobile-menu.js: the glass grows out of the logo. The shape and the blur sit on the
-       same element (a clipped parent would stop the blur seeing the page behind). */
-    clip-path: inset(var(--m-t, 0px) var(--m-r, 0px) var(--m-b, 0px) var(--m-l, 0px) round var(--m-rad, 50px));
+    /* js/mobile-menu.js sizes this from the logo's pill to the full panel on springs (Liquid Glass
+       morph). Nothing clips it, so the blur sees the page behind and the overshoot shows. */
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: calc(50 * var(--mu));
     background: var(--glass-fill);
     -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4);
     box-shadow: inset 0 1.5px 0 var(--glass-rim), inset 0 18px 30px -18px var(--glass-glow),
@@ -64,7 +63,7 @@
 
   /* Theme toggle: top right, level with the logo */
   .theme-toggle {
-    --sz: 36px; top: calc(78 * var(--mu) + 25.45 * var(--mu) - 18px); left: auto;
+    --w: 52px; top: calc(78 * var(--mu) + 25.45 * var(--mu) - 12px); left: auto;
     right: max(14px, env(safe-area-inset-right, 0px));
   }
 
@@ -99,8 +98,6 @@
   /* ---------- Project card (outline 350 x 622 at x26 y604) ---------- */
   .m-ps { position: absolute; left: 0; right: 0; top: calc(560 * var(--mu)); height: calc(711 * var(--mu)); touch-action: pan-y; }
   .m-track { position: absolute; inset: 0; }
-  .m-slide { position: absolute; inset: 0; visibility: hidden; }
-  .m-slide.is-on, .m-slide.is-near { visibility: visible; }
   .m-card {
     position: absolute; left: calc(26 * var(--mu)); top: calc(44.4 * var(--mu));
     width: calc(350.25 * var(--mu)); height: calc(622.33 * var(--mu));
@@ -109,11 +106,17 @@
   .m-card:focus-visible { outline: none; }
   .m-card:focus-visible .m-outline { filter: drop-shadow(0 0 0 var(--blue)) drop-shadow(0 0 3px var(--blue)); }
   /* Outline: drawn twice, under the object (so the object breaks out over it) and over the glass */
-  .m-outline { position: absolute; left: -1.13%; top: -0.64%; width: 102.26%; height: 101.28%; display: block; pointer-events: none; }
+  .m-outline {
+    position: absolute; left: -1.13%; top: -0.64%; width: 102.26%; height: 101.28%; display: block; pointer-events: none;
+    /* Figma outline as a mask, filled with the accent so it follows the theme (yellow / blue) */
+    background: var(--accent);
+    -webkit-mask: url(../img/mobile/card-outline.svg) center / 100% 100% no-repeat; mask: url(../img/mobile/card-outline.svg) center / 100% 100% no-repeat;
+  }
   .m-outline.is-front { z-index: 3; clip-path: inset(71.7% 0 0 0); }
-  /* The still: free above and beside the card, cut off at the card's bottom edge */
-  .m-obj { position: absolute; z-index: 1; clip-path: inset(-200% -200% 0.6% -200%); pointer-events: none; }
-  .m-obj img { position: absolute; display: block; max-width: none; }
+  /* The stills: free above and beside the card, cut off at the card's bottom edge. Only these move
+     when you swipe (js/mobile-home.js); the outline, glass and caption stay put. */
+  .m-objs { position: absolute; inset: 0; z-index: 1; clip-path: inset(-200% -400% 0.6% -400%); pointer-events: none; }
+  .m-still { position: absolute; display: block; max-width: none; will-change: transform; }
   /* Glass band behind the caption: the card's lower 28%, its bottom edge cut to the card's shape.
      The blur and the clip sit on the same element: a clipped parent would stop the blur seeing the still. */
   .m-glass {
@@ -130,7 +133,8 @@
     display: flex; flex-direction: column; gap: calc(24.3 * var(--mu)); pointer-events: none;
   }
   .m-name {
-    margin: 0; text-align: center; color: #fff; white-space: nowrap;
+    --flash: 0; margin: 0; text-align: center; white-space: nowrap;
+    color: color-mix(in srgb, var(--accent) calc(var(--flash) * 100%), var(--fg));
     font-weight: 500; font-size: calc(56.66 * var(--mu)); letter-spacing: -0.05em; line-height: 1.1;
   }
   .m-tags { display: flex; gap: calc(8.09 * var(--mu)); margin: 0; padding: 0; list-style: none; }
@@ -141,6 +145,21 @@
     background: var(--accent); color: var(--on-accent); border: 0.5px solid var(--pill-rim); border-radius: calc(20.2 * var(--mu));
     font-weight: 300; font-size: calc(16.19 * var(--mu)); letter-spacing: -0.05em;
   }
+
+  /* ---------- Dots under the card (Compass dot pagination): one per project, the accent dot
+     slides with your finger. Each dot is a 24px tap target around a 7px dot. ---------- */
+  .m-dots {
+    position: absolute; left: 50%; top: calc(680 * var(--mu)); transform: translateX(-50%);
+    display: flex; gap: 0; --step: 24px;
+  }
+  .m-dot { width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
+  .m-dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--fg); opacity: 0.3; }
+  .m-dots::after {
+    content: ""; position: absolute; top: 50%; left: 12px; width: 16px; height: 7px; margin: -3.5px 0 0 -8px;
+    border-radius: 4px; background: var(--accent); pointer-events: none;
+    transform: translateX(calc(var(--m-pos, 0) * var(--step)));
+  }
+  .m-dot:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; border-radius: 50%; }
 
   /* ---------- Contact (Figma Mobile - Contact: three 80px links, centred, from y200) ---------- */
   body[data-page="case"] .ct { padding: calc(193 * var(--mu)) 0 0; text-align: center; min-height: calc(100svh - 96px); }
