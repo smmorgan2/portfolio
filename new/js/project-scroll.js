@@ -191,16 +191,66 @@
     setActive(i);
   }
 
-  /* ---------- Pin + scrub, like the intro ---------- */
+  /* ---------- Pin + one swipe per project ----------
+     The section is pinned with one stop per project, SEG screens apart. The hand-off is not
+     scrubbed: once the scroll moves TRIGGER of the way toward the next stop, the whole hand-off
+     plays on its own (SLIDE seconds) and the page glides to that stop, so one swipe is enough
+     (Sam, Nov 3: "swipe once and it all slides in", like the intro). Input is held for SETTLE
+     after arriving so a trackpad's leftover momentum can't skip a project.
+     Touch screens keep native scrolling: the hand-off still plays on its own, the page is not moved. */
+  const SEG = 0.8;          // screens of scroll between project stops
+  const TRIGGER = 0.12;     // share of SEG that sets off the hand-off
+  const SLIDE = 0.8;        // seconds for one hand-off
+  const SETTLE = 250;       // ms input stays held after arriving, at least...
+  const QUIET = 160;        // ...and until the wheel/trackpad has been still this long (momentum over)
+  let lastWheel = 0;
+  addEventListener('wheel', () => { lastWheel = performance.now(); }, { passive: true, capture: true });
+  const LINGER = 0.4;       // screens of scroll on the last project before the page moves on
+  const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time with project i at rest
+  const segPx = () => Math.round(innerHeight * SEG);
+  let stop = 0, busy = false, slideTw = null;
   const st = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: () => '+=' + Math.round(innerHeight * total * 0.85),
+    end: () => '+=' + (segPx() * (objs.length - 1) + Math.round(innerHeight * LINGER)),
     pin: true,
-    scrub: reduced ? true : 0.6,
-    animation: tl,
     invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      if (busy) return;
+      const at = (self.scroll() - self.start) / segPx();   // position in stops (0 = first project)
+      if (self.direction > 0 && stop < objs.length - 1 && at > stop + TRIGGER) goTo(stop + 1);
+      else if (self.direction < 0 && stop > 0 && at < stop - TRIGGER) goTo(stop - 1);
+    },
+    // Arriving from below (scrolling back up) or jumping in from a link: sit on the matching stop.
+    onEnterBack: () => jumpTo(objs.length - 1),
+    onRefresh: (self) => { if (self.isActive || self.progress === 1) jumpTo(Math.min(objs.length - 1, Math.round((self.scroll() - self.start) / segPx()))); },
   });
+  function jumpTo(i) {
+    if (slideTw) slideTw.kill();
+    busy = false; stop = Math.max(0, i);
+    tl.time(restT(stop)); syncActive();
+  }
+  function goTo(i) {
+    stop = i; busy = true;
+    if (slideTw) slideTw.kill();
+    slideTw = gsap.to(tl, { time: restT(i), duration: reduced ? 0 : SLIDE, ease: 'none', onUpdate: syncActive,
+      onComplete: () => { syncActive(); if (!window.lenis) busy = false; } });
+    const y = st.start + i * segPx();
+    if (window.lenis) {
+      window.lenis.scrollTo(y, { duration: reduced ? 0 : SLIDE, lock: true, force: true,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        onComplete: () => {
+          window.lenis.stop();                                   // swallow leftover momentum
+          const t0 = performance.now();
+          const release = () => {                                // wait until the swipe has died down
+            const now = performance.now();
+            if (now - t0 < SETTLE || now - lastWheel < QUIET) { setTimeout(release, 50); return; }
+            window.lenis.start(); busy = false;
+          };
+          release();
+        } });
+    }
+  }
   tl.eventCallback('onUpdate', syncActive);
   window.projectsST = st;
 
@@ -229,10 +279,22 @@
   }
 
   // Mouse / pen: hover, no button.
-  area.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') { lastX = e.clientX; section.classList.add('is-rotating'); } });
+  // Rotation cue: a small glass badge that follows the pointer, with an orbit icon that turns with the object.
+  const cue = document.createElement('div');
+  cue.className = 'ps-cue';
+  cue.setAttribute('aria-hidden', 'true');
+  cue.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+    + '<ellipse cx="12" cy="12" rx="9" ry="3.6"/><path d="M12 4.5v15" opacity=".45"/><path d="M18.6 7.6l2.4.8-.9 2.3"/></svg>'
+    + '<span>Move mouse to rotate</span>';
+  document.body.appendChild(cue);
+  const cueIcon = cue.querySelector('svg');
+  const moveCue = (e) => { cue.style.transform = `translate3d(${e.clientX + 22}px, ${e.clientY + 22}px, 0)`; };
+  area.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') { lastX = e.clientX; moveCue(e); section.classList.add('is-rotating'); cue.classList.add('is-on'); } });
   const panel = section.querySelector('.ps-glass');
   area.addEventListener('pointermove', (e) => {
     if (e.pointerType === 'touch') return;
+    moveCue(e);
+    const o = current(); if (o) cueIcon.style.transform = `rotate(${(o.angle * 0.25).toFixed(1)}deg)`;
     // Edge light on the glass panel follows the pointer (see .ps-glass::before).
     const r = panel.getBoundingClientRect();
     section.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
@@ -241,7 +303,7 @@
     lastX = e.clientX;
     turnBy(dx * DEG_PER_PX);
   });
-  area.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') { lastX = null; section.classList.remove('is-rotating'); } });
+  area.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'touch') { lastX = null; section.classList.remove('is-rotating'); cue.classList.remove('is-on'); } });
 
   // Touch: a sideways one-finger swipe turns; anything mostly vertical is left to the page scroll.
   // (CSS gives the area touch-action: pan-y, so the browser keeps vertical scrolling native.)
