@@ -24,4 +24,7 @@ window.PROJECTS = [
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },
     m: { src: 'img/mobile/google-ads.webp', x: -129.8, y: -19.1, w: 604, h: 638 } },
+  // LISTEN: case study live; joins the homepage project scroll once its turn (seq) and mobile still (m) are in.
+  { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
+    client: 'LISTEN', tags: ['Branding', 'Motion'] },
 ];

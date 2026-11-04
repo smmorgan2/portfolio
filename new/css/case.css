@@ -57,6 +57,15 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 }
 .cs-pair .cs-media { width: auto; }
 
+/* A row of equal media (LISTEN): --n columns, --gx Figma px between them, top-aligned */
+.cs-row {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  display: grid; grid-template-columns: repeat(var(--n), 1fr); column-gap: calc(var(--gx) * var(--u)); align-items: start;
+}
+.cs-row .cs-media { width: auto; }
+/* LISTEN (Figma LISTEN_v1b): 100 between blocks, a slightly wider 1392 text column */
+.cs--listen { --gap: calc(100 * var(--u)); --col: calc(1392 * var(--u)); }
+
 /* Story beats (Composer): 1184-wide media alternating sides, caption beside it, vertically centred.
    Left beat: media x77, caption x1358. Right beat: caption x97, media x659. */
 .cs-beat {
@@ -125,6 +134,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-body { font-size: 18px; }
   .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
   .cs-pair { grid-template-columns: 1fr; row-gap: 16px; }
+  .cs-row { grid-template-columns: 1fr; row-gap: 16px; }
   .cs-beat, .cs-beat.is-right { grid-template-columns: 1fr; row-gap: 12px; }
   .cs-beat .cs-caption, .cs-beat.is-right .cs-caption { order: 0; margin-left: 0; max-width: none; }
   .cs-foot-space { height: calc(96px + env(safe-area-inset-bottom, 0px)); }
