@@ -24,7 +24,10 @@ window.PROJECTS = [
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },
     m: { src: 'img/mobile/google-ads.webp', x: -129.8, y: -19.1, w: 604, h: 638 } },
-  // LISTEN: case study live; joins the homepage project scroll once its turn (seq) and mobile still (m) are in.
+  // LISTEN (Figma: Playground > ProjectSelection_v1a 116:89). Sam's plate sequence placed to match the
+  // Figma frame: plate scaled 101% at (-13, -104), cropped to the object's full turn.
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
-    client: 'LISTEN', tags: ['Branding', 'Motion'] },
+    client: 'Listen Mag', tags: ['Social', 'Motion'],
+    seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196 },
+    m: { src: 'img/mobile/listen.webp', x: -65, y: -45, w: 480, h: 539 } },
 ];
