@@ -35,6 +35,7 @@
         return `<img class="m-still" src="${m.src}" alt="" decoding="async" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
       }).join('')}</div>
       <div class="m-glass"></div>
+      <div class="m-fade"><i></i><i></i><i></i></div>
       <span class="m-outline is-front" aria-hidden="true"></span>
       <div class="m-cap" aria-hidden="true">
         <p class="m-name"></p>

@@ -215,3 +215,9 @@ html[data-theme="light"] .mv::backdrop { background: rgba(255, 255, 255, 0.97); 
 .mv-close svg { width: 100%; height: 100%; }
 .mv-close:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .cs-zoom svg { transition: none; } }
+
+/* Reading progress line (js/case.js): fills left to right as you scroll the case study */
+.cs-progress {
+  position: fixed; left: 0; top: 0; z-index: 102; width: 100%; height: 3px; pointer-events: none;
+  background: var(--accent); transform-origin: 0 50%; transform: scaleX(var(--p, 0));
+}
