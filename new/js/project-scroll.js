@@ -254,7 +254,36 @@
       onComplete: () => { syncActive(); if (!window.glideTo) busy = false; } });
     if (window.glideTo) window.glideTo(st.start + i * segPx(), { duration: SLIDE }).then(() => { busy = false; });
   }
-  tl.eventCallback('onUpdate', syncActive);
+  /* ---------- Dots (Compass dot pagination) ----------
+     One dot per project in the gap right of the frame. The accent pill slides with the hand-off
+     (it follows the timeline, not just the landing), and clicking a dot glides to that project. */
+  const dotsEl = document.createElement('nav');
+  dotsEl.className = 'ps-dots';
+  dotsEl.setAttribute('aria-label', 'Projects');
+  const dotBtns = objs.map((o, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'ps-dot';
+    b.setAttribute('aria-label', `${o.p.title}, project ${i + 1} of ${objs.length}`);
+    b.addEventListener('click', () => { if (i !== stop) goTo(i); });
+    dotsEl.appendChild(b);
+    return b;
+  });
+  section.querySelector('.ps-stage').appendChild(dotsEl);
+  function syncDots() {
+    const t = tl.time();
+    let pos = 0;
+    for (let i = 0; i < objs.length - 1; i++) {
+      const a = restT(i), b = restT(i + 1);
+      if (t >= b) { pos = i + 1; continue; }
+      if (t > a) pos = i + (t - a) / (b - a);
+      break;
+    }
+    dotsEl.style.setProperty('--pos', pos.toFixed(3));
+    dotBtns.forEach((d, k) => d.setAttribute('aria-current', k === Math.round(pos) ? 'true' : 'false'));
+  }
+  syncDots();
+
+  tl.eventCallback('onUpdate', () => { syncActive(); syncDots(); });
   window.projectsST = st;
 
   /* ---------- Rotation by hand ----------
