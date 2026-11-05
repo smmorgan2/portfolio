@@ -7,6 +7,7 @@
                      (from Figma ProjectSelection_v1a and Sam's demos).
      seq           = the object's full turn from Sam's AE export (frame 000 = rest pose).
                      loop = frames in one seamless turn, when the last frame repeats the first.
+                     ease = the turn was rendered with an ease (After Effects bezier); evened out in code.
      x, y, w, h    = where those frames sit on the 1920x1080 frame artboard at the rest pose
                      (y is negative when the object already pokes over the top edge).
 
@@ -29,6 +30,6 @@ window.PROJECTS = [
   // Figma frame: plate scaled 101% at (-13, -104), cropped to the object's full turn.
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
-    seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196 },
+    seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196, ease: [0.333, 0, 0.667, 1] },
     m: { src: 'img/mobile/listen.webp', x: -62, y: 59.6, w: 430, h: 483 } },
 ];

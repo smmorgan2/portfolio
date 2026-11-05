@@ -84,10 +84,29 @@
       o.ctx.forEach((ctx) => { ctx.clearRect(0, 0, q.w, q.h); ctx.drawImage(o.imgs[i], 0, 0, q.w, q.h); });
     };
     // angle in degrees -> nearest frame of the turn
+    // A turn rendered with an ease (q.ease = the After Effects bezier, e.g. Easy Ease) is not evenly
+    // spaced: frames bunch up at the start and end. Map each angle to the frame that actually shows it,
+    // so the object turns at an even speed (Sam, Nov 4: Listen Mag felt eased next to the others).
+    let toFrame = null;
+    if (q.ease) {
+      const [x1, y1, x2, y2] = q.ease, bz = (t, a, b) => 3 * (1 - t) * (1 - t) * t * a + 3 * (1 - t) * t * t * b + t * t * t;
+      const N = 720, us = [], ps = [];
+      for (let i = 0; i <= N; i++) { const t = i / N; us.push(bz(t, x1, x2)); ps.push(bz(t, y1, y2)); }
+      toFrame = (p) => {   // p = fraction of the turn (0..1) -> time fraction u, by lookup in the bezier table
+        let i = 1; while (i < N && ps[i] < p) i++;
+        const f = (p - ps[i - 1]) / ((ps[i] - ps[i - 1]) || 1);
+        return us[i - 1] + (us[i] - us[i - 1]) * f;
+      };
+    }
     o.setAngle = (a) => {
       o.angle = a;
       const n = q.loop || q.frames;   // frames in one seamless turn (Google Ads repeats frame 000 at the end)
-      o.want = ((Math.round(a / (360 / n)) % n) + n) % n;
+      if (toFrame) {
+        const p = ((a % 360) + 360) % 360 / 360;
+        o.want = Math.round(toFrame(p) * n) % n;
+      } else {
+        o.want = ((Math.round(a / (360 / n)) % n) + n) % n;
+      }
       o.draw();
     };
     o.place = () => { const t = `translate3d(0, ${o.y}px, 0)`; cs.forEach((c) => { c.style.transform = t; }); };
