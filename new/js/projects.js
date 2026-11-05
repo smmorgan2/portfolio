@@ -13,13 +13,14 @@
    Phones and tablets (js/mobile-home.js, Figma Mobile - Home+ProjectSelection):
      m = the still on the project card: Sam's export (src), placed like the Figma frame: top-left
          corner (x, y) and size (w, h) in Figma px, measured from the card's top-left corner.
+         cut = optional [x, y, w, h] box (card px) trimmed off the still (Figma "Subtract").
 
    Composer: cleared by Whipsaw for the site (Oct 30, 2026). */
 window.PROJECTS = [
   { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 },
-    m: { src: 'img/mobile/composer.webp', x: -30, y: -31, w: 415, h: 651 } },
+    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 326, 30, 78] } },
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },
@@ -29,5 +30,5 @@ window.PROJECTS = [
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
     seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196 },
-    m: { src: 'img/mobile/listen.webp', x: -65, y: -45, w: 480, h: 539 } },
+    m: { src: 'img/mobile/listen.webp', x: -62, y: 59.6, w: 430, h: 483 } },
 ];

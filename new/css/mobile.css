@@ -112,7 +112,7 @@
     background: var(--accent);
     -webkit-mask: url(../img/mobile/card-outline.svg) center / 100% 100% no-repeat; mask: url(../img/mobile/card-outline.svg) center / 100% 100% no-repeat;
   }
-  .m-outline.is-front { z-index: 3; clip-path: inset(71.7% 0 0 0); }
+  .m-outline.is-front { z-index: 3; clip-path: inset(74.3% 0 0 0); }
   /* The stills: free above and beside the card, cut off at the card's bottom edge. Only these move
      when you swipe (js/mobile-home.js); the outline, glass and caption stay put. */
   .m-objs { position: absolute; inset: 0; z-index: 1; clip-path: inset(-200% -400% 0.6% -400%); pointer-events: none; }
@@ -120,7 +120,7 @@
   /* Glass band behind the caption: the card's lower 28%, its bottom edge cut to the card's shape.
      The blur and the clip sit on the same element: a clipped parent would stop the blur seeing the still. */
   .m-glass {
-    position: absolute; left: 0; right: 0; bottom: 0; top: 71.7%; z-index: 2; pointer-events: none;
+    position: absolute; left: 0; right: 0; bottom: 0; top: 74.3%; z-index: 2; pointer-events: none;
     clip-path: url(#mCardBandClip);
     background: var(--glass-fill);
     -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);

@@ -25,7 +25,14 @@
       <span class="m-outline" aria-hidden="true"></span>
       <div class="m-objs" aria-hidden="true">${projects.map((p) => {
         const m = p.m;
-        return `<img class="m-still" src="${m.src}" alt="" decoding="async" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))">`;
+        // m.cut (optional): a box in card px to trim off the still, like Sam's Figma "Subtract" on Composer
+        let clip = '';
+        if (m.cut) {
+          const [cx, cy, cw, ch] = m.cut, px = (v) => (v / m.w * 100).toFixed(2) + '%', py = (v) => (v / m.h * 100).toFixed(2) + '%';
+          const l = px(cx - m.x), r = px(cx - m.x + cw), t = py(cy - m.y), b = py(cy - m.y + ch);
+          clip = `;clip-path:polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${l} ${t},${r} ${t},${r} ${b},${l} ${b},${l} ${t})`;
+        }
+        return `<img class="m-still" src="${m.src}" alt="" decoding="async" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
       }).join('')}</div>
       <div class="m-glass"></div>
       <span class="m-outline is-front" aria-hidden="true"></span>
