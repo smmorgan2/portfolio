@@ -128,6 +128,24 @@
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .m-glass { background: var(--glass-solid); }
   }
+  /* Progressive blur (Compass): layers over the top of the glass band so the object goes from
+     sharp to frosted with no hard line. They sit on top of the band (not clipped: the card's sides
+     are straight here) and span 62% to 84% of the card; the band line (74.3%) is at 56% of that.
+     Blur grows 3px > 10px > 30px (the last with the band's saturation), centred on the band line. */
+  .m-fade { position: absolute; left: 0; right: 0; top: 62%; height: 22%; z-index: 2; pointer-events: none; }
+  .m-fade i { position: absolute; inset: 0; }
+  .m-fade i:nth-child(1) {
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-mask: linear-gradient(transparent 0%, #000 25%); mask: linear-gradient(transparent 0%, #000 25%);
+  }
+  .m-fade i:nth-child(2) {
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    -webkit-mask: linear-gradient(transparent 12%, #000 42%); mask: linear-gradient(transparent 12%, #000 42%);
+  }
+  .m-fade i:nth-child(3) {
+    -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);
+    -webkit-mask: linear-gradient(transparent 28%, #000 56%, transparent 100%); mask: linear-gradient(transparent 28%, #000 56%, transparent 100%);
+  }
   .m-cap {
     position: absolute; z-index: 4; left: calc(16.3 * var(--mu)); top: calc(478.5 * var(--mu)); width: calc(317.7 * var(--mu));
     display: flex; flex-direction: column; gap: calc(24.3 * var(--mu)); pointer-events: none;

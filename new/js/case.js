@@ -118,3 +118,22 @@
     ScrollTrigger.create({ trigger: space, start: 'center bottom', onEnter: show, onLeaveBack: hide });
   }
 })();
+
+/* Reading progress (Compass step progress): a thin accent line across the top that fills as you
+   read, so you can see how much of the case study is left. Case studies only, not Contact. */
+(() => {
+  if (!document.querySelector('main.cs')) return;
+  const bar = document.createElement('div');
+  bar.className = 'cs-progress'; bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.setProperty('--p', max > 0 ? Math.min(1, Math.max(0, scrollY / max)).toFixed(4) : 0);
+  };
+  const ask = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  addEventListener('scroll', ask, { passive: true });
+  addEventListener('resize', ask);
+  update();
+})();
