@@ -21,7 +21,7 @@ window.PROJECTS = [
   { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 },
-    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 326, 30, 78] } },
+    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 300, 80, 170] } },
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },

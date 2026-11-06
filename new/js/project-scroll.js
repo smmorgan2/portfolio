@@ -114,22 +114,27 @@
     return o;
   });
 
-  // Rest poses first, then each full turn (only once the section is getting close).
+  // Rest poses first, then the full turns one project at a time, in order, so the first object can
+  // spin while the others are still coming in (only once the section is getting close).
   function load() {
-    objs.forEach((o) => {
-      if (o.loaded) return;
-      o.loaded = true;
-      o.got = 0; o.ready = false;
-      const get = (i) => {
-        const im = new Image();
-        im.decoding = 'async';
-        im.onload = () => { o.ready = ++o.got >= o.q.frames; if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } };
-        im.src = `${o.q.path}/${String(i).padStart(3, '0')}.webp`;
-        o.imgs[i] = im;
-      };
-      get(0);
-      setTimeout(() => { for (let i = 1; i < o.q.frames; i++) get(i); }, 300);
-    });
+    const get = (o, i, done) => {
+      const im = new Image();
+      im.decoding = 'async';
+      const fin = () => { o.ready = ++o.got >= o.q.frames; if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } if (done) done(); };
+      im.onload = fin; im.onerror = () => { if (done) done(); };
+      im.src = `${o.q.path}/${String(i).padStart(3, '0')}.webp`;
+      o.imgs[i] = im;
+    };
+    const todo = objs.filter((o) => !o.loaded);
+    todo.forEach((o) => { o.loaded = true; o.got = 0; o.ready = false; get(o, 0); });
+    const turn = (k) => {
+      const o = todo[k];
+      if (!o) return;
+      let left = o.q.frames - 1;
+      if (!left) { turn(k + 1); return; }
+      for (let i = 1; i < o.q.frames; i++) get(o, i, () => { if (--left === 0) turn(k + 1); });
+    };
+    setTimeout(() => turn(0), 300);
   }
   ScrollTrigger.create({ trigger: section, start: 'top bottom+=100%', once: true, onEnter: load });
 

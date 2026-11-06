@@ -177,13 +177,15 @@ html[data-theme="light"] .cs-media { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08); 
 .cs-zoom {
   position: absolute; inset: 0; z-index: 1;
   margin: 0; padding: 0; border: 0; background: transparent;
-  cursor: zoom-in; color: var(--fg);
+  cursor: zoom-in; color: #fff;
 }
+/* The badge sits on the media, not the page, so it keeps one dark glass look in both themes:
+   a white icon on a dark tint reads over white and black media alike. */
 .cs-zoom svg {
   position: absolute; top: max(12px, calc(24 * var(--u))); right: max(12px, calc(24 * var(--u)));
   width: 40px; height: 40px; padding: 10px; box-sizing: border-box;
-  border-radius: 50%; border: 1px solid var(--glass-rim);
-  background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-filter); backdrop-filter: var(--glass-filter);
+  border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.38); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
   opacity: 0; transition: opacity 0.15s ease;
 }
 .cs-zoom:hover svg, .cs-zoom:focus-visible svg { opacity: 1; }
