@@ -61,9 +61,10 @@
   }
   html.m-menu-open { overflow: hidden; }
 
-  /* Theme toggle: top right, level with the logo */
+  /* Theme toggle: top right, level with the logo, and it rides up with the logo as you scroll */
   .theme-toggle {
-    --w: 52px; top: calc(78 * var(--mu) + 25.45 * var(--mu) - 12px); left: auto;
+    --w: 52px; left: auto;
+    top: calc(max(calc(12px + env(safe-area-inset-top, 0px)), calc(78 * var(--mu) - var(--m-scroll, 0px))) + 25.45 * var(--mu) - 12px);
     right: max(14px, env(safe-area-inset-right, 0px));
   }
 
@@ -115,7 +116,23 @@
   .m-outline.is-front { z-index: 3; clip-path: inset(74.3% 0 0 0); }
   /* The stills: free above and beside the card, cut off at the card's bottom edge. Only these move
      when you swipe (js/mobile-home.js); the outline, glass and caption stay put. */
-  .m-objs { position: absolute; inset: 0; z-index: 1; clip-path: inset(-200% -400% 0.6% -400%); pointer-events: none; }
+  /* Figma: above the glass line the still breaks out of the card freely; from the glass line down
+     it is cut to the card's shape. .m-objs is widened past the card (300 Figma px each side, 400 up)
+     and masked with the union of "everything above the line" and the card's filled shape;
+     .m-objs-in puts the stills back on the card. */
+  .m-objs {
+    position: absolute; z-index: 1; pointer-events: none;
+    left: calc(-300 * var(--mu)); right: calc(-300 * var(--mu)); top: calc(-400 * var(--mu)); bottom: 0;
+    --line: calc(400 * var(--mu) + 0.743 * 622.33 * var(--mu));
+    -webkit-mask-image: linear-gradient(#000, #000), url(../img/mobile/card-fill.svg);
+            mask-image: linear-gradient(#000, #000), url(../img/mobile/card-fill.svg);
+    -webkit-mask-size: 100% var(--line), calc(350.25 * var(--mu)) calc(622.33 * var(--mu));
+            mask-size: 100% var(--line), calc(350.25 * var(--mu)) calc(622.33 * var(--mu));
+    -webkit-mask-position: 0 0, calc(300 * var(--mu)) calc(400 * var(--mu));
+            mask-position: 0 0, calc(300 * var(--mu)) calc(400 * var(--mu));
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  }
+  .m-objs-in { position: absolute; left: calc(300 * var(--mu)); top: calc(400 * var(--mu)); width: calc(350.25 * var(--mu)); height: calc(622.33 * var(--mu)); }
   .m-still { position: absolute; display: block; max-width: none; will-change: transform; }
   /* Glass band behind the caption: the card's lower 28%, its bottom edge cut to the card's shape.
      The blur and the clip sit on the same element: a clipped parent would stop the blur seeing the still. */

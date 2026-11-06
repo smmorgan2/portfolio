@@ -23,7 +23,7 @@
   trackEl.innerHTML = `
     <a class="m-card" id="mCard" href="${projects[0].href}">
       <span class="m-outline" aria-hidden="true"></span>
-      <div class="m-objs" aria-hidden="true">${projects.map((p) => {
+      <div class="m-objs" aria-hidden="true"><div class="m-objs-in">${projects.map((p) => {
         const m = p.m;
         // m.cut (optional): a box in card px to trim off the still, like Sam's Figma "Subtract" on Composer
         let clip = '';
@@ -33,7 +33,7 @@
           clip = `;clip-path:polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${l} ${t},${r} ${t},${r} ${b},${l} ${b},${l} ${t})`;
         }
         return `<img class="m-still" src="${m.src}" alt="" decoding="async" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
-      }).join('')}</div>
+      }).join('')}</div></div>
       <div class="m-glass"></div>
       <div class="m-fade"><i></i><i></i><i></i></div>
       <span class="m-outline is-front" aria-hidden="true"></span>
@@ -73,7 +73,8 @@
   const W = () => root.getBoundingClientRect().width;
   // Stills sit this far apart: a screen width plus room for the widest overhang (Google Ads reaches
   // ~130 Figma px past the card's left edge), so the next one never peeks in while you're at rest.
-  const S = () => W() + 160 * mu();
+  // Spaced by the screen, not the column: on a wide tablet the column is narrower than the screen.
+  const S = () => Math.max(W(), innerWidth) + 160 * mu();
   const SWIPE_START = 10;          // px sideways before a touch counts as a swipe
   const FLICK = 0.35;              // px/ms: a quick flick changes project even if it's short
   const DISTANCE = 0.22;           // ...otherwise it must be dragged this share of the width
@@ -83,7 +84,7 @@
     stills.forEach((el, i) => {
       const off = i * sp + x;
       el.style.transform = `translate3d(${off}px,0,0)`;
-      el.style.visibility = Math.abs(off) < w * 1.6 ? 'visible' : 'hidden';
+      el.style.visibility = Math.abs(off) < Math.max(w, innerWidth) * 1.6 ? 'visible' : 'hidden';
     });
     // Dots follow the finger: the active pill slides between positions as you drag.
     const pos = Math.max(0, Math.min(projects.length - 1, -x / sp));
