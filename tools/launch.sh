@@ -2,7 +2,6 @@
 # Launch the 2027 site: moves redesign-2027's new/ to the root of main (sammorgancreative.net).
 #   bash tools/launch.sh            dry run: builds the launch in a scratch copy and serves it on :8767
 #   PUSH=1 bash tools/launch.sh     same, then pushes it live
-#   KEEP_ABOUT=1              keep the About links (only once the About page exists)
 # What it does on main:
 #   - removes the old one-page site (index.html and its videos/*.mp4); it stays in git history
 #   - keeps CNAME and the CV at videos/Sam_Morgan_CV_2026.pdf (old links to it keep working)
@@ -26,23 +25,19 @@ git checkout origin/redesign-2027 -- new
 cp -R new/. .
 rm -rf new
 # 3. Search engines may index it now
-for f in index.html composer.html google-ads.html listen.html contact.html; do
+for f in index.html composer.html google-ads.html listen.html contact.html about.html; do
   sed -i '/<!-- Test page at \/new\/ until launch: keep it out of search results. Remove at launch. -->/d' "$f"
   sed -i 's#<meta name="robots" content="noindex">##' "$f"
 done
-# 4. About isn't built yet: take its link out of the header and the phone menu
-if [ "${KEEP_ABOUT:-0}" != 1 ]; then
-  sed -i '/<a href="\(index.html\)\?#about">About<\/a>/d' index.html composer.html google-ads.html listen.html contact.html
-  sed -i "/\['About', isHome ? '#about' : 'index.html#about'\],/d" js/mobile-menu.js
-fi
+# 4. (About is built: its links stay.)
 # 5. robots + sitemap
 printf 'User-agent: *\nAllow: /\nSitemap: https://sammorgancreative.net/sitemap.xml\n' > robots.txt
 { echo '<?xml version="1.0" encoding="UTF-8"?>'; echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-  for u in "" composer.html google-ads.html listen.html contact.html; do echo "  <url><loc>https://sammorgancreative.net/$u</loc></url>"; done
+  for u in "" composer.html google-ads.html listen.html contact.html about.html; do echo "  <url><loc>https://sammorgancreative.net/$u</loc></url>"; done
   echo '</urlset>'; } > sitemap.xml
 # 6. /new/ preview links forward to the real pages
 mkdir -p new
-for f in index.html composer.html google-ads.html listen.html contact.html; do
+for f in index.html composer.html google-ads.html listen.html contact.html about.html; do
   t="/$f"; [ "$f" = index.html ] && t="/"
   cat > "new/$f" <<EOF
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sam Morgan</title>
@@ -54,7 +49,7 @@ done
 
 git add -A
 echo "--- launch diff (main) ---"; git status --short | awk '{print $1}' | sort | uniq -c
-! grep -l 'name="robots" content="noindex"' index.html composer.html google-ads.html listen.html contact.html || { echo "noindex still present"; exit 1; }
+! grep -l 'name="robots" content="noindex"' index.html composer.html google-ads.html listen.html contact.html about.html || { echo "noindex still present"; exit 1; }
 test -f CNAME && test -f videos/Sam_Morgan_CV_2026.pdf && test -f 404.html && echo "checks: CNAME, CV, 404 present"
 
 if [ "${PUSH:-0}" = 1 ]; then
