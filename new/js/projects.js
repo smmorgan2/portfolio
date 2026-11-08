@@ -31,5 +31,5 @@ window.PROJECTS = [
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
     seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196, ease: [0.333, 0, 0.667, 1] },
-    m: { src: 'img/mobile/listen.webp', x: -62, y: 59.6, w: 430, h: 483 } },
+    m: { src: 'img/mobile/listen.webp', x: -71, y: 52.6, w: 447, h: 506.5 } },
 ];
