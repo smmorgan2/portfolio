@@ -2,7 +2,7 @@
    one artboard px = var(--u) (case.css). js/about.js runs the animation.
    --dx (artboard px, set by js/about.js) moves ", [Game Boy] 3D," with the right edge of "motion"
    as the word stretches and settles. */
-main.ab { padding: 0; }
+main.ab { padding: 0; overflow-x: clip; }   /* the artboard is 100vw wide, scrollbar included */
 
 .ab-top { position: relative; }
 .ab-art { position: relative; width: calc(1920 * var(--u)); height: calc(1000 * var(--u)); margin: 0 auto; --dx: 0; }
