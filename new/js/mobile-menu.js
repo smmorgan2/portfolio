@@ -29,7 +29,7 @@
   const links = [
     ['Home', home],
     ['Projects', isHome ? '#mProjects' : 'index.html#mProjects'],
-    ['About', isHome ? '#about' : 'index.html#about'],
+    ['About', 'about.html'],
     ['Contact', 'contact.html'],
   ];
   menu.innerHTML = '<div class="m-menu-glass"></div><nav aria-label="Main">'

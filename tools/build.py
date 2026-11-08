@@ -1,4 +1,4 @@
-# Builds the case-study pages in new/ (google-ads, composer, listen, contact) from index.html's header.
+# Builds the case-study pages in new/ (google-ads, composer, listen, contact, about) from index.html's header.
 # Run: python3 tools/build.py   (after bumping ?v= in new/index.html)
 import re, sys
 import os
@@ -10,7 +10,7 @@ hdr = re.search(r'<header class="hdr".*?</header>', idx, re.S).group(0)
 hdr = hdr.replace('href="#intro" aria-label', 'href="index.html" aria-label')
 hdr = hdr.replace('<a href="#intro">Home</a>', '<a href="index.html">Home</a>')
 hdr = hdr.replace('<a href="mailto:smmorgan2@gmail.com">Contact</a>', '<a href="contact.html">Contact</a>')
-hdr = hdr.replace('<a href="#projects">', '<a href="index.html#projects">').replace('<a href="#about">', '<a href="index.html#about">')
+hdr = hdr.replace('<a href="#projects">', '<a href="index.html#projects">')
 
 def media(src, alt, w, h):
     return f'<figure class="cs-media"><img src="{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy" decoding="async"></figure>'
@@ -22,7 +22,8 @@ def video(name, folder, alt, w, h, hover=False):
             f'muted loop playsinline preload="none"' + (' data-play="hover"' if hover else '') + f' aria-label="{alt}"></video></figure>')
 
 def page(pid, title, desc, body, main_class='cs', foot_label='More projects',
-         foot_links='  <a data-dir="prev" href="index.html">Previous</a>\n  <a data-dir="next" href="index.html">Next</a>'):
+         foot_links='  <a data-dir="prev" href="index.html">Previous</a>\n  <a data-dir="next" href="index.html">Next</a>',
+         extra_css='', extra_js=''):
     h = hdr.replace('<p class="hdr-title">Home</p>', f'<p class="hdr-title">{title}</p>')
     return f'''<!doctype html>
 <html lang="en">
@@ -49,7 +50,7 @@ try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: r
 <link rel="stylesheet" href="css/site.css?v={V}">
 <link rel="stylesheet" href="css/case.css?v={V}">
 <link rel="stylesheet" href="css/mobile.css?v={V}">
-<!-- Hide this page right away if the project is switched off (js/projects.js) -->
+{extra_css}<!-- Hide this page right away if the project is switched off (js/projects.js) -->
 <script src="js/projects.js?v={V}"></script>
 </head>
 <body data-page="case" data-project="{pid}">
@@ -87,7 +88,7 @@ try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: r
 <script src="js/transition.js?v={V}"></script>
 <script src="js/theme.js?v={V}"></script>
 <script src="js/mobile-menu.js?v={V}"></script>
-</body>
+{extra_js}</body>
 </html>
 '''
 
@@ -138,6 +139,7 @@ co = f'''  <h1 class="sr-only">Composer, for Whipsaw</h1>
 open(root + 'google-ads.html', 'w').write(page('google-ads', 'Google Ads', 'Google Ads social campaign: an asset suite that scales across every platform. Motion and design by Sam Morgan.', ga))
 open(root + 'composer.html', 'w').write(page('composer', 'Composer', 'Composer for Whipsaw: branding, product design and motion, told in under thirty seconds.', co))
 exec(open(os.path.join(HERE, 'listen_part.py')).read())
+exec(open(os.path.join(HERE, 'about_part.py')).read())
 print('built with v=' + V)
 
 ct = '''  <h1 class="sr-only">Contact</h1>
