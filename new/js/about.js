@@ -128,8 +128,10 @@
       trigger: '#abTop', start: 'top top',
       end: () => '+=' + Math.round(innerHeight * 1.5),   // same build length as the homepage intro
       pin: true, scrub: 0.6, animation: tl,
+      refreshPriority: 1,   // measured before the footer trigger (js/case.js), so the footer waits for the real end of the page
       onUpdate: (self) => { if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); },
     });
+    ScrollTrigger.refresh();
     Promise.all([fontsReady, window.txWait]).then(() => { if (scrollY > 10) tlAuto.progress(1); else tlAuto.play(); });
   }
   initItems();
