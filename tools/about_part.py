@@ -16,7 +16,7 @@ def obj(key, x, y, w, h, cls='ab-o'):
 about = f'''  <h1 class="sr-only">Bringing concepts to life through motion, 3D, and graphic design.</h1>
   <section class="ab-top" id="abTop">
     <div class="ab-art" id="abArt" aria-hidden="true">
-      <div class="ab-photo" id="abPhoto"><img src="img/about/me.webp" alt="" width="525" height="468"></div>
+      <div class="ab-photo" id="abPhoto"><img class="ph-dark" src="img/about/me.webp" alt="" width="525" height="468"><img class="ph-light" src="img/about/me-light.webp" alt="" width="525" height="468"></div>
       <canvas class="ab-o ab-motion" id="abMotion" width="581" height="176"></canvas>
       <div class="ab-follow ab-gba-wrap">{obj('gba', 1270, 398, 257.4, 226.5, 'ab-o ab-gba')}</div>
       <svg class="words ab-words" viewBox="0 0 1920 1000">
