@@ -143,7 +143,8 @@
     scrub: 0.6, // seconds the animation takes to catch up to the scroll (Lenis adds its own glide on top)
     animation: tlScroll,
     onUpdate: (self) => {
-      if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); // skip ahead if they scroll early
+      // skip ahead if they scroll early (above a hair: the pin can report ~0.000001 on load)
+      if (self.progress > 0.001 && tlAuto.progress() < 1) tlAuto.progress(1);
       showCue(self.progress < 0.02 && tlAuto.progress() === 1);
     },
   });

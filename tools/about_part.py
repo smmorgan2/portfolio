@@ -32,6 +32,7 @@ about = f'''  <h1 class="sr-only">Bringing concepts to life through motion, 3D, 
       </svg>
     </div>
   </section>
+  <div class="cue ab-cue" id="abCue" aria-hidden="true"><span>Scroll</span><i></i></div>
   <section class="ab-rest" id="abRest">
     <p class="ab-body">My work is a synthesis of my history and my curiosity. I find inspiration in the objects that shaped my creative path as a child, using them as a foundation for my own design language. I translate complex narratives into clear visual signals by combining 3D, motion, and graphic design. I don’t just build assets; I create cohesive systems that turn cultural influences into polished, purposeful brand experiences.</p>
     <h2 class="ab-h2">Things I like to do when I’m not designing</h2>
