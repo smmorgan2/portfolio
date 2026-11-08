@@ -124,15 +124,30 @@
     // Phones and tablets: no pin; the whole headline plays on its own after the first line.
     Promise.all([fontsReady, window.txWait]).then(() => tlAuto.play().then(() => tl.play()));
   } else {
-    ScrollTrigger.create({
+    // Scroll cue, as on the homepage: shows once the first line has played, until the first scroll
+    const cue = document.getElementById('abCue');
+    let cueShown = false;
+    const showCue = (on) => {
+      if (!cue || on === cueShown) return;
+      cueShown = on;
+      gsap.to(cue, { opacity: on ? 1 : 0, duration: on ? 0.6 : 0.25, overwrite: true });
+    };
+    const st = ScrollTrigger.create({
       trigger: '#abTop', start: 'top top',
       end: () => '+=' + Math.round(innerHeight * 1.5),   // same build length as the homepage intro
       pin: true, scrub: 0.6, animation: tl,
       refreshPriority: 1,   // measured before the footer trigger (js/case.js), so the footer waits for the real end of the page
-      onUpdate: (self) => { if (self.progress > 0 && tlAuto.progress() < 1) tlAuto.progress(1); },
+      onUpdate: (self) => {
+        // skip ahead if they scroll early (above a hair: the pin can report ~0.000001 on load)
+        if (self.progress > 0.001 && tlAuto.progress() < 1) tlAuto.progress(1);
+        showCue(self.progress < 0.02 && tlAuto.progress() === 1);
+      },
     });
     ScrollTrigger.refresh();
-    Promise.all([fontsReady, window.txWait]).then(() => { if (scrollY > 10) tlAuto.progress(1); else tlAuto.play(); });
+    Promise.all([fontsReady, window.txWait]).then(() => {
+      if (scrollY > 10) { tlAuto.progress(1); return; }
+      tlAuto.play().then(() => { if (st.progress < 0.02) showCue(true); });
+    });
   }
   initItems();
 

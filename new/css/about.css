@@ -20,6 +20,9 @@ main.ab { padding: 0; overflow-x: clip; }   /* the artboard is 100vw wide, scrol
 .ab-photo .ph-light, html[data-theme="light"] .ab-photo .ph-dark { display: none; }
 html[data-theme="light"] .ab-photo .ph-light { display: block; }
 
+/* Scroll cue: the homepage one, pinned to the bottom of the screen while the headline waits for a scroll */
+.ab-cue { position: fixed; z-index: 5; pointer-events: none; }
+
 /* ---------- Below the headline ---------- */
 .ab-rest { position: relative; width: calc(1920 * var(--u)); height: calc(1746 * var(--u)); margin: 0 auto; }
 .ab-body {
@@ -49,6 +52,7 @@ html[data-theme="light"] .ab-photo .ph-light { display: block; }
 /* ---------- Phones and tablets: the headline keeps its artboard (it reads fine scaled to the
    screen); the rest becomes a readable column, objects turning on their own as they come into view. ---------- */
 @media (hover: none) {
+  .ab-cue { display: none; }   /* phones play the headline on their own */
   /* The headline artboard has room above and below it; trim it so the words sit under the logo */
   body[data-page="case"] .ab-top { padding-top: calc(118 * var(--mu)); }
   .ab-art { height: calc(700 * var(--u)); margin-top: calc(-230 * var(--u)); }
