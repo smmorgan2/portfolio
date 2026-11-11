@@ -49,17 +49,33 @@ html[data-theme="light"] .ab-photo .ph-light { display: block; }
   .ab-glass { background: var(--glass-solid); }
 }
 
-/* ---------- Phones and tablets: the headline keeps its artboard (it reads fine scaled to the
-   screen); the rest becomes a readable column, objects turning on their own as they come into view. ---------- */
+.abm-art { display: none; }
+
+/* ---------- Phones and tablets (Figma: Mobile - About, 402 wide; one Figma px = var(--mu)) ---------- */
 @media (hover: none) {
-  .ab-cue { display: none; }   /* phones play the headline on their own */
-  /* The headline artboard has room above and below it; trim it so the words sit under the logo */
-  body[data-page="case"] .ab-top { padding-top: calc(118 * var(--mu)); }
-  .ab-art { height: calc(700 * var(--u)); margin-top: calc(-230 * var(--u)); }
-  .ab-rest { height: auto; width: auto; padding: calc(24 * var(--mu)) calc(20 * var(--mu)) calc(60 * var(--mu)); }
-  .ab-body { position: static; width: auto; font-size: calc(18 * var(--mu)); line-height: 1.35; letter-spacing: -0.03em; }
-  .ab-h2 { position: static; margin: calc(56 * var(--mu)) 0 calc(24 * var(--mu)); font-size: calc(30 * var(--mu)); text-align: left; }
-  .ab-items { position: static; display: flex; flex-direction: column; gap: calc(28 * var(--mu)); }
+  .ab-cue, .ab-art { display: none; }
+  .abm-art { display: block; position: relative; width: calc(402 * var(--mu)); height: calc(1458 * var(--mu)); margin: 0 auto; --dx: 0; }
+  .abm-words { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .abm-words text { font-size: 80px; letter-spacing: -4px; }
+  /* "motion": the desktop render at 80/150 scale. It starts where the Figma has it (stretched m at x64)
+     and the comma rides its right edge; as the word settles the line drifts right so it ends centred. */
+  .abm-motion {
+    left: calc((56.53 - var(--dx) * 0.10816) * var(--mu)); top: calc(659.9 * var(--mu));
+    width: calc(309.87 * var(--mu)); height: calc(93.87 * var(--mu));
+  }
+  .abm-comma { transform: translateX(calc(var(--dx) * 0.42516px)); }
+  .abm-gba { left: calc(66.5 * var(--mu)); top: calc(762.0 * var(--mu)); width: calc(170.1 * var(--mu)); height: calc(149.6 * var(--mu)); rotate: -3.76deg; }
+  .abm-photo { left: calc(48.3 * var(--mu)); top: calc(1170.2 * var(--mu)); width: calc(336.5 * var(--mu)); height: calc(300 * var(--mu)); }
+
+  /* Body copy: Figma S-M_DetailText, 26px Book, 300 wide at x51 */
+  .ab-rest { height: auto; width: auto; padding: 0 0 calc(60 * var(--mu)); }
+  .ab-body {
+    position: static; width: calc(300 * var(--mu)); margin: 0 0 0 calc(51 * var(--mu));
+    font-size: calc(26 * var(--mu)); line-height: normal; letter-spacing: -0.05em;
+  }
+  /* Things I like to do: not in the phone Figma yet; set to match the body column */
+  .ab-h2 { position: static; margin: calc(72 * var(--mu)) calc(51 * var(--mu)) calc(28 * var(--mu)); font-size: calc(40 * var(--mu)); text-align: left; line-height: 1.1; }
+  .ab-items { position: static; display: flex; flex-direction: column; gap: calc(28 * var(--mu)); padding: 0 calc(20 * var(--mu)); }
   .ab-item { position: relative; display: block; }
   .ab-item .ab-o { position: relative; left: auto !important; top: auto !important; width: 100% !important; height: auto !important; }
   .ab-item .ab-glass {

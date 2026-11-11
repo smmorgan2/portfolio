@@ -7,11 +7,13 @@
    - The portrait pops in last, like the homepage photo.
    Below: three objects sit still behind the homepage glass; hovering a glass box loops that
    object's turn, and it finishes the turn back to its rest pose when the pointer leaves.
-   Phones and tablets: the headline plays on its own, and the objects turn while they're on screen. */
+   Phones and tablets (Figma: Mobile - About): a stacked, centred headline; the first lines play on their own, the
+   rest builds with the scroll. The objects turn while they're on screen. */
 (() => {
-  const art = document.getElementById('abArt');
-  if (!art) return;
   const touch = matchMedia('(hover: none)').matches;
+  // Desktop and phones each have their own headline layout (Figma: About_page / Mobile - About)
+  const art = document.getElementById(touch ? 'abmArt' : 'abArt');
+  if (!art) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isLight = () => document.documentElement.dataset.theme === 'light';
   const pad = (i) => String(i).padStart(3, '0');
@@ -61,7 +63,8 @@
   // line was laid out for the widest frame (577), so it shifts by (edge - 577).
   const EDGE = [443,473,489,501,511,519,526,532,538,542,547,550,554,557,560,562,564,566,568,570,571,572,573,574,575,576,576,576,577,577,577,577,577,576,576,576,575,574,573,572,571,570,568,566,564,562,560,557,554,550,547,542,538,532,526,519,511,501,489,473,443,443,443,443,443,443,443,443,443,443,443];
   const MOTION_END = 60;                       // frames 60..70 are the settled word
-  const motion = seq(document.getElementById('abMotion'), 71, () => isLight() ? 'img/about/motion-light' : 'img/about/motion');
+  const GBA_REST = 60;                         // rest pose (frame 60 = frame 0)
+  const motion = seq(art.querySelector('.ab-motion'), 71, () => isLight() ? 'img/about/motion-light' : 'img/about/motion');
   const gba = seq(art.querySelector('[data-seq="gba"]'), 61, () => 'img/about/gba');
   const setMotion = (f) => {
     motion.set(f);
@@ -70,10 +73,10 @@
   setMotion(0);
   addEventListener('sm-theme', () => motion.draw());   // light mode has its own black / blue render
 
-  const words = [...art.querySelectorAll('.ab-words text')];
+  const words = [...art.querySelectorAll('svg.words text')];
   const word = (t) => words.find((el) => el.textContent === t);
-  const photo = document.getElementById('abPhoto');
-  const motionEl = document.getElementById('abMotion');
+  const photo = art.querySelector('.ab-photo');
+  const motionEl = motion.canvas;
   const gbaEl = gba.canvas;
 
   function popIn(tl, el, at) { gsap.set(el, { autoAlpha: 0 }); tl.set(el, { autoAlpha: 1 }, at); }
@@ -83,7 +86,7 @@
     if (flash) tl.fromTo(el, { '--flash': 1 }, { '--flash': 0, duration: 0.35, ease: 'power1.out' }, at + 0.15);
   }
 
-  const finish = () => { setMotion(MOTION_END); gba.set(60); };
+  const finish = () => { setMotion(MOTION_END); gba.set(GBA_REST); };
   if (!window.gsap || reduced) {                 // reduced motion: the finished composition
     finish();
     initItems();
@@ -94,8 +97,8 @@
   const tlAuto = gsap.timeline({ paused: true });
   wordIn(tlAuto, word('Bringing'), 0.15);
   wordIn(tlAuto, word('concepts'), 0.45);
-  wordIn(tlAuto, word('to'), 0.75);
-  wordIn(tlAuto, word('life'), 1.0);
+  if (touch) wordIn(tlAuto, word('to life'), 0.75);   // phones set "to life" on one line
+  else { wordIn(tlAuto, word('to'), 0.75); wordIn(tlAuto, word('life'), 1.0); }
 
   const tl = gsap.timeline({ paused: true });
   wordIn(tl, word('through'), 0.02);
@@ -105,11 +108,11 @@
   const mp = { f: 0 };
   tl.fromTo(mp, { f: 0 }, { f: MOTION_END, duration: 1.4, ease: 'none', onUpdate: () => setMotion(mp.f) }, 0.3);
   wordIn(tl, word(','), 0.75, false);
-  // Game Boy: pops in on frame 0 and turns to its rest pose (frame 60)
+  // Game Boy: pops in on frame 0 and turns to its rest pose
   const gp = { f: 0 };
   popIn(tl, gbaEl, 0.95);
   tl.fromTo(gbaEl, { y: 32 }, { y: 0, duration: 0.5, ease: 'expo.out' }, 0.95);
-  tl.fromTo(gp, { f: 0 }, { f: 60, duration: 1.0, ease: 'none', onUpdate: () => gba.set(gp.f) }, 0.95);
+  tl.fromTo(gp, { f: 0 }, { f: GBA_REST, duration: 1.0, ease: 'none', onUpdate: () => gba.set(gp.f) }, 0.95);
   wordIn(tl, word('3D,'), 1.3);
   wordIn(tl, word('and'), 1.75);
   wordIn(tl, word('graphic'), 2.05);
@@ -121,8 +124,16 @@
 
   const fontsReady = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 1500))]);
   if (touch) {
-    // Phones and tablets: no pin; the whole headline plays on its own after the first line.
-    Promise.all([fontsReady, window.txWait]).then(() => tlAuto.play().then(() => tl.play()));
+    // Phones and tablets: the stacked headline is taller than the screen, so after the first lines play
+    // on their own, the rest builds with the scroll as it comes up (no pin).
+    ScrollTrigger.create({
+      trigger: art, start: 'top top', end: () => '+=' + Math.round(art.offsetHeight * 0.55),
+      scrub: 0.6, animation: tl, refreshPriority: 1,
+      once: true,   // once built it stays built (no un-building when you scroll back up)
+      onUpdate: (self) => { if (self.progress > 0.001 && tlAuto.progress() < 1) tlAuto.progress(1); },
+    });
+    ScrollTrigger.refresh();
+    Promise.all([fontsReady, window.txWait]).then(() => { if (scrollY > 10) tlAuto.progress(1); else tlAuto.play(); });
   } else {
     // Scroll cue, as on the homepage: shows once the first line has played, until the first scroll
     const cue = document.getElementById('abCue');
