@@ -137,13 +137,29 @@
   const elDay = document.getElementById('clkDay');
   const elDate = document.getElementById('clkDate');
   const elTime = document.getElementById('clkTime');
+  const fmtDayShort = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short' });
+  const fmtMonthShort = new Intl.DateTimeFormat('en-US', { timeZone: tz, month: 'short' });
+  const clock = elDay.parentNode;
+  let shown = '';
   function tick() {
     const now = new Date();
-    elDay.textContent = fmtDay.format(now);
-    elDate.textContent = fmtMonth.format(now) + ' ' + ordinal(+fmtDate.format(now));
-    elTime.textContent = fmtTime.format(now) + ' PT';
+    const date = ordinal(+fmtDate.format(now));
+    const time = fmtTime.format(now).replace(/\s+/g, ' ') + ' PT';   // plain spaces (Intl uses a narrow one before AM/PM)
+    const key = fmtDay.format(now) + date + time;
+    if (key === shown) return;
+    shown = key;
+    elTime.textContent = time;
+    // Longest form that fits the pill: full names, then a short month, then a short day too.
+    const forms = [[fmtDay, fmtMonth], [fmtDay, fmtMonthShort], [fmtDayShort, fmtMonthShort]];
+    for (const [d, m] of forms) {
+      elDay.textContent = d.format(now);
+      elDate.textContent = m.format(now) + ' ' + date;
+      // room needed: the three texts, two 22px gaps and 30px of padding each side (css/site.css)
+      if (elDay.offsetWidth + elDate.offsetWidth + elTime.offsetWidth + 2 * 22 + 2 * 30 <= clock.clientWidth) break;
+    }
   }
   tick();
+  if (document.fonts) document.fonts.ready.then(() => { shown = ''; tick(); });   // re-fit once Halyard is in
   setInterval(tick, 1000);
 
   /* ---------- States ---------- */
@@ -274,7 +290,8 @@
      When the page wants the bar (past the intro, on case studies) and you stop scrolling for
      REST_MS, it slides up out of view. Scrolling again brings it straight back; so does moving
      the pointer to the top edge (peek). It never hides while open, hovered or holding focus. */
-  const REST_MS = 1000; // Sam: 1 second
+  // Sam, Nov 11: half a second on project pages (and About / Contact); the home page keeps 1 second
+  const REST_MS = document.body.dataset.page === 'case' ? 500 : 1000;
   let wanted = false;      // the page wants the bar shown (not during the intro or under the footer)
   let restHidden = false;  // hidden only because you stopped scrolling
   let restTimer = null;
