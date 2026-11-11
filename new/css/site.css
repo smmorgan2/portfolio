@@ -181,11 +181,11 @@ html.lenis, html.lenis body { height: auto; }
   color: var(--on-accent);
   font-weight: 300; font-size: 26px; letter-spacing: -1.3px; line-height: 57px;
   font-variant-numeric: tabular-nums;
+  /* Day, date and time share the pill's width, so a long day ("Wednesday") can never run into the
+     date. js/header.js shortens the month, then the day, if a long combination still wouldn't fit. */
+  display: flex; justify-content: space-between; gap: 22px; padding: 0 30px; box-sizing: border-box; margin: 0;
 }
-.hdr-clock span { position: absolute; top: 0; transform: translate(-50%, calc(-1 * var(--pill-lift))); white-space: nowrap; }
-.hdr-clock span:nth-child(1) { left: 92px; }
-.hdr-clock span:nth-child(2) { left: 243px; }
-.hdr-clock span:nth-child(3) { left: 409px; }
+.hdr-clock span { flex: none; transform: translateY(calc(-1 * var(--pill-lift))); white-space: nowrap; }
 
 .hdr-nav a {
   position: absolute; left: 167px;
