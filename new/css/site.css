@@ -245,7 +245,7 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; margin: 0;
   font-weight: 300; font-size: 38.386px; letter-spacing: -1.919px; line-height: 1.4;
   color: var(--fg);
-  text-wrap: balance;   /* even line lengths, no single word left on the last line */
+  text-wrap: balance;   /* line breaks are set by hand in index.html (measured in Halyard); this evens out any fallback wrap */
 }
 /* Edge light along the badge outline */
 .icard-rim { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -269,6 +269,7 @@ html.lenis, html.lenis body { height: auto; }
   position: static; width: auto !important;
   font-size: 16px; letter-spacing: -0.01em; line-height: 1.45;
 }
+.icards.compact .icard p br { display: none; }   /* the bottom sheet wraps on its own */
 .icards.compact .icard-rim { display: none; }
 .icards.compact .icard.refract { backdrop-filter: var(--glass-filter); } /* map is sized for the artboard card */
 
