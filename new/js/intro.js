@@ -116,12 +116,15 @@
   wordIn(tlScroll, word('art'), 2.45);
   objIn(tlScroll, 'skate', 2.65);
   wordIn(tlScroll, word('direction.'), 2.95);
+  // The whole sentence has played once: the hover cards may open from here on (js/cards.js)
+  tlScroll.call(() => { window.introDone = true; }, null, 3.5);
   tlScroll.to({}, { duration: 0.6 }, 3.65); // short hold on the full sentence before release
 
   /* ---------- Reduced motion: show the finished composition, no pin ---------- */
   if (reduced) {
     tlAuto.progress(1);
     tlScroll.progress(1);
+    window.introDone = true;
     return;
   }
 
