@@ -7,8 +7,8 @@
    - The portrait pops in last, like the homepage photo.
    Below: three objects sit still behind the homepage glass; hovering a glass box loops that
    object's turn, and it finishes the turn back to its rest pose when the pointer leaves.
-   Phones and tablets (Figma: Mobile - About): a stacked, centred headline; the first lines play on their own, the
-   rest builds with the scroll. The objects turn while they're on screen. */
+   Phones and tablets (Figma: Mobile - About): a stacked, centred headline, shown static (no animation);
+   the objects sit on their rest poses. */
 (() => {
   const touch = matchMedia('(hover: none)').matches;
   // Desktop and phones each have their own headline layout (Figma: About_page / Mobile - About)
@@ -87,7 +87,7 @@
   }
 
   const finish = () => { setMotion(MOTION_END); gba.set(GBA_REST); };
-  if (!window.gsap || reduced) {                 // reduced motion: the finished composition
+  if (!window.gsap || reduced || touch) {        // phones, and reduced motion: the finished composition, no animation
     finish();
     initItems();
     return;
@@ -212,11 +212,7 @@
         it.canvas.parentNode.insertBefore(wrap, it.canvas);
         wrap.appendChild(it.canvas); wrap.appendChild(it.box);
       });
-      const io = new IntersectionObserver((es) => es.forEach((e) => {
-        const it = items.find((x) => x.canvas.parentNode === e.target);
-        if (it) (e.isIntersecting ? start : stop)(it);
-      }), { threshold: 0.4 });
-      items.forEach((it) => io.observe(it.canvas.parentNode));
+      // (static on phones: each object stays on its rest pose)
     } else {
       items.forEach((it) => {
         it.box.addEventListener('pointerenter', () => start(it));
