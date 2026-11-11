@@ -289,6 +289,33 @@
   syncDots();
 
   tl.eventCallback('onUpdate', () => { syncActive(); syncDots(); });
+
+  /* Coming back from a case study through "Projects": land on that project, not the first one. */
+  let from = null;
+  try { from = sessionStorage.getItem('sm-from-project'); sessionStorage.removeItem('sm-from-project'); } catch (e) { /* storage blocked */ }
+  const back = objs.findIndex((o) => o.p.id === from);
+  if (back > 0 && location.hash === '#projects') {
+    // After the browser has made its own jump to #projects (the first stop), move on to this project's
+    // stop. Layout can still settle for a moment after load (fonts, pin measuring), so it's re-applied
+    // for the first second and a half, or until the visitor scrolls, clicks or types.
+    let live = true;
+    const place = () => {
+      if (!live) return;
+      const y = st.start + back * segPx();
+      if (Math.abs(scrollY - y) < 2 && stop === back) return;
+      jumpTo(back); syncDots();          // set the stop first, so the scroll below isn't read as a swipe
+      scrollTo(0, y);
+      if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true });
+    };
+    const done = () => { live = false; ScrollTrigger.removeEventListener('refresh', place); };
+    ['wheel', 'pointerdown', 'keydown', 'touchstart'].forEach((ev) => addEventListener(ev, done, { once: true, passive: true }));
+    const land = () => {
+      ScrollTrigger.addEventListener('refresh', place);
+      [60, 250, 500, 900, 1500].forEach((ms) => setTimeout(place, ms));
+      setTimeout(done, 1600);
+    };
+    if (document.readyState === 'complete') land(); else addEventListener('load', land, { once: true });
+  }
   window.projectsST = st;
 
   /* ---------- Rotation by hand ----------
