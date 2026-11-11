@@ -241,8 +241,10 @@ html.lenis, html.lenis body { height: auto; }
 }
 .icard.refract { backdrop-filter: var(--refract) var(--glass-filter); }
 .icard.is-open { pointer-events: auto; }
+/* The text block (as wide as its longest hand-set line) sits dead centre in the glass, with about
+   80px of glass on every side: the cards are sized to their copy. */
 .icard p {
-  position: absolute; margin: 0;
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; max-width: 86%; margin: 0;
   font-weight: 300; font-size: 38.386px; letter-spacing: -1.919px; line-height: 1.4;
   color: var(--fg);
   text-wrap: balance;   /* line breaks are set by hand in index.html (measured in Halyard); this evens out any fallback wrap */
@@ -266,7 +268,7 @@ html.lenis, html.lenis body { height: auto; }
   padding: 18px 20px;
 }
 .icards.compact .icard p {
-  position: static; width: auto !important;
+  position: static; transform: none; width: auto; max-width: none;
   font-size: 16px; letter-spacing: -0.01em; line-height: 1.45;
 }
 .icards.compact .icard p br { display: none; }   /* the bottom sheet wraps on its own */
