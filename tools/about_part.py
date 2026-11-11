@@ -31,6 +31,24 @@ about = f'''  <h1 class="sr-only">Bringing concepts to life through motion, 3D, 
         <text class="w" x="885.7" y="717">design.</text>
       </svg>
     </div>
+    <!-- Phones and tablets (Figma: Mobile - About, 402 wide): stacked, centred, 80px lines every 112px.
+         Positions are Figma px; the Game Boy rests on the desktop pose, tilted like the Figma. -->
+    <div class="abm-art" id="abmArt" aria-hidden="true">
+      <div class="ab-photo abm-photo"><img class="ph-dark" src="img/about/me.webp" alt="" width="525" height="468"><img class="ph-light" src="img/about/me-light.webp" alt="" width="525" height="468"></div>
+      <canvas class="ab-o ab-motion abm-motion" width="581" height="176"></canvas>
+      <canvas class="ab-o abm-gba" data-seq="gba"></canvas>
+      <svg class="words abm-words" viewBox="0 0 402 1458">
+        <text x="52.96" y="285">Bringing</text>
+        <text x="42.8" y="397">concepts</text>
+        <text x="103.1" y="509">to life</text>
+        <text x="68.1" y="621">through</text>
+        <g class="abm-comma"><text x="364.8" y="733">,</text></g>
+        <text x="190.4" y="846">3D,</text>
+        <text x="128.96" y="957">and</text>
+        <text x="68.8" y="1069">graphic</text>
+        <text x="82.6" y="1181">design.</text>
+      </svg>
+    </div>
   </section>
   <div class="cue ab-cue" id="abCue" aria-hidden="true"><span>Scroll</span><i></i></div>
   <section class="ab-rest" id="abRest">
