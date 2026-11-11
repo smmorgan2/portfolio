@@ -16,6 +16,8 @@ main.ab { padding: 0; overflow-x: clip; }   /* the artboard is 100vw wide, scrol
 /* Portrait: placed 1:1 from the demo (me_inframe.png, 525 x 468) */
 .ab-photo { position: absolute; left: calc(1307 * var(--u)); top: calc(435 * var(--u)); width: calc(525 * var(--u)); height: calc(468 * var(--u)); }
 .ab-photo img { display: block; width: 100%; height: 100%; }
+/* In front of the headline, so the portrait covers the comma after "3D" (Sam, Nov 11) */
+.ab-art .ab-photo { z-index: 2; }
 /* Frame follows the theme: yellow on dark, brand blue on light */
 .ab-photo .ph-light, html[data-theme="light"] .ab-photo .ph-dark { display: none; }
 html[data-theme="light"] .ab-photo .ph-light { display: block; }
