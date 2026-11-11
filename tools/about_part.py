@@ -52,13 +52,13 @@ about = f'''  <h1 class="sr-only">Bringing concepts to life through motion, 3D, 
   </section>
   <div class="cue ab-cue" id="abCue" aria-hidden="true"><span>Scroll</span><i></i></div>
   <section class="ab-rest" id="abRest">
-    <p class="ab-body">My work is a synthesis of my history and my curiosity. I find inspiration in the objects that shaped my creative path as a child, using them as a foundation for my own design language. I translate complex narratives into clear visual signals by combining 3D, motion, and graphic design. I don’t just build assets; I create cohesive systems that turn cultural influences into polished, purposeful brand experiences.</p>
+    <p class="ab-body">My work comes from my history and my curiosity. I find inspiration in the objects that shaped my creative path as a child, using them as a foundation for my own design language. I translate complex narratives into clear visual signals by combining 3D, motion, and graphic design. I build systems, not one-off assets, so cultural influences turn into brand work that holds together.</p>
     <h2 class="ab-h2">Things I like to do when I’m not designing</h2>
     <div class="ab-items">
       {obj('3ds', 38, 702, 493.65, 423.45)}
       {obj('skate', 602, 620, 1233.2, 636.4)}
       {obj('shoe', 468.25, 955.1, 718.4, 522.6)}
-      {glass('3ds', 103, 759, ['Play my modded 3Ds'], 61, 127)}
+      {glass('3ds', 103, 759, ['Play my modded 3DS'], 61, 127)}
       {glass('skate', 1005, 824, ['Skateboard with friends', 'at the skatepark'], 38, 105)}
       {glass('shoe', 578, 1160, ['Go on long walks', 'along the beach'], 91, 104)}
     </div>

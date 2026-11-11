@@ -97,17 +97,17 @@ ga = f'''  <h1 class="sr-only">Google Ads</h1>
   {video('hero', 'google-ads', 'Google Ads social spot: Turn your social content into video ads on Google', 1920, 1080)}
   <p class="cs-statement">How do you make multi-platform journeys<br> speak volumes in just 15 seconds?</p>
   {video('ad-cards', 'google-ads', 'Ad cards for YouTube and Shorts animating across the frame', 1920, 1080)}
-  <p class="cs-role"><span>Graphic + Motion Designer (2026)</span><span>Design, Motion, Art Direction</span></p>
+  <p class="cs-role"><span>Graphic + Motion Designer (2026)</span><span>Design, Motion</span></p>
   <p class="cs-body">At Entropico, I worked with the Google Ads team to create a suite of ads. My goal was to build on Google’s design system to make an asset suite that could scale across every platform. Movement couldn’t just be decoration. Every motion had to show different pieces of content coming together into one clear message.</p>
   <h2 class="cs-h2">The asset design suite</h2>
-  <p class="cs-body">Every spot is built from the same set of parts: rounded ad cards, real Google Ads UI states, a single cursor and a Launch button. I pulled these straight from Google’s own products, so viewers recognize the interface the second it appears. Keeping the parts consistent meant we could build versions quickly, and they still felt like one campaign.</p>
+  <p class="cs-body">Every spot is built from the same set of parts: rounded ad cards, real Google Ads UI states, a single cursor, and a Launch button. I pulled these straight from Google’s own products, so viewers recognize the interface the second it appears. Keeping the parts consistent meant we could build versions quickly, and they still felt like one campaign.</p>
   {media(G+'suite.webp', 'The asset suite: ad cards on phones, a TV and a tablet, an upload area and a Launch button', 1766, 1198)}
   <p class="cs-body">Simple shapes and small nods to Google’s UI across platforms let the customer’s own content take center stage. Drag and drop became the hero gesture: everyone knows it, it reads in a second, and it shows how easy it is to turn your social into an ad.</p>
   <div class="cs-pair">
     {video('4x5', 'google-ads', 'The 4x5 version: a cursor drags social posts into an ad', 1080, 1350, hover=True)}
     {video('9x16', 'google-ads', 'The 9x16 version of the same moment', 1080, 1920, hover=True)}
   </div>
-  <p class="cs-body">The system had to hold up across every social size without being redesigned each time. I set clear rules for safe areas, type size and where motion starts, so 16x9, 1x1, 4x5 and 9x16 all feel like the same ad.</p>
+  <p class="cs-body">The system had to hold up across every social size without being redesigned each time. I set clear rules for safe areas, type size, and where motion starts, so 16x9, 1x1, 4x5, and 9x16 all feel like the same ad.</p>
   {video('sizes', 'google-ads', 'The spot in every size: 16x9, 4x5, 9x16 and 1x1', 1920, 1080)}'''
 
 C = 'img/cases/composer/'
@@ -121,23 +121,23 @@ def beat(n, side, alt, cap):
 
 co = f'''  <h1 class="sr-only">Composer, for Whipsaw</h1>
   {video('film', 'composer', 'Composer featurette: The disposal for the next 100 years', 1920, 1080)}
-  <p class="cs-statement">Branding, product design and motion,<br> told in under thirty seconds.</p>
+  <p class="cs-statement">How do you show a brand and a product<br> are one system in under 30 seconds?</p>
   {video('brand-line', 'composer', 'Brand line on Avocado green: Quietly crushing it.', 1920, 1080)}
   <p class="cs-role"><span>Motion Art Director (2026)</span><span>Art Direction, Motion</span></p>
   <p class="cs-body">Whipsaw is widely recognized for their industrial design, but they wanted to show prospective clients that their work goes deeper. They needed to prove they also handle the full brand strategy: the positioning, the archetype, the typography, and the digital identity. I was hired to create a sizzle reel that bridged this gap. The goal was to show that for the Composer disposal, the branding and the product were built as a single, unified system.</p>
-  <h2 class="cs-h2">Storyboard vs Final Animation</h2>
+  <h2 class="cs-h2">Storyboard vs. final animation</h2>
   <p class="cs-body">I started by turning Whipsaw’s brand deck into a story. Two details in their work already proved the “one system” idea, so I built the film around them: three of the brand’s tone of voice lines ship word for word as site copy, and the color names (Avocado, Kumquat, Oatmeal, Black Sesame, Blueberry) are the product’s own finish names. Putting those side by side on screen makes the link between the object and the identity.</p>
   {video('storyboard', 'composer', 'Storyboard next to the final animation, side by side', 1920, 1080)}
-  <p class="cs-body">Following specific beats, starting with the product’s longevity, moving into its core features, and then transitioning into the brand hook. I used the existing 3D renders as design elements rather than just showing the product in a vacuum. This kept the focus on the brand identity while still showcasing the industrial design.</p>
-  {beat(1, 'left', 'Opening frame: The disposal for the next 100 years', 'The featurette opens with a defining statement about the product.')}
-  {beat(2, 'right', 'Feature frame: Engineered Safety, with the Composer splash guard', 'This portion captures key brand tone of voice language and pairs it with aspects of the product that reflect those.')}
-  {beat(3, 'left', 'Avocado color card over a field of avocados', 'During the brand identity showcase portion, these cards are shown on screen to reflect the colors and tactility of those colors in the context of the composer product.')}
-  {beat(4, 'right', 'Brand touch points together: type, logo, color cards and tagline', 'The brand identity portion closes with an overview of all the different graphical touch points that covers a mesh with the product renders to showcase how it all is one system.')}
-  <p class="cs-body">I designed the assets in Figma and created storyboards to map out the motion before moving into production. I delivered two versions: a 30-second 16x9 film for web and a 9x16 version for social. Both versions maintain the same pacing and visual weight, ensuring the brand feels consistent regardless of the platform.</p>
+  <p class="cs-body">The film follows three beats: the product’s longevity, its core features, then the brand hook. I used the existing 3D renders as design elements rather than just showing the product in a vacuum. This kept the focus on the brand identity while still showcasing the industrial design.</p>
+  {beat(1, 'left', 'Opening frame: The disposal for the next 100 years', 'Opens on a defining statement about the product.')}
+  {beat(2, 'right', 'Feature frame: Engineered Safety, with the Composer splash guard', 'Pairs lines from the brand’s tone of voice with the product details that prove them.')}
+  {beat(3, 'left', 'Avocado color card over a field of avocados', 'Color cards show each finish name and how it feels on the product.')}
+  {beat(4, 'right', 'Brand touch points together: type, logo, color cards and tagline', 'Closes on every brand touchpoint meshed with the product renders: one system.')}
+  <p class="cs-body">I designed the assets in Figma and created storyboards to map out the motion before moving into production. I delivered two versions: a 30-second 16x9 film for web and a 9x16 version for social. Both keep the same pacing and visual weight, so the brand feels the same on every platform.</p>
   {video('formats', 'composer', 'The film in 16x9 and 9x16', 1920, 1080)}'''
 
-open(root + 'google-ads.html', 'w').write(page('google-ads', 'Google Ads', 'Google Ads social campaign: an asset suite that scales across every platform. Motion and design by Sam Morgan.', ga))
-open(root + 'composer.html', 'w').write(page('composer', 'Composer', 'Composer for Whipsaw: branding, product design and motion, told in under thirty seconds.', co))
+open(root + 'google-ads.html', 'w').write(page('google-ads', 'Google Ads', 'Google Ads for Entropico: an asset suite that scales across every platform. Design and motion by Sam Morgan.', ga))
+open(root + 'composer.html', 'w').write(page('composer', 'Composer', 'Composer for Whipsaw: a brand and a product shown as one system in under 30 seconds. Art direction and motion by Sam Morgan.', co))
 exec(open(os.path.join(HERE, 'listen_part.py')).read())
 exec(open(os.path.join(HERE, 'about_part.py')).read())
 print('built with v=' + V)
@@ -148,5 +148,5 @@ ct = '''  <h1 class="sr-only">Contact</h1>
     <li><a href="https://www.linkedin.com/in/sam-morgan-297a02108/" target="_blank" rel="noopener">LinkedIn</a></li>
     <li><a href="https://www.instagram.com/sammorgan.mov/" target="_blank" rel="noopener">Instagram</a></li>
   </ul>'''
-open(root + 'contact.html', 'w').write(page('contact', 'Contact', 'Get in touch with Sam Morgan: email, LinkedIn and Instagram.', ct,
+open(root + 'contact.html', 'w').write(page('contact', 'Contact', 'Get in touch with Sam Morgan: email, LinkedIn, and Instagram.', ct,
      main_class='ct', foot_label='Back home', foot_links='  <a class="is-dark-rim" href="index.html">Home</a>'))
