@@ -148,7 +148,12 @@
   });
   dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
   addEventListener('resize', () => { x = -index * S(); render(); });
-  fill(0);
+  // Coming back from a case study through "Projects": show that project, not the first one.
+  let from = null;
+  try { from = sessionStorage.getItem('sm-from-project'); sessionStorage.removeItem('sm-from-project'); } catch (e) { /* storage blocked */ }
+  const back = projects.findIndex((p) => p.id === from);
+  if (back > 0 && location.hash === '#mProjects') { index = back; x = -index * S(); }
+  fill(index);
   render();
 
   /* ---------- Intro: plays on its own ---------- */

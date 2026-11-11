@@ -11,6 +11,8 @@
     location.replace('index.html');
     return;
   }
+  // Remember which project this is, so "Projects" lands back on it in the project selection.
+  if (me) { try { sessionStorage.setItem('sm-from-project', id); } catch (e) { /* storage blocked */ } }
 
   /* ---------- Videos ----------
      Each <video data-src> loads only as it nears the screen, then plays muted on a loop,
