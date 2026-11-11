@@ -1,10 +1,12 @@
 /* Intro hover cards (Figma: Intro Statement_v5_alt_a)
-   "Sam." / "design" / "direction." each reveal one glass card.
+   "Sam." / "design" / "art" + "direction." each reveal one glass card ("art" and "direction." share one).
    - Pointer: opens on entering the word; stays open while the pointer is on the word or its card;
      closes shortly after it leaves both. Only one card at a time.
    - Keyboard: each word has a transparent button over it. Focus opens, Escape closes.
    - Touch: tapping the word toggles its card; tapping anywhere else closes it.
-   - A word's trigger only works once that word has appeared in the intro. */
+   - A word's trigger only works once that word has appeared in the intro.
+   - On a first visit, no card opens until the whole intro sentence has played once (js/intro.js sets
+     window.introDone); after that it's remembered, so return visits aren't held back. */
 (() => {
   if (matchMedia('(hover: none)').matches) return;   // phones and tablets: js/mobile-home.js
   const CLOSE_DELAY = 120; // ms; bridges tiny gaps between word and card so it never flickers
@@ -43,7 +45,7 @@
 
   /* ---------- Glass refraction on each card (Chrome / Edge), same preset as the header ----------
      Cards sit on the scaled artboard, so artboard px values apply as they are. */
-  pairs.forEach(({ card }) => {
+  [...new Set(pairs.map((p) => p.card))].forEach((card) => {
     const w = parseFloat(card.style.width), h = parseFloat(card.style.height);
     const g = window.Glass && Glass.refract(card, {
       radius: Math.min(w * 0.097, h * 0.167), edge: Glass.PRESET.edge, strength: Glass.PRESET.strength,
@@ -63,6 +65,11 @@
   function show(pair) {
     clearTimeout(closeTimer);
     if (current === pair) return;
+    if (current && current.card === pair.card) {   // "art" <-> "direction.": same card, keep it as it is
+      current.btn.setAttribute('aria-expanded', 'false');
+      current = pair; pair.btn.setAttribute('aria-expanded', 'true');
+      return;
+    }
     if (current) hide(current, true);
     current = pair;
     pair.btn.setAttribute('aria-expanded', 'true');
@@ -88,9 +95,15 @@
 
   /* ---------- Only live once the word is on screen ---------- */
   const isShown = (el) => getComputedStyle(el).visibility !== 'hidden' && +getComputedStyle(el).opacity > 0.5;
+  let ready = reduced;
+  try { ready = ready || localStorage.getItem('sm-intro-seen') === '1'; } catch (e) {}
   function sync() {
+    if (!ready && window.introDone) {
+      ready = true;
+      try { localStorage.setItem('sm-intro-seen', '1'); } catch (e) {}
+    }
     pairs.forEach((p) => {
-      const live = isShown(p.word);
+      const live = ready && isShown(p.word);
       if (live !== p.btn.classList.contains('is-live')) {
         p.btn.classList.toggle('is-live', live);
         if (!live && current === p) hide(p, true);
@@ -105,7 +118,7 @@
     if (!touch) {
       btn.addEventListener('pointerenter', () => show(pair));
       btn.addEventListener('pointerleave', hideSoon);
-      card.addEventListener('pointerenter', () => { if (current === pair) clearTimeout(closeTimer); });
+      card.addEventListener('pointerenter', () => { if (current && current.card === card) clearTimeout(closeTimer); });
       card.addEventListener('pointerleave', hideSoon);
     }
     // Touch tap toggles. (On desktop, click just keeps it open.)
@@ -122,7 +135,7 @@
   // Tap outside closes (touch). The card itself doesn't close it.
   document.addEventListener('click', (e) => {
     if (!current) return;
-    if (current.card.contains(e.target) || current.btn.contains(e.target)) return;
+    if (current.card.contains(e.target) || e.target.closest('.itrig')) return;
     hide(current);
   });
   addEventListener('keydown', (e) => {
