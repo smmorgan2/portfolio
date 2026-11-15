@@ -57,9 +57,14 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs-intro-copy { font-size: calc(40 * var(--u)); line-height: 1.4; }
 .cs-intro-copy p + p { margin-top: 1em; }
 
-/* A one-line caption under a full-width visual */
-.cs-note { width: var(--media); margin-left: auto; margin-right: auto; }
-.cs > .cs-media + .cs-note { margin-top: calc(24 * var(--u)); }
+/* One grid for all copy after the intro (Sam, Nov 15): body lines sit in the intro copy column
+   (right 48% of the media width), captions sit under their visual in the left 52% (role + tags). */
+.cs > .cs-body {
+  width: var(--media); box-sizing: border-box; padding-left: calc(var(--media) * 0.52);
+}
+.cs-body, .cs-note, .cs-intro-copy p { text-wrap: pretty; }   /* no one-word last lines */
+.cs-note { width: var(--media); box-sizing: border-box; padding-right: calc(var(--media) * 0.48); margin-left: auto; margin-right: auto; }
+.cs > .cs-media + .cs-note, .cs > .cs-pair + .cs-note, .cs > .cs-row + .cs-note { margin-top: var(--gap-tight); }
 
 /* ---------- Media ----------
    Placeholder stills for now; each <img> becomes a <video> with the same box when the files arrive. */
@@ -151,6 +156,8 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-statement, .cs-h2 { font-size: 30px; }
   .cs-statement br { display: none; }
   .cs-body { font-size: 18px; }
+  .cs > .cs-body { padding-left: 0; }
+  .cs-note { padding-right: 0; }
   .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
   /* role and tags share a row, the copy sits under them */
   .cs-intro { grid-template-columns: 1fr 1fr; row-gap: 20px; font-size: 14px; }
