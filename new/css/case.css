@@ -42,17 +42,19 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 }
 .cs-role span:last-child { text-align: right; }
 
-/* First copy beat: role | type-of-work tags | project copy, one text size (Sam, Nov 14).
+/* First copy beat: role | type-of-work tags | project copy (Sam, Nov 14).
    Columns start at 0, 26% and 52% of the media width, like the reference. */
 .cs-intro {
   width: var(--media); margin-left: auto; margin-right: auto;
-  display: grid; grid-template-columns: 26fr 26fr 48fr; align-items: start;
+  display: grid; grid-template-columns: 26fr 26fr 48fr; align-items: baseline;   /* first lines share a baseline */
   font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; line-height: 1.42;
 }
 .cs-intro p { margin: 0; }
 .cs-intro-role, .cs-intro-tags { color: var(--accent); }
 .cs-intro-tags span { display: block; }
-.cs-intro-copy { max-width: calc(760 * var(--u)); }
+/* The copy is body copy: same size, line height and spacing as .cs-body (type system: 80 / 40 / 26).
+   Role and tags stay detail size. */
+.cs-intro-copy { font-size: calc(40 * var(--u)); line-height: 1.4; }
 .cs-intro-copy p + p { margin-top: 1em; }
 
 /* A one-line caption under a full-width visual */
