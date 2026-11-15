@@ -130,7 +130,6 @@ co = f'''  <h1 class="sr-only">Composer, for Whipsaw</h1>
   <p class="cs-statement">How do you show a brand and a product<br> are one system in under 30 seconds?</p>
   {video('brand-line', 'composer', 'Brand line on Avocado green: Quietly crushing it.', 1920, 1080)}
   {intro('Motion Art Director (2026)', ['Art Direction', 'Motion'], 'Whipsaw is known for industrial design. They wanted to show clients they also handle brand strategy: positioning, archetype, typography, and digital identity.', 'The film shows that for the Composer disposal, the brand and the product were built as one system.')}
-  <p class="cs-body">The color names (Avocado, Kumquat, Oatmeal, Black Sesame, Blueberry) are the product’s own finish names. Three tone of voice lines ship word for word as site copy.</p>
   {video('storyboard', 'composer', 'Storyboard next to the final animation, side by side', 1920, 1080)}
   <p class="cs-caption cs-note">Storyboard vs. final animation.</p>
   {beat(1, 'left', 'Opening frame: The disposal for the next 100 years', 'Opens on a defining statement about the product.')}
