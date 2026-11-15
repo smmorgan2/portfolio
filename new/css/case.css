@@ -55,6 +55,10 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs-intro-copy { max-width: calc(760 * var(--u)); }
 .cs-intro-copy p + p { margin-top: 1em; }
 
+/* A one-line caption under a full-width visual */
+.cs-note { width: var(--media); margin-left: auto; margin-right: auto; }
+.cs > .cs-media + .cs-note { margin-top: calc(24 * var(--u)); }
+
 /* ---------- Media ----------
    Placeholder stills for now; each <img> becomes a <video> with the same box when the files arrive. */
 .cs-media {
