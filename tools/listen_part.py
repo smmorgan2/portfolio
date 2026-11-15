@@ -12,8 +12,7 @@ parts = ['  <h1 class="sr-only">Listen Mag</h1>',
   '  ' + video('hero', 'listen', 'LISTEN Digital Issue, July 2025: Tinashe in a grocery aisle with the LISTEN wordmark', 1920, 1080),
   '  <p class="cs-statement">How do you give a music magazine a<br> motion identity that puts the artist first?</p>']
 parts.append('  ' + video('moodboard', 'listen', 'Moodboard: references from music, film and editorial design', 1772, 996))
-parts.append('  <p class="cs-role"><span>Art Director (2025)</span><span>Social, Motion</span></p>')
-parts.append('  <p class="cs-body">LISTEN is a passion project from my friend Chris, a PR consultant in the music industry. Chris built it into a home for up-and-coming artists, and I rebranded it with him in 2021. In 2025 we came back, now with thousands of followers and features on Lolo Zouaï, Sam Gellaitry, Anna of the North, Audrey Nuna, and more. This time the job was motion. The idea was simple: the artist comes first. Instead of making their videos and images fit inside our identity, the identity works with their visuals.</p>')
+parts.append('  ' + intro('Art Director (2025)', ['Social', 'Motion'], 'LISTEN is a passion project from my friend Chris, a PR consultant in the music industry. Chris built it into a home for up-and-coming artists, and I rebranded it with him in 2021. In 2025 we came back, now with thousands of followers and features on Lolo Zouaï, Sam Gellaitry, Anna of the North, Audrey Nuna, and more. This time the job was motion. The idea was simple: the artist comes first. Instead of making their videos and images fit inside our identity, the identity works with their visuals.'))
 if have('logo-old.webp', 'logo-new.webp'):
     parts.append('  ' + row([media(L + 'logo-old.webp', 'The 2021 LISTEN logo', 871, 600), media(L + 'logo-new.webp', 'The simplified 2025 LISTEN wordmark', 871, 600)], 2, 24))
 parts += [

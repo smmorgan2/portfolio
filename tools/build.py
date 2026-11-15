@@ -92,13 +92,19 @@ try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: r
 </html>
 '''
 
+def intro(role, tags, *paras):
+    # First copy beat (Sam, Nov 14; text layout after fionnbreen.com): role on the left, type-of-work
+    # tags in the middle, the project copy on the right.
+    t = ''.join(f'<span>{x}</span>' for x in tags)
+    c = ''.join(f'<p>{x}</p>' for x in paras)
+    return f'<div class="cs-intro"><p class="cs-intro-role">{role}</p><p class="cs-intro-tags">{t}</p><div class="cs-intro-copy">{c}</div></div>'
+
 G = 'img/cases/google-ads/'
 ga = f'''  <h1 class="sr-only">Google Ads</h1>
   {video('hero', 'google-ads', 'Google Ads social spot: Turn your social content into video ads on Google', 1920, 1080)}
   <p class="cs-statement">How do you make multi-platform journeys<br> speak volumes in just 15 seconds?</p>
   {video('ad-cards', 'google-ads', 'Ad cards for YouTube and Shorts animating across the frame', 1920, 1080)}
-  <p class="cs-role"><span>Graphic + Motion Designer (2026)</span><span>Design, Motion</span></p>
-  <p class="cs-body">At Entropico, I worked with the Google Ads team to create a suite of ads. My goal was to build on Google’s design system to make an asset suite that could scale across every platform. Movement couldn’t just be decoration. Every motion had to show different pieces of content coming together into one clear message.</p>
+  {intro('Graphic + Motion Designer (2026)', ['Design', 'Motion'], 'At Entropico, I worked with the Google Ads team to create a suite of ads. My goal was to build on Google’s design system to make an asset suite that could scale across every platform. Movement couldn’t just be decoration. Every motion had to show different pieces of content coming together into one clear message.')}
   <h2 class="cs-h2">The asset design suite</h2>
   <p class="cs-body">Every spot is built from the same set of parts: rounded ad cards, real Google Ads UI states, a single cursor, and a Launch button. I pulled these straight from Google’s own products, so viewers recognize the interface the second it appears. Keeping the parts consistent meant we could build versions quickly, and they still felt like one campaign.</p>
   {media(G+'suite.webp', 'The asset suite: ad cards on phones, a TV and a tablet, an upload area and a Launch button', 1766, 1198)}
@@ -123,8 +129,7 @@ co = f'''  <h1 class="sr-only">Composer, for Whipsaw</h1>
   {video('film', 'composer', 'Composer featurette: The disposal for the next 100 years', 1920, 1080)}
   <p class="cs-statement">How do you show a brand and a product<br> are one system in under 30 seconds?</p>
   {video('brand-line', 'composer', 'Brand line on Avocado green: Quietly crushing it.', 1920, 1080)}
-  <p class="cs-role"><span>Motion Art Director (2026)</span><span>Art Direction, Motion</span></p>
-  <p class="cs-body">Whipsaw is widely recognized for their industrial design, but they wanted to show prospective clients that their work goes deeper. They needed to prove they also handle the full brand strategy: the positioning, the archetype, the typography, and the digital identity. I was hired to create a sizzle reel that bridged this gap. The goal was to show that for the Composer disposal, the branding and the product were built as a single, unified system.</p>
+  {intro('Motion Art Director (2026)', ['Art Direction', 'Motion'], 'Whipsaw is widely recognized for their industrial design, but they wanted to show prospective clients that their work goes deeper. They needed to prove they also handle the full brand strategy: the positioning, the archetype, the typography, and the digital identity. I was hired to create a sizzle reel that bridged this gap. The goal was to show that for the Composer disposal, the branding and the product were built as a single, unified system.')}
   <h2 class="cs-h2">Storyboard vs. final animation</h2>
   <p class="cs-body">I started by turning Whipsaw’s brand deck into a story. Two details in their work already proved the “one system” idea, so I built the film around them: three of the brand’s tone of voice lines ship word for word as site copy, and the color names (Avocado, Kumquat, Oatmeal, Black Sesame, Blueberry) are the product’s own finish names. Putting those side by side on screen makes the link between the object and the identity.</p>
   {video('storyboard', 'composer', 'Storyboard next to the final animation, side by side', 1920, 1080)}
