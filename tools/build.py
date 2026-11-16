@@ -15,9 +15,11 @@ hdr = hdr.replace('<a href="#projects">', '<a href="index.html#projects">')
 def media(src, alt, w, h):
     return f'<figure class="cs-media"><img src="{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy" decoding="async"></figure>'
 
-def video(name, folder, alt, w, h, hover=False):
+def video(name, folder, alt, w, h, hover=False, box=None):
     # Loads only when scrolled near (js/case.js). Phones get videos/<folder>/mobile/<name>.mp4.
-    return (f'<figure class="cs-media"><video data-src="videos/{folder}/{name}.mp4" '
+    # box=(w, h): show it in a frame of that shape, cropped to fill (Figma GA v2's 871x889 tiles).
+    fig = f'<figure class="cs-media is-box" style="aspect-ratio:{box[0]}/{box[1]}">' if box else '<figure class="cs-media">'
+    return (f'{fig}<video data-src="videos/{folder}/{name}.mp4" '
             f'poster="img/cases/{folder}/{name}-poster.webp" width="{w}" height="{h}" style="aspect-ratio:{w}/{h}" '
             f'muted loop playsinline preload="none"' + (' data-play="hover"' if hover else '') + f' aria-label="{alt}"></video></figure>')
 
@@ -95,27 +97,36 @@ try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: r
 def intro(role, tags, *paras):
     # First copy beat (Sam, Nov 14; text layout after fionnbreen.com): role on the left, type-of-work
     # tags in the middle, the project copy on the right.
-    t = ''.join(f'<span>{x}</span>' for x in tags)
+    t = f'<span>{", ".join(tags)}</span>'   # one line, as in Figma Google Ads_v2 (Nov 16)
     c = ''.join(f'<p>{x}</p>' for x in paras)
     return f'<div class="cs-intro"><p class="cs-intro-role">{role}</p><p class="cs-intro-tags">{t}</p><div class="cs-intro-copy">{c}</div></div>'
 
 G = 'img/cases/google-ads/'
 ga = f'''  <h1 class="sr-only">Google Ads</h1>
-  {video('hero', 'google-ads', 'Google Ads social spot: Turn your social content into video ads on Google', 1920, 1080)}
-  <p class="cs-statement">How do you make multi-platform journeys<br> speak volumes in just 15 seconds?</p>
+  {video('iphone-loreal', 'google-ads', 'L’Oréal spot for Google Ads on a phone: Now that’s what we call a glow up', 1920, 1080)}
+  <p class="cs-statement">How do you make multi-platform journeys speak volumes in just 15 seconds?</p>
+  {intro('Graphic + Motion Designer (2026)', ['Design', 'Motion', 'Art Direction'], 'At Entropico, I worked with the Google Ads team to create a suite of ads. My goal was to build on Google’s design system to make an asset suite that could scale across every platform. Movement couldn’t just be decoration. Every motion had to show different pieces of content coming together into one clear message.')}
   {video('ad-cards', 'google-ads', 'Ad cards for YouTube and Shorts animating across the frame', 1920, 1080)}
-  {intro('Graphic + Motion Designer (2026)', ['Design', 'Motion'], 'At Entropico, I worked with the Google Ads team on a suite of social ads. It builds on Google’s design system so it scales across every platform.', 'Every motion shows different pieces of content coming together into one clear message.')}
-  {media(G+'suite.webp', 'The asset suite: ad cards on phones, a TV and a tablet, an upload area and a Launch button', 1766, 1198)}
-  <p class="cs-caption cs-note">Every spot is built from the same parts: rounded ad cards, real Google Ads UI states, a single cursor, and a Launch button.</p>
-  <p class="cs-body">Drag and drop became the hero gesture. Everyone knows it and it reads in a second.</p>
+  <div class="cs-grid2">
+    {video('sq-sephora', 'google-ads', 'Sephora spot: Get personal like Sephora did', 1080, 1080, box=(871, 889))}
+    {video('sq-moneygroup', 'google-ads', 'Money Group spot: The smartest way to get more leads?', 1080, 1080, box=(871, 889))}
+    {video('sq-loreal', 'google-ads', 'L’Oréal spot: Now that’s what we call a glow up', 1080, 1080, box=(871, 889))}
+    {video('sq-assetstudio', 'google-ads', 'Asset Studio spot: Want endless creative possibilities?', 1080, 1080, box=(871, 889))}
+  </div>
+  <h2 class="cs-h2">The asset design suite</h2>
+  <p class="cs-body">Every spot is built from the same set of parts: rounded ad cards, real Google Ads UI states, a single cursor and a Launch button. I pulled these straight from Google’s own products, so viewers recognize the interface the second it appears. Keeping the parts consistent meant we could build versions quickly, and they still felt like one campaign.</p>
+  {media(G+'ui-kit.webp', 'The UI kit: ad cards on phones, a TV and a tablet, an upload area and a Launch button', 1766, 1300)}
+  <p class="cs-body">Simple shapes and small nods to Google’s UI across platforms let the customer’s own content take center stage. Drag and drop became the hero gesture: everyone knows it, it reads in a second, and it shows how easy it is to turn your social into an ad.</p>
   <div class="cs-pair">
     {video('4x5', 'google-ads', 'The 4x5 version: a cursor drags social posts into an ad', 1080, 1350, hover=True)}
     {video('9x16', 'google-ads', 'The 9x16 version of the same moment', 1080, 1920, hover=True)}
   </div>
-  {video('sizes', 'google-ads', 'The spot in every size: 16x9, 4x5, 9x16 and 1x1', 1920, 1080)}
-  <p class="cs-caption cs-note">Rules for safe areas, type size, and where motion starts keep 16x9, 1x1, 4x5, and 9x16 feeling like the same ad.</p>'''
+  <h2 class="cs-h2">Every size, one ad</h2>
+  <p class="cs-body">The system had to hold up across every social size without being redesigned each time. I set clear rules for safe areas, type size and where motion starts, so 16x9, 1x1, 4x5 and 9x16 all feel like the same ad.</p>
+  {video('sizes', 'google-ads', 'The spot in every size: 16x9, 4x5, 9x16 and 1x1', 1920, 1080)}'''
 
-# Google Ads and Composer copy cut down Nov 14 2026 after the portfolio review; long versions in tools/copy-archive/.
+# Google Ads: Figma Website Design > Google Ads_v2 (652:1213), Nov 16, copy and layout as in the Figma.
+# Composer copy cut down Nov 14 2026 after the portfolio review; long versions in tools/copy-archive/.
 C = 'img/cases/composer/'
 def beat(n, side, alt, cap):
     m = media(C+f'beat-{n}.webp', alt, 1184, 666)
