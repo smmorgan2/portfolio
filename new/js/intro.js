@@ -116,8 +116,10 @@
   objIn(tlScroll, 'book', O + 1.65);
   wordIn(tlScroll, word('and'), O + 2.0);
   wordIn(tlScroll, word('art'), O + 2.45);
-  objIn(tlScroll, 'sculpture', 2.75, O + 0.8);   // Intro_demo_v2: 0.3s after "art", turns for 0.8s
-  wordIn(tlScroll, word('direction.'), O + 3.25);  // 0.8s after "art"
+  // Intro_demo_v2.mp4, measured frame by frame (30fps): "art" pops on frame 8, the sculpture on
+  // frame 11 (0.1s later) and turns until frame 34 (0.8s), "direction." pops on frame 28 (0.67s after "art").
+  objIn(tlScroll, 'sculpture', O + 2.55, 0.8);
+  wordIn(tlScroll, word('direction.'), O + 3.12);
   // The whole sentence has played once: the hover cards may open from here on (js/cards.js)
   tlScroll.call(() => { window.introDone = true; }, null, O + 3.8);
   tlScroll.to({}, { duration: 0.6 }, O + 3.95); // short hold on the full sentence before release
