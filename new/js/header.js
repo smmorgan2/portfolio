@@ -389,18 +389,11 @@
   /* ---------- When the header is available ---------- */
   hdr.inert = true;
   hdr.dataset.state = state;
-  if (isHome && window.introST) {
-    // Appears once you scroll past the end of the intro animation (the end of its pinned
-    // scroll range), and hides again when you scroll back into it. After that first time,
-    // the top edge of the screen can bring it back while you're in the intro (peek).
-    ScrollTrigger.create({
-      start: () => window.introST.end + 1,
-      end: 'max',
-      // Past the intro the bar stays out of the way: it only comes down when the pointer goes to
-      // the top edge (peek) or someone Tabs to it. Touch screens have no pointer, so there it shows.
-      onEnter: () => { unlock(); pastIntro = true; if (touch) { peeking = false; pageShow(); } },
-      onLeaveBack: () => { pastIntro = false; pageHide(); },
-    });
+  if (isHome) {
+    // Home opens on the projects (Sam, Nov 15): the bar is hidden from the start and comes down
+    // only when the pointer goes to the top edge (peek) or someone Tabs to it.
+    unlocked = true;
+    pastIntro = true;
   } else {
     // Other pages (and the home page with reduced motion, which has no intro animation).
     // Arriving through the page transition: slide in once the tiles have lifted.

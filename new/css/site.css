@@ -352,27 +352,35 @@ html.lenis, html.lenis body { height: auto; }
 html.tx-in .tx { visibility: visible; opacity: 1; }
 html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 
-/* ---------- Project scroll (Figma: ProjectSelection_v1a; js/project-scroll.js) ----------
-   A 1920x1080 artboard scaled to fit (--ps), like the intro. Frame: the ID badge shape,
-   1727x941 at (96.5, 55.7), 5px yellow outline. Glass panel at y774, name + three pills on it. */
+/* ---------- Project selection (Figma: ProjectSelection_v1a, Composer frame 619:177; js/project-scroll.js) ----------
+   Full bleed, first on the page (Sam, Nov 15). A 1920x1080 artboard scaled to fit (--ps), pinned to
+   the bottom of the screen so the glass strip (y831 to 1080) always sits on the bottom edge. The strip
+   and its blurred copy of the object run the full width of any screen. Title at x112 / y836, pills
+   at y925. The old badge outline and breakout layer are gone (home-v1 branch has them). */
 .ps { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
 .ps-stage {
-  position: absolute; left: 50%; top: 50%;
+  position: absolute; left: 50%; bottom: 0;
   width: 1920px; height: 1080px;
-  transform: translate(-50%, -50%) scale(var(--ps, 0.5));
-  transform-origin: 50% 50%;
+  transform: translateX(-50%) scale(var(--ps, 0.5));
+  transform-origin: 50% 100%;
 }
 .ps canvas { position: absolute; display: block; will-change: transform; }
-.ps-clip {
-  position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px;
-  clip-path: url(#wiiClip);
+/* Name and role (Figma S-M_DetailText, 26), fixed at the top corners while the projects are pinned.
+   x96 / right edge 1824 / y158 on the 1920 artboard. The shadow keeps them readable over light media. */
+.ps-who {
+  position: absolute; z-index: 3; left: 0; right: 0; top: calc(158px * var(--ps, 0.5));
+  padding: 0 calc(50% - 864px * var(--ps, 0.5)); display: flex; justify-content: space-between;
+  font-weight: 300; font-size: max(13px, calc(26px * var(--ps, 0.5))); letter-spacing: -0.05em; line-height: 1;
+  color: var(--fg); pointer-events: none;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--bg) 55%, transparent), 0 0 18px color-mix(in srgb, var(--bg) 45%, transparent);
 }
+.ps-clip { position: absolute; inset: 0; }
 .ps-objs { position: absolute; inset: 0; }
 /* Same glass as the header and footers, built directly: Chrome samples backdrop-filter from the
    wrong place inside a scaled, clipped box, so the panel blurs its own copy of the objects with the
    shared glass filter instead. The blur is divided by the stage scale to match on-screen glass. */
 .ps-glass {
-  position: absolute; left: -33.5px; top: 718.26px; width: 1792px; height: 249px;
+  position: absolute; left: -1500px; top: 831px; width: 4920px; height: 249px;   /* wider than any screen */
   overflow: hidden; background: var(--bg);
 }
 .ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
@@ -392,34 +400,27 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps.is-rotating .ps-glass::before { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ps-glass::before { transition: none; } }
-.ps-frame { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; overflow: visible; pointer-events: none; }
-.ps-frame path { fill: none; stroke: var(--accent); stroke-width: calc(5px * var(--ps, 0.5)); vector-effect: non-scaling-stroke; }
-/* Breakout copy: everything above y62 (just under the top outline) draws over the frame */
-.ps-break {
-  position: absolute; inset: 0; pointer-events: none;
-  clip-path: polygon(-4000px -8000px, 6000px -8000px, 6000px 62px, -4000px 62px);
-}
 .ps-info { position: absolute; inset: 0; pointer-events: none; }
 .ps-name {
-  position: absolute; left: 168px; top: 757px; margin: 0;
-  font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: 1.4;
+  position: absolute; left: 112px; top: 836px; margin: 0;
+  font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: normal;
   color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
   white-space: nowrap;
 }
-.ps-tags { position: absolute; left: 1010px; top: 846px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
+.ps-tags { position: absolute; left: 1015px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: 28.6px; }
 .ps-tags li {
-  width: 228px; height: 59px; display: flex; align-items: center; justify-content: center;
+  width: 244.2px; height: 58.8px; display: flex; align-items: center; justify-content: center;
   background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
   font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
   padding-bottom: calc(2 * var(--pill-lift));   /* centres the capitals (see --pill-lift) */
 }
 .ps-link {
-  position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; clip-path: url(#wiiClip);
+  position: absolute; left: -1500px; top: -2000px; width: 4920px; height: 3080px;   /* the whole screen */
   cursor: pointer;       /* a click opens the case study; moving turns the object (the .ps-cue badge says so) */
   touch-action: pan-y;   /* vertical swipes scroll the page natively; sideways ones turn the object */
 }
 /* Keyboard rotate control: same area as the frame, takes no pointer input, shows a ring when focused */
-.ps-rot { position: absolute; left: 96.5px; top: 55.74px; width: 1727px; height: 940.53px; pointer-events: none; border-radius: 160px; }
+.ps-rot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
 .ps-rot:focus { outline: none; }
 .ps-rot:focus-visible { box-shadow: 0 0 0 calc(4px / var(--ps, 0.5)) var(--blue); }
 /* Rotation cue: glass badge beside the pointer while it is over the frame (js/project-scroll.js).
@@ -448,7 +449,7 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* Project dots (js/project-scroll.js; Compass dot pagination): stacked in the gap right of the frame
    (artboard x1823 to 1920), centred on the frame. Sizes are real screen px (divided by the stage scale). */
 .ps-dots {
-  position: absolute; left: 1871.75px; top: 526px; transform: translate(-50%, -50%);
+  position: absolute; left: 1860px; top: 480px; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; --step: calc(24px / var(--ps, 0.5));
 }
 .ps-dot {
@@ -529,3 +530,12 @@ html[data-theme="light"] .tt-knob .moon { display: none; }
   .theme-toggle { top: calc(207px * var(--hs, 0.2) + 10px); left: auto; right: max(12px, env(safe-area-inset-right, 0px)); }
 }
 
+/* ---------- Home contact: the last beat of the sign-off (same type as contact.html: 150 Medium at x644) ---------- */
+.hc { min-height: 100vh; min-height: 100svh; box-sizing: border-box; padding: 9.64vw 0 0 33.54vw; background: var(--bg); }
+.hc .ct-links { list-style: none; margin: 0; padding: 0; }
+.hc .ct-links a {
+  display: inline-block; font-weight: 500; font-size: 7.8125vw; letter-spacing: -0.05em; line-height: 1.4;
+  color: var(--fg); text-decoration: none; transition: color 0.15s;
+}
+.hc .ct-links a:hover, .hc .ct-links a:focus-visible { color: var(--accent); }
+.hc .ct-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }

@@ -32,7 +32,6 @@
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const objsLayer = document.getElementById('psObjs');
-  const breakLayer = document.getElementById('psBreak');
   const glassLayer = document.getElementById('psGlassObjs');
   const nameEl = document.getElementById('psName');
   const tagEls = [...document.querySelectorAll('#psTags li')];
@@ -46,8 +45,9 @@
   let swipedAt = 0;
 
   /* ---------- Geometry (artboard px, from Figma) ---------- */
-  const FRAME = { x: 96.5, y: 55.74, w: 1727, h: 940.53 };
-  const PANEL = { x: -33.5, y: 718.26 };   // glass panel, relative to the frame
+  // Full bleed (Sam, Nov 15): the old badge frame is the whole artboard now.
+  const FRAME = { x: 0, y: 0, w: 1920, h: 1080 };
+  const PANEL = { x: -1500, y: 831 };      // glass strip, relative to the artboard (see .ps-glass)
   const COMPACT_BELOW = 0.45;              // stage scale under which the name and pills move below the frame
 
   let s = 1;
@@ -59,7 +59,7 @@
   fit();
   addEventListener('resize', fit);
   // Room above the artboard on this screen (artboard px), so an exiting object clears the top fully.
-  const spaceAbove = () => (innerHeight / s - 1080) / 2;
+  const spaceAbove = () => innerHeight / s - 1080;   // the artboard sits on the bottom edge
 
   /* ---------- Objects: three canvases each (clipped, breakout, glass), one shared position ---------- */
   const objs = projects.map((p) => {
@@ -71,7 +71,7 @@
       parent.appendChild(c);
       return c;
     };
-    const cs = [mk(objsLayer, q.x - FRAME.x, q.y - FRAME.y), mk(breakLayer, q.x, q.y),
+    const cs = [mk(objsLayer, q.x - FRAME.x, q.y - FRAME.y),
       mk(glassLayer, q.x - FRAME.x - PANEL.x, q.y - FRAME.y - PANEL.y)];
     const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: 0, got: 0, ready: false,
       y: 0, angle: 0, spin: 0, back: null, loaded: false };

@@ -1,12 +1,11 @@
-/* Homepage intro
-   - First line ("Hi! I'm Sam.") plays on load.
-   - The rest of the sentence and the 3D objects are scrubbed by scroll (and reverse on scroll up).
+/* Homepage sign-off (was the intro; Sam, Nov 15: work first, personality last)
+   - It now comes after the projects. The whole sentence, greeting included, is scrubbed by scroll
+     (and reverses on scroll up). It is pinned while it builds, but nothing holds you there.
    - Objects drift slightly with the mouse on desktop.
    Timing comes from Sam's AE demo (Intro_demo_v1), in demo seconds minus 1.8s. */
 (() => {
   if (matchMedia('(hover: none)').matches) return;   // phones and tablets: their own intro plays on its own (js/mobile-home.js)
   const stage = document.getElementById('stage');
-  const cue = document.getElementById('cue');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -98,61 +97,50 @@
     }, at);
   }
 
-  /* ---------- Part 1: autoplay ---------- */
-  const tlAuto = gsap.timeline({ paused: true });
-  wordIn(tlAuto, word('Hi!'), 0.15);
-  popIn(tlAuto, photo, 0.45);
-  tlAuto.fromTo(photo, { y: 56 }, { y: 0, duration: 0.6, ease: 'expo.out' }, 0.45);
-  wordIn(tlAuto, word('I’m'), 0.85);
-  wordIn(tlAuto, word('Sam.'), 1.15);
-  wordIn(tlAuto, word('(he/they)'), 1.2);
-
-  /* ---------- Part 2: scroll-scrubbed ---------- */
+  /* ---------- One scroll-scrubbed timeline ----------
+     The greeting used to play on load; it is the first beat of the scroll now. The rest keeps its
+     old timing, moved O seconds later. */
   const tlScroll = gsap.timeline({ paused: true });
-  wordIn(tlScroll, word('I collage'), 0.02); // not exactly 0, or it pops before any scroll
-  objIn(tlScroll, 'collage', 0.4);
-  wordIn(tlScroll, word('culture'), 0.7);
-  wordIn(tlScroll, word('through'), 1.0);
-  wordIn(tlScroll, word('design'), 1.4);
-  objIn(tlScroll, 'book', 1.65);
-  wordIn(tlScroll, word('and'), 2.0);
-  wordIn(tlScroll, word('art'), 2.45);
-  objIn(tlScroll, 'sculpture', 2.75, 0.8);   // Intro_demo_v2: 0.3s after "art", turns for 0.8s
-  wordIn(tlScroll, word('direction.'), 3.25);  // 0.8s after "art"
+  wordIn(tlScroll, word('Hi!'), 0.02);   // not exactly 0, or it pops before any scroll
+  popIn(tlScroll, photo, 0.3);
+  tlScroll.fromTo(photo, { y: 56 }, { y: 0, duration: 0.6, ease: 'expo.out' }, 0.3);
+  wordIn(tlScroll, word('I’m'), 0.7);
+  wordIn(tlScroll, word('Sam.'), 1.0);
+  wordIn(tlScroll, word('(he/they)'), 1.05);
+  const O = 1.4;
+  wordIn(tlScroll, word('I collage'), O + 0.02);
+  objIn(tlScroll, 'collage', O + 0.4);
+  wordIn(tlScroll, word('culture'), O + 0.7);
+  wordIn(tlScroll, word('through'), O + 1.0);
+  wordIn(tlScroll, word('design'), O + 1.4);
+  objIn(tlScroll, 'book', O + 1.65);
+  wordIn(tlScroll, word('and'), O + 2.0);
+  wordIn(tlScroll, word('art'), O + 2.45);
+  objIn(tlScroll, 'sculpture', 2.75, O + 0.8);   // Intro_demo_v2: 0.3s after "art", turns for 0.8s
+  wordIn(tlScroll, word('direction.'), O + 3.25);  // 0.8s after "art"
   // The whole sentence has played once: the hover cards may open from here on (js/cards.js)
-  tlScroll.call(() => { window.introDone = true; }, null, 3.8);
-  tlScroll.to({}, { duration: 0.6 }, 3.95); // short hold on the full sentence before release
+  tlScroll.call(() => { window.introDone = true; }, null, O + 3.8);
+  tlScroll.to({}, { duration: 0.6 }, O + 3.95); // short hold on the full sentence before release
 
   /* ---------- Reduced motion: show the finished composition, no pin ---------- */
   if (reduced) {
-    tlAuto.progress(1);
     tlScroll.progress(1);
     window.introDone = true;
     return;
   }
 
   /* ---------- Scroll control ---------- */
-  let cueShown = false;
-  const showCue = (on) => {
-    if (on === cueShown) return;
-    cueShown = on;
-    gsap.to(cue, { opacity: on ? 1 : 0, duration: on ? 0.6 : 0.25, overwrite: true });
-  };
 
   // Exposed so the header can appear exactly when this scroll animation ends (js/header.js).
   window.introST = ScrollTrigger.create({
     trigger: '#intro',
     start: 'top top',
     // Scroll distance for the whole build, in screen heights. Lower = more sentence per scroll.
-    end: () => '+=' + Math.round(innerHeight * 1.5), // 1.5 screens (Sam, Oct 30: 1.8 too stiff, 1.0 too sensitive)
+    // 1.5 screens for the sentence (Sam, Oct 30: 1.8 too stiff, 1.0 too sensitive) + 0.5 for the greeting
+    end: () => '+=' + Math.round(innerHeight * 2),
     pin: true,
     scrub: 0.6, // seconds the animation takes to catch up to the scroll (Lenis adds its own glide on top)
     animation: tlScroll,
-    onUpdate: (self) => {
-      // skip ahead if they scroll early (above a hair: the pin can report ~0.000001 on load)
-      if (self.progress > 0.001 && tlAuto.progress() < 1) tlAuto.progress(1);
-      showCue(self.progress < 0.02 && tlAuto.progress() === 1);
-    },
   });
 
   /* ---------- Mouse parallax (desktop only) ---------- */
@@ -169,16 +157,4 @@
     }, { passive: true });
   }
 
-  /* ---------- Start once fonts are in (max 1.5s wait) ---------- */
-  const fontsReady = Promise.race([
-    document.fonts ? document.fonts.ready : Promise.resolve(),
-    new Promise((r) => setTimeout(r, 1500)),
-  ]);
-  // Arriving through the page transition: start once the tiles have lifted.
-  Promise.all([fontsReady, window.txWait]).then(() => {
-    if (scrollY > 10) { tlAuto.progress(1); return; } // reloaded mid-page
-    tlAuto.play().then(() => {
-      if (ScrollTrigger.getAll()[0].progress < 0.02) showCue(true);
-    });
-  });
 })();
