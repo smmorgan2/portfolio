@@ -19,19 +19,21 @@
    Order (Nov 12, Sam): Google Ads leads, on advice from a motion art director who reviewed the book.
 
    Composer: cleared by Whipsaw for the site (Oct 30, 2026). */
+// Order (Sam, Nov 15; Figma Website Design > ProjectSelection_v2): Google Ads, LISTEN, Composer.
+// Spotify and AT&T go after Composer once their turntables are rendered.
 window.PROJECTS = [
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 414, y: -66, w: 1044, h: 1082 },
     m: { src: 'img/mobile/google-ads.webp', x: -129.8, y: -19.1, w: 604, h: 638 } },
-  { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
-    client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
-    seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 },
-    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 300, 80, 170] } },
   // LISTEN (Figma: Playground > ProjectSelection_v1a 116:89). Sam's plate sequence placed to match the
   // Figma frame: plate scaled 101% at (-13, -104), cropped to the object's full turn.
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
     seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196, ease: [0.333, 0, 0.667, 1] },
     m: { src: 'img/mobile/listen.webp', x: -71, y: 52.6, w: 447, h: 506.5 } },
+  { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
+    client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
+    seq: { path: 'img/projects/composer', frames: 180, x: 478, y: -28, w: 925, h: 1171 },
+    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 300, 80, 170] } },
 ];
