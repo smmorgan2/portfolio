@@ -34,7 +34,8 @@
   const objsLayer = document.getElementById('psObjs');
   const glassLayer = document.getElementById('psGlassObjs');
   const nameEl = document.getElementById('psName');
-  const tagEls = [...document.querySelectorAll('#psTags li')];
+  const tagsEl = document.getElementById('psTags');
+  const tagEls = [...tagsEl.querySelectorAll('li')];
   const link = document.getElementById('psLink');
   const linkLabel = link.querySelector('.sr-only');
   const rot = document.getElementById('psRot');
@@ -73,7 +74,7 @@
     };
     const cs = [mk(objsLayer, q.x - FRAME.x, q.y - FRAME.y),
       mk(glassLayer, q.x - FRAME.x - PANEL.x, q.y - FRAME.y - PANEL.y)];
-    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: 0, got: 0, ready: false,
+    const o = { p, q, canvases: cs, ctx: cs.map((c) => c.getContext('2d')), imgs: [], cur: '', want: q.rest || 0, got: 0, ready: false,
       y: 0, angle: 0, spin: 0, back: null, loaded: false };
     const ok = (im) => im && im.complete && im.naturalWidth > 0;
     // Draws exactly one rendered frame (no blending: the see-through parts would flicker).
@@ -107,9 +108,11 @@
       } else {
         o.want = ((Math.round(a / (360 / n)) % n) + n) % n;
       }
+      o.want = (o.want + (q.rest || 0)) % n;   // q.rest: the frame it lands on (Figma v2 pose); angle 0 = that frame
       o.draw();
     };
-    o.place = () => { const t = `translate3d(0, ${o.y}px, 0)`; cs.forEach((c) => { c.style.transform = t; }); };
+    // q.rot: a tilt in degrees on top of the render (Figma v2 rotates some objects), around the box centre
+    o.place = () => { const t = `translate3d(0, ${o.y}px, 0)` + (q.rot ? ` rotate(${q.rot}deg)` : ''); cs.forEach((c) => { c.style.transform = t; }); };
     o.show = (v) => cs.forEach((c) => { c.style.visibility = v ? 'visible' : 'hidden'; });
     return o;
   });
@@ -120,19 +123,19 @@
     const get = (o, i, done) => {
       const im = new Image();
       im.decoding = 'async';
-      const fin = () => { o.ready = ++o.got >= o.q.frames; if (i === 0 || i === o.want) { o.cur = ''; o.draw(); } if (done) done(); };
+      const fin = () => { o.ready = ++o.got >= o.q.frames; if (i === (o.q.rest || 0) || i === o.want) { o.cur = ''; o.draw(); } if (done) done(); };
       im.onload = fin; im.onerror = () => { if (done) done(); };
       im.src = `${o.q.path}/${String(i).padStart(3, '0')}.webp`;
       o.imgs[i] = im;
     };
     const todo = objs.filter((o) => !o.loaded);
-    todo.forEach((o) => { o.loaded = true; o.got = 0; o.ready = false; get(o, 0); });
+    todo.forEach((o) => { o.loaded = true; o.got = 0; o.ready = false; get(o, o.q.rest || 0); });
     const turn = (k) => {
       const o = todo[k];
       if (!o) return;
       let left = o.q.frames - 1;
       if (!left) { turn(k + 1); return; }
-      for (let i = 1; i < o.q.frames; i++) get(o, i, () => { if (--left === 0) turn(k + 1); });
+      for (let i = 0; i < o.q.frames; i++) if (i !== (o.q.rest || 0)) get(o, i, () => { if (--left === 0) turn(k + 1); });
     };
     setTimeout(() => turn(0), 300);
   }
@@ -176,6 +179,9 @@
     const p = objs[i].p;
     nameEl.textContent = p.title;
     [p.client, ...p.tags].forEach((t, k) => { if (tagEls[k]) tagEls[k].textContent = t; });
+    // Pill width and spacing per project (Figma ProjectSelection_v2: 228 wide, 26 apart; Composer 244 wide)
+    const pill = p.pill || [227.9, 26];
+    tagsEl.style.setProperty('--pill-w', pill[0] + 'px'); tagsEl.style.setProperty('--pill-gap', pill[1] + 'px');
     link.href = p.href;
     linkLabel.textContent = `${p.title}: ${p.client}, ${p.tags.join(', ')}. View the case study`;
   }
@@ -274,6 +280,12 @@
   syncDots();
 
   tl.eventCallback('onUpdate', () => { syncActive(); syncDots(); });
+  // ScrollTrigger sets the timeline's position on load/refresh without firing callbacks, so after a
+  // reload part-way down (the browser restores the scroll) the objects and labels were left where
+  // they started: Google Ads on screen with LISTEN's position. Re-sync after every refresh.
+  const resync = () => { objs.forEach((o) => o.place()); syncActive(); syncDots(); };
+  ScrollTrigger.addEventListener('refresh', resync);
+  addEventListener('load', () => requestAnimationFrame(resync), { once: true });
 
   /* Coming back from a case study through "Projects": land on that project, not the first one. */
   let from = null;
