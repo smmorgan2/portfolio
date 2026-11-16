@@ -25,7 +25,9 @@
   const LAYOUT = {
     collage: { x: 770.9,  y: 330.9, w: 449.1, h: 277.0, px: [898, 554] },
     book:    { x: 1144.6, y: 529.9, w: 317.5, h: 273.0, px: [635, 546] },
-    skate:   { x: 379.5,  y: 704.0, w: 638.8, h: 280.4, px: [1278, 561] },
+    // Sculpture (Intro_demo_v2, Nov 15): replaces the skateboard. Rendered at 1x; frames 11-34 of the
+    // export (before 11 it isn't on screen, after 34 it holds still), placed from the demo frame.
+    sculpture: { x: 400, y: 681, w: 397, h: 375, px: [397, 375], frames: 24 },
   };
   const seqs = {};
 
@@ -38,7 +40,8 @@
     canvas.width = L.px[0];
     canvas.height = L.px[1];
     const ctx = canvas.getContext('2d');
-    const s = { canvas, cur: 0 };
+    const N = L.frames || FRAMES;
+    const s = { canvas, cur: 0, n: N };
 
     const ready = (im) => im.complete && im.naturalWidth > 0;
     s.draw = () => {
@@ -48,10 +51,10 @@
       if (ready(s.imgs[i])) ctx.drawImage(s.imgs[i], 0, 0, canvas.width, canvas.height);
     };
     s.set = (f) => {
-      const i = Math.max(0, Math.min(FRAMES - 1, Math.round(f)));
+      const i = Math.max(0, Math.min(N - 1, Math.round(f)));
       if (i !== s.cur) { s.cur = i; s.draw(); }
     };
-    s.imgs = Array.from({ length: FRAMES }, (_, i) => {
+    s.imgs = Array.from({ length: N }, (_, i) => {
       const im = new Image();
       im.decoding = 'async';
       im.onload = () => { if (i <= s.cur) s.draw(); };
@@ -84,13 +87,13 @@
   }
 
   // Object: appears on frame 0, rises 32px (the main-comp Y pop), sequence plays 0 to 30.
-  function objIn(tl, key, at) {
+  function objIn(tl, key, at, dur = 1.0) {
     const s = seqs[key];
     const proxy = { f: 0 };
     popIn(tl, s.canvas, at);
     tl.fromTo(s.canvas, { y: 32 }, { y: 0, duration: 0.5, ease: 'expo.out' }, at);
     tl.fromTo(proxy, { f: 0 }, {
-      f: FRAMES - 1, duration: 1.0, ease: 'none',
+      f: s.n - 1, duration: dur, ease: 'none',
       onUpdate: () => s.set(proxy.f),
     }, at);
   }
@@ -114,11 +117,11 @@
   objIn(tlScroll, 'book', 1.65);
   wordIn(tlScroll, word('and'), 2.0);
   wordIn(tlScroll, word('art'), 2.45);
-  objIn(tlScroll, 'skate', 2.65);
-  wordIn(tlScroll, word('direction.'), 2.95);
+  objIn(tlScroll, 'sculpture', 2.75, 0.8);   // Intro_demo_v2: 0.3s after "art", turns for 0.8s
+  wordIn(tlScroll, word('direction.'), 3.25);  // 0.8s after "art"
   // The whole sentence has played once: the hover cards may open from here on (js/cards.js)
-  tlScroll.call(() => { window.introDone = true; }, null, 3.5);
-  tlScroll.to({}, { duration: 0.6 }, 3.65); // short hold on the full sentence before release
+  tlScroll.call(() => { window.introDone = true; }, null, 3.8);
+  tlScroll.to({}, { duration: 0.6 }, 3.95); // short hold on the full sentence before release
 
   /* ---------- Reduced motion: show the finished composition, no pin ---------- */
   if (reduced) {
