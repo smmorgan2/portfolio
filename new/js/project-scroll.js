@@ -27,7 +27,8 @@
   if (!section || !window.PROJECTS || !window.gsap || !window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
 
-  const projects = window.PROJECTS.filter((p) => p.live && p.seq);
+  // home: true shows a project here before its case study exists (no link until it does)
+  const projects = window.PROJECTS.filter((p) => (p.live || p.home) && p.seq);
   if (!projects.length) { section.hidden = true; return; }
 
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -179,11 +180,9 @@
     const p = objs[i].p;
     nameEl.textContent = p.title;
     [p.client, ...p.tags].forEach((t, k) => { if (tagEls[k]) tagEls[k].textContent = t; });
-    // Pill width and spacing per project (Figma ProjectSelection_v2: 228 wide, 26 apart; Composer 244 wide)
-    const pill = p.pill || [227.9, 26];
-    tagsEl.style.setProperty('--pill-w', pill[0] + 'px'); tagsEl.style.setProperty('--pill-gap', pill[1] + 'px');
-    link.href = p.href;
-    linkLabel.textContent = `${p.title}: ${p.client}, ${p.tags.join(', ')}. View the case study`;
+    // No case study yet (home: true): the frame isn't a link, so a click does nothing.
+    if (p.href) { link.href = p.href; link.style.cursor = ''; } else { link.removeAttribute('href'); link.style.cursor = 'default'; }
+    linkLabel.textContent = `${p.title}: ${p.client}, ${p.tags.join(', ')}.` + (p.href ? ' View the case study' : '');
   }
   function pop() {
     if (popTl) popTl.kill();
