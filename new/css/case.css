@@ -1,23 +1,26 @@
-/* Case study pages (Figma: Google Ads_v1b, Composer_v1)
+/* Case study pages. Type hierarchy and spacing from Figma Website Design > Google Ads_v2 (652:1213), Nov 16,
+   used for every case study: everything left-aligned on the 1766 media column (x77), 100 between blocks,
+   question 80 at x77 (1365 wide), section titles 80 and body copy 40 at x101 (1392 wide), intro row at x101
+   with role 501 | tags 442 | copy 799, media corners 50. The previous version is tools/copy-archive/case-before-ga-v2.css.
    Built on the same 1920 artboard as Figma. --u is one Figma pixel at the current screen width,
    so every size below reads straight from the Figma file: calc(<figma px> * var(--u)).
    Shared type: Headline02 80/Medium, BodyCopy 40/Book, DetailText 26/Book, all -5% tracking. */
 /* --u lives on the body so the page and its footer share it */
 body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs {
-  --gap: calc(88 * var(--u));       /* space between blocks */
+  --gap: calc(100 * var(--u));      /* space between blocks */
   --gap-tight: calc(40 * var(--u)); /* a label or heading to its paragraph */
   --media: calc(1766 * var(--u));   /* full-width media */
-  --col: calc(1338 * var(--u));     /* text column */
-  --radius: calc(40 * var(--u));
+  --col: calc(1392 * var(--u));     /* body copy width */
+  --in: calc(24 * var(--u));        /* text inset from the media edge (x101) */
+  --radius: calc(50 * var(--u));
   max-width: 1920px;
   margin: 0 auto;
-  padding: calc(317 * var(--u)) 0 var(--gap);
+  padding: calc(279 * var(--u)) 0 var(--gap);
 }
 .cs > * + * { margin-top: var(--gap); }
 .cs > .sr-only + * { margin-top: 0; }   /* the hidden page title doesn't count as a block */
-.cs > .cs-role + .cs-body,
-.cs > .cs-h2 + .cs-body { margin-top: var(--gap-tight); }
+/* (Google Ads_v2: a section title is 100 above its copy too, like every other block) */
 
 .cs p, .cs h1, .cs h2, .cs figure { margin-bottom: 0; }
 .cs h1, .cs h2 { font-weight: 500; }
@@ -26,10 +29,14 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 .cs-statement, .cs-h2 {
   font-weight: 500; font-size: calc(80 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
 }
-.cs-statement { width: fit-content; max-width: var(--media); margin-left: auto; margin-right: auto; }
-.cs-h2 { text-align: center; width: var(--col); margin-left: auto; margin-right: auto; }
+.cs-statement, .cs-h2, .cs-body, .cs-note {
+  width: var(--media); margin-left: auto; margin-right: auto; box-sizing: border-box; text-align: left;
+}
+.cs-statement { padding-right: calc(var(--media) - 1365 * var(--u)); }   /* the question: x77, 1365 wide */
+.cs-statement br { display: none; }                                      /* it wraps on its own now */
+.cs-h2 { padding-left: var(--in); }
 .cs-body {
-  width: var(--col); margin-left: auto; margin-right: auto;
+  padding-left: var(--in); padding-right: calc(var(--media) - var(--in) - var(--col));
   font-weight: 300; font-size: calc(40 * var(--u)); letter-spacing: -0.05em; line-height: 1.4;
 }
 .cs-detail, .cs-role, .cs-caption {
@@ -42,28 +49,23 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
 }
 .cs-role span:last-child { text-align: right; }
 
-/* First copy beat: role | type-of-work tags | project copy (Sam, Nov 14).
-   Columns start at 0, 26% and 52% of the media width, like the reference. */
+/* First copy beat: role | type-of-work tags | project copy (Google Ads_v2: 501 | 442 | 799 from x101) */
 .cs-intro {
-  width: var(--media); margin-left: auto; margin-right: auto;
-  display: grid; grid-template-columns: 26fr 26fr 48fr; align-items: baseline;   /* first lines share a baseline */
+  width: var(--media); margin-left: auto; margin-right: auto; box-sizing: border-box; padding-left: var(--in);
+  display: grid; grid-template-columns: 501fr 442fr 799fr; align-items: baseline;   /* first lines share a baseline */
   font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; line-height: 1.42;
 }
 .cs-intro p { margin: 0; }
 .cs-intro-role, .cs-intro-tags { color: var(--accent); }
-.cs-intro-tags span { display: block; }
+.cs-intro-tags { padding-right: 1em; }
 /* The copy is body copy: same size, line height and spacing as .cs-body (type system: 80 / 40 / 26).
    Role and tags stay detail size. */
 .cs-intro-copy { font-size: calc(40 * var(--u)); line-height: 1.4; }
 .cs-intro-copy p + p { margin-top: 1em; }
 
-/* One grid for all copy after the intro (Sam, Nov 15): body lines sit in the intro copy column
-   (right 48% of the media width), captions sit under their visual in the left 52% (role + tags). */
-.cs > .cs-body {
-  width: var(--media); box-sizing: border-box; padding-left: calc(var(--media) * 0.52);
-}
+/* Captions: detail size, on the same x101 edge as the body copy, under their visual */
+.cs-note { padding-left: var(--in); padding-right: calc(var(--media) - var(--in) - var(--col)); }
 .cs-body, .cs-note, .cs-intro-copy p { text-wrap: pretty; }   /* no one-word last lines */
-.cs-note { width: var(--media); box-sizing: border-box; padding-right: calc(var(--media) * 0.48); margin-left: auto; margin-right: auto; }
 .cs > .cs-media + .cs-note, .cs > .cs-pair + .cs-note, .cs > .cs-row + .cs-note { margin-top: var(--gap-tight); }
 
 /* ---------- Media ----------
@@ -73,11 +75,23 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   border-radius: var(--radius); overflow: hidden; background: #111;
 }
 .cs-media img, .cs-media video { display: block; width: 100%; height: auto; }
+/* A fixed frame, filled and cropped (Google Ads_v2 tiles: 871x889) */
+.cs-media.is-box video, .cs-media.is-box img { height: 100%; aspect-ratio: auto !important; object-fit: cover; }
+/* Media inside a group sits flush at the top (the browser's default figure margin was adding 16px) */
+.cs-pair > .cs-media, .cs-grid2 > .cs-media, .cs-row > .cs-media, .cs-beat > .cs-media { margin-top: 0; }
 
-/* Two media side by side, top-aligned (Google Ads: 900 + 62 + 804) */
+/* 2x2 grid (Google Ads_v2: 871 + 24 + 871) */
+.cs-grid2 {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: calc(24 * var(--u));
+}
+.cs-grid2 .cs-media { width: auto; }
+
+/* Two media side by side, top-aligned and centred (Google Ads_v2: 1000 + 24 + 703, both 1250 tall) */
 .cs-pair {
   width: var(--media); margin-left: auto; margin-right: auto;
-  display: grid; grid-template-columns: 900fr 804fr; column-gap: calc(62 * var(--u)); align-items: start;
+  display: grid; grid-template-columns: calc(1000 * var(--u)) calc(703 * var(--u)); column-gap: calc(24 * var(--u));
+  justify-content: center; align-items: start;
 }
 .cs-pair .cs-media { width: auto; }
 
@@ -87,8 +101,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   display: grid; grid-template-columns: repeat(var(--n), 1fr); column-gap: calc(var(--gx) * var(--u)); align-items: start;
 }
 .cs-row .cs-media { width: auto; }
-/* LISTEN (Figma LISTEN_v1b): 100 between blocks, a slightly wider 1392 text column */
-.cs--listen { --gap: calc(100 * var(--u)); --col: calc(1392 * var(--u)); }
+/* LISTEN: same spacing as every case study now (it was the one at 100 / 1392 before) */
 
 /* Story beats (Composer): 1184-wide media alternating sides, caption beside it, vertically centred.
    Left beat: media x77, caption x1358. Right beat: caption x97, media x659. */
@@ -156,8 +169,8 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-statement, .cs-h2 { font-size: 30px; }
   .cs-statement br { display: none; }
   .cs-body { font-size: 18px; }
-  .cs > .cs-body { padding-left: 0; }
-  .cs-note { padding-right: 0; }
+  .cs-statement, .cs-h2, .cs-body, .cs-note, .cs-intro { padding-left: 0; padding-right: 0; }
+  .cs-grid2 { gap: 8px; }
   .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
   /* role and tags share a row, the copy sits under them */
   .cs-intro { grid-template-columns: 1fr 1fr; row-gap: 20px; font-size: 14px; }
