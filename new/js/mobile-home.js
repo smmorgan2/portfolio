@@ -1,17 +1,18 @@
-/* Phones and tablets: home page (Figma: Mobile - Home+ProjectSelection 439:1076 / 453:267).
-   - Intro: "Hi! I'm Sam.", the portrait and the sentence play on their own (no scrolling needed),
-     with the same word pop as desktop: rise, flash the accent colour, settle.
-   - Projects: one fixed card; only the project still moves (no rotation on touch). Swipe left for the
+/* Phones and tablets: home page (Figma: Mobile - Home+ProjectSelection_v2, 633:684, Nov 16).
+   - Projects first (work first, personality last, like desktop): full-width stills over a glass strip
+     with the title and pills. Only the project still moves (no rotation on touch). Swipe left for the
      next project, right for the previous one; the still follows the finger and lets go with the speed
      of the swipe. Dots under the card show where you are (Compass dot pagination). Tapping the card
      opens the case study.
+   - Then the greeting: "Hi! I'm Sam.", the portrait and the sentence play once they scroll into view,
+     with the same word pop as desktop: rise, flash the accent colour, settle.
    Desktop never runs this (its own intro and project scroll live in intro.js / project-scroll.js). */
 (() => {
   if (!matchMedia('(hover: none)').matches) return;
   const root = document.getElementById('mHome');
   if (!root || !window.PROJECTS) return;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const projects = window.PROJECTS.filter((p) => p.live && p.m);
+  const projects = window.PROJECTS.filter((p) => (p.live || p.home) && p.m);
   const mu = () => Math.min(innerWidth, 560) / 402;
 
   /* ---------- Card ----------
@@ -21,7 +22,7 @@
   const section = document.getElementById('mProjects');
   const trackEl = document.getElementById('mTrack');
   trackEl.innerHTML = `
-    <a class="m-card" id="mCard" href="${projects[0].href}">
+    <a class="m-card" id="mCard" href="${projects[0].href || ''}">
       <span class="m-outline" aria-hidden="true"></span>
       <div class="m-objs" aria-hidden="true"><div class="m-objs-in">${projects.map((p) => {
         const m = p.m;
@@ -32,7 +33,7 @@
           const l = px(cx - m.x), r = px(cx - m.x + cw), t = py(cy - m.y), b = py(cy - m.y + ch);
           clip = `;clip-path:polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${l} ${t},${r} ${t},${r} ${b},${l} ${b},${l} ${t})`;
         }
-        return `<img class="m-still" src="${m.src}" alt="" decoding="async" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
+        return `<img class="m-still" src="${m.src}" alt="" decoding="async" data-rot="${m.rot || 0}" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
       }).join('')}</div></div>
       <div class="m-glass"></div>
       <div class="m-fade"><i></i><i></i><i></i></div>
@@ -55,8 +56,9 @@
     const p = projects[i];
     nameEl.textContent = p.title;
     [p.client, ...p.tags].forEach((t, k) => { if (tagEls[k]) tagEls[k].textContent = t; });
-    card.href = p.href;
-    card.setAttribute('aria-label', `${p.title}: ${p.client}, ${p.tags.join(', ')}. View the case study. Swipe sideways for more projects.`);
+    // No case study yet (home: true): the card isn't a link
+    if (p.href) card.href = p.href; else card.removeAttribute('href');
+    card.setAttribute('aria-label', `${p.title}: ${p.client}, ${p.tags.join(', ')}.` + (p.href ? ' View the case study.' : '') + ' Swipe sideways for more projects.');
     dots.forEach((d, k) => d.setAttribute('aria-current', k === i ? 'true' : 'false'));
   }
   // Same word pop as desktop (js/project-scroll.js): rise, flash the accent colour, settle.
@@ -83,7 +85,7 @@
     const w = W(), sp = S();
     stills.forEach((el, i) => {
       const off = i * sp + x;
-      el.style.transform = `translate3d(${off}px,0,0)`;
+      el.style.transform = `translate3d(${off}px,0,0)` + (+el.dataset.rot ? ` rotate(${el.dataset.rot}deg)` : '');
       el.style.visibility = Math.abs(off) < Math.max(w, innerWidth) * 1.6 ? 'visible' : 'hidden';
     });
     // Dots follow the finger: the active pill slides between positions as you drag.
@@ -160,7 +162,7 @@
   const words = [...root.querySelectorAll('.mw')];
   const photo = root.querySelector('.m-photo');
   if (reduced || !window.gsap) return;
-  gsap.set([...words, photo, section], { autoAlpha: 0 });
+  gsap.set([...words, photo], { autoAlpha: 0 });   // the projects show straight away
   const tl = gsap.timeline({ paused: true });
   const wordIn = (el, at, flash = true) => {
     tl.set(el, { autoAlpha: 1 }, at);
@@ -178,14 +180,9 @@
   wordIn(greet[2], 1.15, false);
   wordIn(pron, 1.2);
   state.forEach((w, k) => wordIn(w, 1.6 + k * 0.22));
-  const after = 1.6 + state.length * 0.22;
-  tl.set(section, { autoAlpha: 1 }, after);
-  tl.fromTo(section, { y: 60 * mu() }, { y: 0, duration: 0.7, ease: 'expo.out' }, after);
-
-  const fontsReady = Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 1500))]);
-  Promise.all([fontsReady, window.txWait]).then(() => {
-    if (scrollY > 40) tl.progress(1); else tl.play();
-  });
-  // Scrolling before it finishes shows everything at once.
-  addEventListener('scroll', () => { if (scrollY > 40 && tl.progress() < 1) tl.progress(1); }, { passive: true });
+  // Plays once, when the greeting comes into view (it sits under the projects now)
+  const io = new IntersectionObserver((es) => {
+    if (es.some((e) => e.isIntersecting)) { io.disconnect(); tl.play(); }
+  }, { threshold: 0.25 });
+  io.observe(root.querySelector('.m-greet'));
 })();
