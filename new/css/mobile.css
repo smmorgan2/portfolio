@@ -10,7 +10,7 @@
   html, body { overflow-x: clip; }
 
   /* The desktop pieces step aside (their scripts also stop early on touch) */
-  .hdr, #intro, #projects { display: none !important; }
+  .hdr, #intro, #projects, #contact { display: none !important; }
 
   /* ---------- S-M logo button: sits at its Figma spot, then stays 12px under the top edge ---------- */
   .m-logo {
