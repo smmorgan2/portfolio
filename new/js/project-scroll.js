@@ -144,7 +144,7 @@
   const HOLD = 0.6;        // timeline time at rest on each project (room to stop and look)
   const MOVE = 1.2;        // timeline time for one hand-off
   const GAP = 160;         // artboard px between the two objects during a hand-off
-  const EASE = 'power2.inOut';
+  const EASE = 'sine.inOut';   // Sam, Nov 15: smoother hand-off (was power2.inOut, which starts and stops harder)
   const startOf = (i) => (i + 1) * HOLD + i * MOVE;   // when hand-off i (project i -> i+1) begins
   const total = objs.length * HOLD + (objs.length - 1) * MOVE;
   const tl = gsap.timeline({ paused: true });
@@ -226,7 +226,7 @@
      Touch screens keep native scrolling: the hand-off still plays on its own, the page is not moved. */
   const SEG = 0.8;          // screens of scroll between project stops
   const TRIGGER = 0.12;     // share of SEG that sets off the hand-off
-  const SLIDE = 0.8;        // seconds for one hand-off
+  const SLIDE = 1.1;        // seconds for one hand-off (was 0.8; Sam, Nov 15: more fluid)
   const LINGER = 0.4;       // screens of scroll on the last project before the page moves on
   const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time with project i at rest
   const segPx = () => Math.round(innerHeight * SEG);
