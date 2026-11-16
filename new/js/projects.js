@@ -19,6 +19,8 @@
    Order (Nov 12, Sam): Google Ads leads, on advice from a motion art director who reviewed the book.
 
    Composer: cleared by Whipsaw for the site (Oct 30, 2026). */
+// Phone stills (m): placed from Figma Mobile - Home+ProjectSelection_v2 (633:684, 634:813, 634:727), Nov 16,
+// in px of that 402-wide frame. m.rot tilts a still.
 // Order (Sam, Nov 15; Figma Website Design > ProjectSelection_v2): Google Ads, LISTEN, Composer.
 // Spotify and AT&T go after Composer once their turntables are rendered.
 window.PROJECTS = [
@@ -26,23 +28,25 @@ window.PROJECTS = [
     client: 'Entropico', tags: ['Design', 'Motion'],
     // Placed to match Figma Website Design > ProjectSelection_v2 (633:537), Nov 16: frame 1, 6% larger, tilted -1deg
     seq: { path: 'img/projects/google-ads', frames: 180, loop: 179, x: 386.7, y: -106.8, w: 1106.6, h: 1146.9, rest: 1, rot: -1 },
-    m: { src: 'img/mobile/google-ads.webp', x: -129.8, y: -19.1, w: 604, h: 638 } },
+    m: { src: 'img/mobile/google-ads.webp', x: -107, y: 121.5, w: 620, h: 654.9 } },
   // LISTEN (Figma: Playground > ProjectSelection_v1a 116:89). Sam's plate sequence placed to match the
   // Figma frame: plate scaled 101% at (-13, -104), cropped to the object's full turn.
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
     seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196, ease: [0.333, 0, 0.667, 1] },
-    m: { src: 'img/mobile/listen.webp', x: -71, y: 52.6, w: 447, h: 506.5 } },
+    m: { src: 'img/mobile/listen.webp', x: -54, y: 158.1, w: 510, h: 577.9, rot: -4 } },
   { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     // Placed to match Figma ProjectSelection_v2 (633:506), Nov 16: lands on frame 114 (turned to show the
     // cylinder on the left, as in the Figma), 4% larger, tilted 1deg
     seq: { path: 'img/projects/composer', frames: 180, x: 489, y: 7.7, w: 962, h: 1217.8, rest: 114, rot: 1 },
-    m: { src: 'img/mobile/composer.webp', x: -29, y: -36.4, w: 415, h: 652, cut: [350, 300, 80, 170] } },
+    m: { src: 'img/mobile/composer.webp', x: 1, y: 126.8, w: 400, h: 628.5 } },
   // Spotify (BYTE): Sam's Blender turntable SpotifyMug_turntable_v02, cropped to the full turn. Placed to
   // match Figma ProjectSelection_v2 (633:583): mug body tilted 13.3deg, 1.39x, handle on the right
   // (frame 31). No case study yet, so it shows on the homepage only (home: true, live: false).
   { id: 'spotify',    title: 'Spotify',    href: null,              live: false, home: true,
     client: 'BYTE', tags: ['Design', 'Motion'],
-    seq: { path: 'img/projects/spotify', frames: 180, x: 541.2, y: -511.1, w: 925.8, h: 1511.5, rest: 31, rot: 13.3 } },
+    seq: { path: 'img/projects/spotify', frames: 180, x: 541.2, y: -511.1, w: 925.8, h: 1511.5, rest: 31, rot: 13.3 },
+    // Phone still: frame 31 with the same tilt baked in (no Figma phone frame for Spotify yet)
+    m: { src: 'img/mobile/spotify.webp', x: 30, y: 10, w: 360, h: 781 } },
 ];
