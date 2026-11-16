@@ -366,9 +366,9 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps canvas { position: absolute; display: block; will-change: transform; }
 /* Name and role (Figma S-M_DetailText, 26), fixed at the top corners while the projects are pinned.
-   x96 / right edge 1824 / y158 on the 1920 artboard. The shadow keeps them readable over light media. */
+   x96 / right edge 1824 / y432 on the 1920 artboard (Figma ProjectSelection_v2). The shadow keeps them readable over light media. */
 .ps-who {
-  position: absolute; z-index: 3; left: 0; right: 0; top: calc(158px * var(--ps, 0.5));
+  position: absolute; z-index: 3; left: 0; right: 0; top: calc(100% - (1080px - 432px) * var(--ps, 0.5));   /* y432 on the artboard (Figma v2), which sits on the bottom edge */
   padding: 0 calc(50% - 864px * var(--ps, 0.5)); display: flex; justify-content: space-between;
   font-weight: 300; font-size: max(13px, calc(26px * var(--ps, 0.5))); letter-spacing: -0.05em; line-height: 1;
   color: var(--fg); pointer-events: none;
@@ -403,14 +403,14 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ps-glass::before { transition: none; } }
 .ps-info { position: absolute; inset: 0; pointer-events: none; }
 .ps-name {
-  position: absolute; left: 112px; top: 836px; margin: 0;
+  position: absolute; left: 112px; top: 831px; margin: 0;
   font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: normal;
   color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
   white-space: nowrap;
 }
-.ps-tags { position: absolute; left: 1015px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: 28.6px; }
+.ps-tags { position: absolute; left: 1010.25px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: var(--pill-gap, 26px); }
 .ps-tags li {
-  width: 244.2px; height: 58.8px; display: flex; align-items: center; justify-content: center;
+  width: var(--pill-w, 227.9px); height: 58.8px; display: flex; align-items: center; justify-content: center;
   background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
   font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
   padding-bottom: calc(2 * var(--pill-lift));   /* centres the capitals (see --pill-lift) */
