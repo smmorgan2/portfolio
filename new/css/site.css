@@ -408,12 +408,14 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
   color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
   white-space: nowrap;
 }
-.ps-tags { position: absolute; left: 1010.25px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: var(--pill-gap, 26px); }
+/* Pills (Sam, Nov 16, option B): one line at y925, right edge on x1824 (under "Motion Art Director"),
+   26px apart. Same height and styling on every pill; only the width changes, with the word. */
+.ps-tags { position: absolute; right: 96px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
 .ps-tags li {
-  width: var(--pill-w, 227.9px); height: 58.8px; display: flex; align-items: center; justify-content: center;
+  height: 58.8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
   background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
   font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
-  padding-bottom: calc(2 * var(--pill-lift));   /* centres the capitals (see --pill-lift) */
+  padding: 0 44px calc(2 * var(--pill-lift));   /* 44px each side; the bottom padding centres the capitals (see --pill-lift) */
 }
 .ps-link {
   position: absolute; left: -1500px; top: -2000px; width: 4920px; height: 3080px;   /* the whole screen */
