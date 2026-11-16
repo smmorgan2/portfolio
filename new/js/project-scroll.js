@@ -217,48 +217,33 @@
     setActive(i);
   }
 
-  /* ---------- Pin + one swipe per project ----------
-     The section is pinned with one stop per project, SEG screens apart. The hand-off is not
-     scrubbed: once the scroll moves TRIGGER of the way toward the next stop, the whole hand-off
-     plays on its own (SLIDE seconds) and the page glides to that stop, so one swipe is enough
-     (Sam, Nov 3: "swipe once and it all slides in", like the intro). Input is held for SETTLE
-     after arriving so a trackpad's leftover momentum can't skip a project.
-     Touch screens keep native scrolling: the hand-off still plays on its own, the page is not moved. */
-  const SEG = 0.8;          // screens of scroll between project stops
-  const TRIGGER = 0.12;     // share of SEG that sets off the hand-off
-  const SLIDE = 1.1;        // seconds for one hand-off (was 0.8; Sam, Nov 15: more fluid)
-  const LINGER = 0.4;       // screens of scroll on the last project before the page moves on
-  const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time with project i at rest
-  const segPx = () => Math.round(innerHeight * SEG);
-  let stop = 0, busy = false, slideTw = null;
+  /* ---------- Pin + scrub (Sam, Nov 15) ----------
+     Scrolling drives the hand-offs directly, like the sign-off animation further down: the timeline
+     follows the scroll in both directions with a short catch-up (SCRUB), so there is nothing to
+     trigger and nothing to wait for. The rests between hand-offs (HOLD) are short stretches of
+     scroll where a project sits still. Before this it was one swipe per project with an automatic
+     glide; that version is on the home-v1 branch. */
+  const SCREENS_PER_PROJECT = 0.8;   // scroll distance, in screen heights, per project
+  const SCRUB = 0.6;                 // seconds the animation takes to catch up (same as the sign-off)
   const st = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: () => '+=' + (segPx() * (objs.length - 1) + Math.round(innerHeight * LINGER)),
+    end: () => '+=' + Math.round(innerHeight * SCREENS_PER_PROJECT * objs.length),
     pin: true,
+    scrub: reduced ? true : SCRUB,
+    animation: tl,
     invalidateOnRefresh: true,
-    onUpdate: (self) => {
-      if (busy) return;
-      const at = (self.scroll() - self.start) / segPx();   // position in stops (0 = first project)
-      if (self.direction > 0 && stop < objs.length - 1 && at > stop + TRIGGER) goTo(stop + 1);
-      else if (self.direction < 0 && stop > 0 && at < stop - TRIGGER) goTo(stop - 1);
-    },
-    // Arriving from below (scrolling back up) or jumping in from a link: sit on the matching stop.
-    onEnterBack: () => jumpTo(objs.length - 1),
-    onRefresh: (self) => { if (self.isActive || self.progress === 1) jumpTo(Math.min(objs.length - 1, Math.round((self.scroll() - self.start) / segPx()))); },
   });
-  function jumpTo(i) {
-    if (slideTw) slideTw.kill();
-    busy = false; stop = Math.max(0, i);
-    tl.time(restT(stop)); syncActive();
-  }
+  // Scroll position where project i sits still (the middle of its rest).
+  const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time when project i lands (used by the dots)
+  const restMid = (i) => (i === 0 ? 0 : i === objs.length - 1 ? total : startOf(i - 1) + MOVE + HOLD / 2);
+  const posFor = (i) => st.start + (restMid(i) / total) * (st.end - st.start);
   function goTo(i) {
-    stop = i; busy = true;
-    if (slideTw) slideTw.kill();
-    slideTw = gsap.to(tl, { time: restT(i), duration: reduced ? 0 : SLIDE, ease: 'none', onUpdate: syncActive,
-      onComplete: () => { syncActive(); if (!window.glideTo) busy = false; } });
-    if (window.glideTo) window.glideTo(st.start + i * segPx(), { duration: SLIDE }).then(() => { busy = false; });
+    const y = posFor(i);
+    if (window.lenis) window.lenis.scrollTo(y, { duration: 1.1 });
+    else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
   }
+  function jumpTo(i) { tl.time(restMid(i)); syncActive(); }
   /* ---------- Dots (Compass dot pagination) ----------
      One dot per project in the gap right of the frame. The accent pill slides with the hand-off
      (it follows the timeline, not just the landing), and clicking a dot glides to that project. */
@@ -269,7 +254,7 @@
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'ps-dot';
     b.setAttribute('aria-label', `${o.p.title}, project ${i + 1} of ${objs.length}`);
-    b.addEventListener('click', () => { if (i !== stop) goTo(i); });
+    b.addEventListener('click', () => goTo(i));
     dotsEl.appendChild(b);
     return b;
   });
@@ -301,9 +286,9 @@
     let live = true;
     const place = () => {
       if (!live) return;
-      const y = st.start + back * segPx();
-      if (Math.abs(scrollY - y) < 2 && stop === back) return;
-      jumpTo(back); syncDots();          // set the stop first, so the scroll below isn't read as a swipe
+      const y = posFor(back);
+      if (Math.abs(scrollY - y) < 2) return;
+      jumpTo(back); syncDots();
       scrollTo(0, y);
       if (window.lenis) window.lenis.scrollTo(y, { immediate: true, force: true });
     };
