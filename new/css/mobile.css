@@ -109,14 +109,17 @@
   .m-objs { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
   .m-objs-in { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
   .m-still { position: absolute; display: block; max-width: none; will-change: transform; transform-origin: 50% 50%; }
+  /* Liquid glass (Nov 16): the strip holds its own copy of the stills, enlarged 6% from its middle and
+     blurred, so it refracts in every browser (iPhone included); then the fill on top. */
   .m-glass {
     position: absolute; left: 0; right: 0; top: calc(581 * var(--mu)); bottom: 0; z-index: 2; pointer-events: none;
-    background: var(--glass-fill);
-    -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);
+    overflow: hidden; background: var(--bg);
   }
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .m-glass { background: var(--glass-solid); }
+  .m-glass-objs {
+    position: absolute; left: 0; top: calc(-581 * var(--mu)); width: 100%; height: calc(745 * var(--mu));
+    filter: blur(14px) saturate(1.4); transform: scale(1.06); transform-origin: 50% calc(663 * var(--mu));   /* less frost so the lens reads */
   }
+  .m-glass::after { content: ""; position: absolute; inset: 0; background: var(--glass-fill); }
   /* Progressive blur over the strip's top edge (centred on y581), so the still goes sharp to frosted */
   .m-fade { position: absolute; left: 0; right: 0; top: calc(504 * var(--mu)); height: calc(137 * var(--mu)); z-index: 2; pointer-events: none; }
   .m-fade i { position: absolute; inset: 0; }

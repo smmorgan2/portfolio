@@ -34,6 +34,22 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const objsLayer = document.getElementById('psObjs');
   const glassLayer = document.getElementById('psGlassObjs');
+  // Liquid glass (Sam, Nov 16, after Compass): the strip refracts its copy of the object. A lens that
+  // enlarges about 6% from the middle of the screen, plus a bend along the top edge. Chrome / Edge
+  // build the real filter; other browsers get the plain 6% enlargement in CSS (site.css).
+  if (window.Glass) {
+    if (Glass.lensFilter('psLens', 4920, 249, { flatBottom: true, edge: 80, strength: 300, rim: 0.5, magnify: 1, magnifyY: 0.05 })) {
+      // Only filter the part of the strip that's on screen (it's 4920 wide so any screen is covered)
+      const lens = document.getElementById('psLens');
+      const fitLens = () => {
+        const s = parseFloat(getComputedStyle(section).getPropertyValue('--ps')) || 1;
+        const half = Math.min(2460, innerWidth / s / 2 + 80);
+        lens.setAttribute('x', Math.round(2460 - half)); lens.setAttribute('width', Math.round(half * 2));
+      };
+      fitLens(); addEventListener('resize', fitLens);
+    }
+    Glass.surface(document.querySelector('.ps-glass'), { shine: false });   /* it has its own pointer light */
+  }
   const nameEl = document.getElementById('psName');
   const tagsEl = document.getElementById('psTags');
   const tagEls = [...tagsEl.querySelectorAll('li')];
