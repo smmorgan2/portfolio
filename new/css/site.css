@@ -452,7 +452,9 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* Project dots (js/project-scroll.js; Compass dot pagination): stacked in the gap right of the frame
    (artboard x1823 to 1920), centred on the frame. Sizes are real screen px (divided by the stage scale). */
 .ps-dots {
-  position: absolute; left: 1860px; top: 480px; transform: translate(-50%, -50%);
+  /* centred on the "Motion Art Director" line (y432 + half its 26px), so the column sits level with it
+     however many projects there are (Sam, Nov 16) */
+  position: absolute; left: 1860px; top: 445px; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; --step: calc(24px / var(--ps, 0.5));
 }
 .ps-dot {
