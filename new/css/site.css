@@ -368,7 +368,8 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* Name and role (Figma S-M_DetailText, 26), fixed at the top corners while the projects are pinned.
    x96 / right edge 1824 / y432 on the 1920 artboard (Figma ProjectSelection_v2). The shadow keeps them readable over light media. */
 .ps-who {
-  position: absolute; z-index: 3; left: 0; right: 0; top: calc(100% - (1080px - 432px) * var(--ps, 0.5));   /* y432 on the artboard (Figma v2), which sits on the bottom edge */
+  /* Centred top to bottom on the screen at any window size (Sam, Nov 17); sides stay on the x96 / x1824 margins */
+  position: absolute; z-index: 3; left: 0; right: 0; top: 50%; transform: translateY(-50%);
   padding: 0 calc(50% - 864px * var(--ps, 0.5)); display: flex; justify-content: space-between;
   font-weight: 300; font-size: max(13px, calc(26px * var(--ps, 0.5))); letter-spacing: -0.05em; line-height: 1;
   color: var(--fg); pointer-events: none;
@@ -452,9 +453,9 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* Project dots (js/project-scroll.js; Compass dot pagination): stacked in the gap right of the frame
    (artboard x1823 to 1920), centred on the frame. Sizes are real screen px (divided by the stage scale). */
 .ps-dots {
-  /* centred on the "Motion Art Director" line (y432 + half its 26px), so the column sits level with it
-     however many projects there are (Sam, Nov 16) */
-  position: absolute; left: 1860px; top: 445px; transform: translate(-50%, -50%);
+  /* level with the name row, which sits in the middle of the screen. The stage is 1080 tall and sits on
+     the bottom edge, so the screen's middle is 1080 - half the screen height, in artboard px (Nov 17) */
+  position: absolute; left: 1860px; top: calc(1080px - 50svh / var(--ps, 0.5)); transform: translate(-50%, -50%);
   display: flex; flex-direction: column; --step: calc(24px / var(--ps, 0.5));
 }
 .ps-dot {
