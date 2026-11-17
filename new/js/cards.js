@@ -48,9 +48,10 @@
   [...new Set(pairs.map((p) => p.card))].forEach((card) => {
     const w = parseFloat(card.style.width), h = parseFloat(card.style.height);
     const g = window.Glass && Glass.refract(card, {
-      radius: Math.min(w * 0.097, h * 0.167), edge: Glass.PRESET.edge, strength: Glass.PRESET.strength,
+      radius: Math.min(w * 0.097, h * 0.167), edge: Glass.PRESET.edge, strength: Glass.PRESET.strength, magnify: Glass.PRESET.magnify,
     });
     if (g) g.rebuild(w, h);
+    if (window.Glass) Glass.surface(card, { rim: false });   // shine only: no outline on the cards (Sam, Oct 30)
   });
 
   /* ---------- Small screens: bottom sheet ---------- */

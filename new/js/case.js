@@ -54,6 +54,14 @@
   })();
 
   const foot = document.getElementById('csFoot');
+  // Liquid glass footer (Nov 16): bends at its rounded top edge, flush with the screen at the bottom
+  const footGlass = foot && foot.querySelector('.cs-foot-glass');
+  if (footGlass && window.Glass) {
+    Glass.surface(footGlass);
+    const fg = Glass.refract(footGlass, { flatBottom: true, edge: () => 60 * innerWidth / 1920, strength: 75 * innerWidth / 1920, magnify: 0.25 });
+    const fit = () => fg.rebuild(footGlass.offsetWidth, footGlass.offsetHeight);
+    requestAnimationFrame(fit); let ft; addEventListener('resize', () => { clearTimeout(ft); ft = setTimeout(fit, 150); });
+  }
   if (!foot) return;
   // Case studies: Previous / Next point at the neighbouring live projects.
   // Other pages (Contact) carry their own fixed buttons, e.g. Home.

@@ -200,8 +200,9 @@
       if (!it.g) it.g = Glass.refract(it.box, {
         radius: Math.min(w * 0.097, h * 0.167),
         edge: () => Glass.PRESET.edge * it.box.offsetWidth / 440,
-        strength: Glass.PRESET.strength * w / 440,
+        strength: Glass.PRESET.strength * w / 440, magnify: Glass.PRESET.magnify,
       });
+      Glass.surface(it.box, { rim: false });
       it.g.rebuild(w, h);
     });
 

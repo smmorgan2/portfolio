@@ -139,6 +139,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
     inset 1.5px 0 0 var(--glass-rim-soft),
     inset -1.5px 0 0 var(--glass-rim-soft);
 }
+.cs-foot-glass.refract { backdrop-filter: var(--refract) var(--glass-filter); }   /* Chrome / Edge (js/case.js) */
 .cs-foot a {
   position: relative;
   display: flex; align-items: center; justify-content: center;

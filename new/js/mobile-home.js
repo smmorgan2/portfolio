@@ -35,7 +35,10 @@
         }
         return `<img class="m-still" src="${m.src}" alt="" decoding="async" data-rot="${m.rot || 0}" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))${clip}">`;
       }).join('')}</div></div>
-      <div class="m-glass"></div>
+      <div class="m-glass"><div class="m-glass-objs" aria-hidden="true">${projects.map((p) => {
+        const m = p.m;   // the same stills again: the glass refracts its own copy (works on iPhone too)
+        return `<img class="m-still" src="${m.src}" alt="" decoding="async" data-rot="${m.rot || 0}" style="left:calc(${m.x} * var(--mu));top:calc(${m.y} * var(--mu));width:calc(${m.w} * var(--mu));height:calc(${m.h} * var(--mu))">`;
+      }).join('')}</div></div>
       <div class="m-fade"><i></i><i></i><i></i></div>
       <span class="m-outline is-front" aria-hidden="true"></span>
       <div class="m-cap" aria-hidden="true">
@@ -46,7 +49,9 @@
     <div class="m-dots" role="group" aria-label="Projects">${projects.map((p, i) =>
       `<button type="button" class="m-dot" aria-label="${p.title}, project ${i + 1} of ${projects.length}"></button>`).join('')}</div>`;
   const card = document.getElementById('mCard');
-  const stills = [...trackEl.querySelectorAll('.m-still')];
+  const stills = [...trackEl.querySelectorAll('.m-objs .m-still')];
+  const glassStills = [...trackEl.querySelectorAll('.m-glass-objs .m-still')];
+  if (window.Glass) Glass.surface(trackEl.querySelector('.m-glass'), { shine: false });
   const dots = [...trackEl.querySelectorAll('.m-dot')];
   const nameEl = trackEl.querySelector('.m-name');
   const tagEls = [...trackEl.querySelectorAll('.m-tags li')];
@@ -87,6 +92,8 @@
       const off = i * sp + x;
       el.style.transform = `translate3d(${off}px,0,0)` + (+el.dataset.rot ? ` rotate(${el.dataset.rot}deg)` : '');
       el.style.visibility = Math.abs(off) < Math.max(w, innerWidth) * 1.6 ? 'visible' : 'hidden';
+      const g = glassStills[i];
+      if (g) { g.style.transform = el.style.transform; g.style.visibility = el.style.visibility; }
     });
     // Dots follow the finger: the active pill slides between positions as you drag.
     const pos = Math.max(0, Math.min(projects.length - 1, -x / sp));

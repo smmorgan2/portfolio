@@ -40,7 +40,8 @@
      Maps for the collapsed and expanded sizes are built once (and again after a resize),
      then swapped, so nothing heavy runs during the animation. */
   const glass = hdr.querySelector('.hdr-glass');
-  const refr = window.Glass ? Glass.refract(glass, { flatTop: true, edge: () => Glass.PRESET.edge * hs, strength: Glass.PRESET.strength }) : null;
+  const refr = window.Glass ? Glass.refract(glass, { flatTop: true, edge: () => Glass.PRESET.edge * hs, strength: Glass.PRESET.strength, magnify: 0.25 }) : null;
+  if (window.Glass) Glass.surface(glass);   // liquid glass rim, dispersion and pointer shine (Nov 16)
   let maps = null;
   function buildMaps() {
     if (!refr || !Glass.supported) return;

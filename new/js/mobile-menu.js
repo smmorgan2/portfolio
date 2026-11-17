@@ -55,6 +55,7 @@
   let open = false, tl = null, raf = 0;
   const mu = () => Math.min(innerWidth, 560) / 402;
   const glass = menu.querySelector('.m-menu-glass');
+  if (window.Glass) Glass.surface(glass, { shine: false });   // liquid glass rim + dispersion (Nov 16)
   const SPRING_OPEN_X = { response: 0.38, damping: 0.74 };
   const SPRING_OPEN_Y = { response: 0.5, damping: 0.66 };
   const SPRING_CLOSE = { response: 0.26, damping: 1 };
