@@ -12,8 +12,8 @@ hdr = hdr.replace('<a href="#intro">Home</a>', '<a href="index.html">Home</a>')
 hdr = hdr.replace('<a href="mailto:smmorgan2@gmail.com">Contact</a>', '<a href="contact.html">Contact</a>')
 hdr = hdr.replace('<a href="#projects">', '<a href="index.html#projects">')
 
-def media(src, alt, w, h):
-    return f'<figure class="cs-media"><img src="{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy" decoding="async"></figure>'
+def media(src, alt, w, h, cls=''):
+    return f'<figure class="cs-media{(" " + cls) if cls else ""}"><img src="{src}" alt="{alt}" width="{w}" height="{h}" loading="lazy" decoding="async"></figure>'
 
 def video(name, folder, alt, w, h, hover=False, box=None):
     # Loads only when scrolled near (js/case.js). Phones get videos/<folder>/mobile/<name>.mp4.
@@ -161,8 +161,9 @@ sp = f'''  <h1 class="sr-only">Spotify Wrapped</h1>
   <p class="cs-statement">How can we give users the tools to tell their own story inside Spotify’s brand?</p>
   {intro('Motion Designer (2021)', ['Design', 'Motion'], '2021 Wrapped celebrated the millions of weird and wonderful ways people listen, built on the idea that no two listening years look the same. Working inside a larger team, I was the motion designer for the Wrapped social posts and designed the Instagram Story sticker set.')}
   <h2 class="cs-h2">The sticker set</h2>
+  {video('sketches', 'spotify', 'Sketches for the Wrapped 2021 stickers, animated', 1920, 1080)}
   <p class="cs-body">The stickers had to feel personal and native to Stories: tools for listeners to bring their own Wrapped data into a post without it reading as branded content.</p>
-  {media(SP+'stickers.webp', 'Three Wrapped 2021 Instagram Story stickers: a 2021 spiral, Wrapped headphones and a steaming mug', 1766, 800)}
+  {media(SP+'stickers.webp', 'Three Wrapped 2021 Instagram Story stickers: a 2021 spiral, Wrapped headphones and a steaming mug', 1766, 800, 'is-clear')}
   <h2 class="cs-h2">The social posts</h2>
   <p class="cs-body">The posts shipped across Instagram, Twitter and Facebook.</p>
   <div class="cs-grid3">
