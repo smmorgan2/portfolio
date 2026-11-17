@@ -25,7 +25,7 @@ git checkout origin/redesign-2027 -- new
 cp -R new/. .
 rm -rf new
 # 3. Search engines may index it now
-for f in index.html composer.html google-ads.html listen.html contact.html about.html; do
+for f in index.html composer.html google-ads.html listen.html contact.html about.html spotify.html; do
   sed -i '/<!-- Test page at \/new\/ until launch: keep it out of search results. Remove at launch. -->/d' "$f"
   sed -i 's#<meta name="robots" content="noindex">##' "$f"
 done
@@ -33,11 +33,11 @@ done
 # 5. robots + sitemap
 printf 'User-agent: *\nAllow: /\nSitemap: https://sammorgancreative.net/sitemap.xml\n' > robots.txt
 { echo '<?xml version="1.0" encoding="UTF-8"?>'; echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-  for u in "" composer.html google-ads.html listen.html contact.html about.html; do echo "  <url><loc>https://sammorgancreative.net/$u</loc></url>"; done
+  for u in "" composer.html google-ads.html listen.html contact.html about.html spotify.html; do echo "  <url><loc>https://sammorgancreative.net/$u</loc></url>"; done
   echo '</urlset>'; } > sitemap.xml
 # 6. /new/ preview links forward to the real pages
 mkdir -p new
-for f in index.html composer.html google-ads.html listen.html contact.html about.html; do
+for f in index.html composer.html google-ads.html listen.html contact.html about.html spotify.html; do
   t="/$f"; [ "$f" = index.html ] && t="/"
   cat > "new/$f" <<EOF
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sam Morgan</title>
@@ -49,7 +49,7 @@ done
 
 git add -A
 echo "--- launch diff (main) ---"; git status --short | awk '{print $1}' | sort | uniq -c
-! grep -l 'name="robots" content="noindex"' index.html composer.html google-ads.html listen.html contact.html about.html || { echo "noindex still present"; exit 1; }
+! grep -l 'name="robots" content="noindex"' index.html composer.html google-ads.html listen.html contact.html about.html spotify.html || { echo "noindex still present"; exit 1; }
 test -f CNAME && test -f videos/Sam_Morgan_CV_2026.pdf && test -f 404.html && echo "checks: CNAME, CV, 404 present"
 
 if [ "${PUSH:-0}" = 1 ]; then

@@ -152,6 +152,33 @@ co = f'''  <h1 class="sr-only">Composer, for Whipsaw</h1>
 
 open(root + 'google-ads.html', 'w').write(page('google-ads', 'Google Ads', 'Google Ads for Entropico: an asset suite that scales across every platform. Design and motion by Sam Morgan.', ga))
 open(root + 'composer.html', 'w').write(page('composer', 'Composer', 'Composer for Whipsaw: a brand and a product shown as one system in under 30 seconds. Art direction and motion by Sam Morgan.', co))
+# Spotify Wrapped 2021: Figma Website Design > Spotify_v3 (646:919), Nov 17. Videos from the old site.
+# Left out for now: the "Sticker case study ani" slot (still a "Sketches" placeholder in the Figma) and the
+# placeholder half of the social copy. Outcome: Spotify's Q4 2021 shareholder results.
+SP = 'img/cases/spotify/'
+sp = f'''  <h1 class="sr-only">Spotify Wrapped</h1>
+  {video('hero', 'spotify', 'Wrapped 2021 social spot: Get ready for your Wrapped', 1920, 1080)}
+  <p class="cs-statement">How can we give users the tools to tell their own story inside Spotify’s brand?</p>
+  {intro('Motion Designer (2021)', ['Design', 'Motion'], '2021 Wrapped celebrated the millions of weird and wonderful ways people listen, built on the idea that no two listening years look the same. Working inside a larger team, I was the motion designer for the Wrapped social posts and designed the Instagram Story sticker set.')}
+  <h2 class="cs-h2">The sticker set</h2>
+  <p class="cs-body">The stickers had to feel personal and native to Stories: tools for listeners to bring their own Wrapped data into a post without it reading as branded content.</p>
+  {media(SP+'stickers.webp', 'Three Wrapped 2021 Instagram Story stickers: a 2021 spiral, Wrapped headphones and a steaming mug', 1766, 800)}
+  <h2 class="cs-h2">The social posts</h2>
+  <p class="cs-body">The posts shipped across Instagram, Twitter and Facebook.</p>
+  <div class="cs-grid3">
+    {video('social-01', 'spotify', 'Wrapped 2021 social post, lime', 1080, 1080)}
+    {video('social-02', 'spotify', 'Wrapped 2021 social post, lilac', 1080, 1080)}
+    {video('social-03', 'spotify', 'Wrapped 2021 social post, pink', 1080, 1080)}
+  </div>
+  <div class="cs-grid3">
+    {video('social-04', 'spotify', 'Wrapped 2021 social post, peach', 1080, 1080)}
+    {video('social-05', 'spotify', 'Wrapped 2021 social post, blue', 1080, 1080)}
+    {video('social-06', 'spotify', 'Wrapped 2021 social post', 1080, 1080)}
+  </div>
+  {video('story-mock', 'spotify', 'A Wrapped 2021 Instagram Story with the stickers, on a phone', 1920, 1080)}
+  <p class="cs-body">120 million listeners engaged with Wrapped 2021, up 29% on the year before, and people shared Wrapped stories and cards nearly 60 million times.</p>
+  <p class="cs-caption cs-note">Source: Spotify, fourth quarter 2021 results</p>'''
+open(root + 'spotify.html', 'w').write(page('spotify', 'Spotify Wrapped', 'Spotify Wrapped 2021: the Instagram Story sticker set and social posts. Motion and design by Sam Morgan.', sp))
 exec(open(os.path.join(HERE, 'listen_part.py')).read())
 exec(open(os.path.join(HERE, 'about_part.py')).read())
 print('built with v=' + V)

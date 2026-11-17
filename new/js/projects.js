@@ -43,8 +43,8 @@ window.PROJECTS = [
     m: { src: 'img/mobile/composer.webp', x: 1, y: 126.8, w: 400, h: 628.5 } },
   // Spotify (BYTE): Sam's Blender turntable SpotifyMug_turntable_v02, cropped to the full turn. Placed to
   // match Figma ProjectSelection_v2 (633:583): mug body tilted 13.3deg, 1.39x, handle on the right
-  // (frame 31). No case study yet, so it shows on the homepage only (home: true, live: false).
-  { id: 'spotify',    title: 'Spotify',    href: null,              live: false, home: true,
+  // (frame 31). Case study: spotify.html (Nov 17).
+  { id: 'spotify',    title: 'Spotify',    href: 'spotify.html',    live: true,
     client: 'BYTE', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/spotify', frames: 180, x: 541.2, y: -511.1, w: 925.8, h: 1511.5, rest: 31, rot: 13.3 },
     // Phone still: frame 31 with the same tilt baked in (no Figma phone frame for Spotify yet)

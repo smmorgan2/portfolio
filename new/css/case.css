@@ -86,6 +86,14 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   display: grid; grid-template-columns: 1fr 1fr; gap: calc(24 * var(--u));
 }
 .cs-grid2 .cs-media { width: auto; }
+/* 3-up grid (Spotify_v3 social rows: three across, 24 apart) */
+.cs-grid3 {
+  width: var(--media); margin-left: auto; margin-right: auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(24 * var(--u));
+}
+.cs-grid3 .cs-media { width: auto; margin-top: 0; }
+/* a caption under copy (a source line) sits close to it */
+.cs > .cs-body + .cs-note { margin-top: var(--gap-tight); }
 
 /* Two media side by side, top-aligned and centred (Google Ads_v2: 1000 + 24 + 703, both 1250 tall) */
 .cs-pair {
@@ -171,7 +179,7 @@ body[data-page="case"] { --u: calc(min(100vw, 1920px) / 1920); }
   .cs-statement br { display: none; }
   .cs-body { font-size: 18px; }
   .cs-statement, .cs-h2, .cs-body, .cs-note, .cs-intro { padding-left: 0; padding-right: 0; }
-  .cs-grid2 { gap: 8px; }
+  .cs-grid2, .cs-grid3 { gap: 8px; }
   .cs-detail, .cs-role, .cs-caption { font-size: 14px; }
   /* role and tags share a row, the copy sits under them */
   .cs-intro { grid-template-columns: 1fr 1fr; row-gap: 20px; font-size: 14px; }
