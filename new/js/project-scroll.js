@@ -41,7 +41,7 @@
   // enlarges about 6% from the middle of the screen, plus a bend along the top edge. Chrome / Edge
   // build the real filter; other browsers get the plain 6% enlargement in CSS (site.css).
   if (window.Glass) {
-    if (Glass.lensFilter('psLens', 4920, 207, { flatBottom: true, edge: 80, strength: 300, rim: 0.5, magnify: 1, magnifyY: 0.05 })) {
+    if (Glass.lensFilter('psLens', 4920, 207, { flatBottom: true, edge: 80, strength: 300, rim: 0.5, magnify: 1, magnifyY: 0.05, noise: 32, noiseFreq: 0.006 })) {
       // Only filter the part of the strip that's on screen (it's 4920 wide so any screen is covered)
       const lens = document.getElementById('psLens');
       const fitLens = () => {
