@@ -38,14 +38,12 @@ try{{if(localStorage.getItem("sm-theme")==="light"){{document.documentElement.da
 <script>/* Arriving through the page transition: cover the page before it paints (js/transition.js) */
 try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){{document.documentElement.classList.add("tx-in");window.txWait=new Promise(function(r){{window.__txDone=r;}});}}}}catch(e){{}}</script>
 <title>{title} | Sam Morgan</title>
-<!-- Test page at /new/ until launch: keep it out of search results. Remove at launch. -->
-<meta name="robots" content="noindex">
 <meta name="description" content="{desc}">
 <link rel="canonical" href="https://sammorgancreative.net/{pid}.html">
 <link rel="icon" href="favicon.ico" sizes="48x48"><link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Sam Morgan"><meta property="og:title" content="{title} | Sam Morgan">
 <meta property="og:description" content="{desc}">
-<meta property="og:url" content="https://sammorgancreative.net/{pid}.html"><meta property="og:image" content="https://sammorgancreative.net/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://sammorgancreative.net/{pid}.html"><meta property="og:image" content="https://sammorgancreative.net/img/og-home.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
