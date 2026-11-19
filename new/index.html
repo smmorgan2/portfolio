@@ -19,8 +19,9 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261118b">
-<link rel="stylesheet" href="css/mobile.css?v=20261118b">
+<link rel="stylesheet" href="css/site.css?v=20261118c">
+<link rel="stylesheet" href="css/case.css?v=20261118c">
+<link rel="stylesheet" href="css/mobile.css?v=20261118c">
 </head>
 <body data-page="home">
 <!-- Page transition screen (js/transition.js) -->
@@ -181,20 +182,27 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
     <a class="hc-mail" href="mailto:smmorgan2@gmail.com">smmorgan2@gmail.com</a>
   </section>
 </main>
+<!-- Glass footer with Home, as on the case studies: pops up at the end of the page (js/case.js) -->
+<div class="cs-foot-space" id="csFootSpace" aria-hidden="true"></div>
+<footer class="cs-foot" id="csFoot" aria-label="Back to the top">
+  <div class="cs-foot-glass"></div>
+  <a class="is-dark-rim" href="#projects" id="footHome">Home</a>
+</footer>
 
-<script src="js/vendor/gsap.min.js?v=20261118b"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261118b"></script>
-<script src="js/vendor/lenis.min.js?v=20261118b"></script>
-<script src="js/smooth.js?v=20261118b"></script>
-<script src="js/glass.js?v=20261118b"></script>
-<script src="js/projects.js?v=20261118b"></script>
-<script src="js/project-scroll.js?v=20261118b"></script>
-<script src="js/intro.js?v=20261118b"></script>   <!-- after the project scroll: its pin comes later on the page -->
-<script src="js/cards.js?v=20261118b"></script>
-<script src="js/header.js?v=20261118b"></script>
-<script src="js/transition.js?v=20261118b"></script>
-<script src="js/theme.js?v=20261118b"></script>
-<script src="js/mobile-menu.js?v=20261118b"></script>
-<script src="js/mobile-home.js?v=20261118b"></script>
+<script src="js/vendor/gsap.min.js?v=20261118c"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261118c"></script>
+<script src="js/vendor/lenis.min.js?v=20261118c"></script>
+<script src="js/smooth.js?v=20261118c"></script>
+<script src="js/glass.js?v=20261118c"></script>
+<script src="js/projects.js?v=20261118c"></script>
+<script src="js/project-scroll.js?v=20261118c"></script>
+<script src="js/intro.js?v=20261118c"></script>   <!-- after the project scroll: its pin comes later on the page -->
+<script src="js/case.js?v=20261118c"></script>   <!-- the glass footer; after intro.js so its trigger is placed after the pins -->
+<script src="js/cards.js?v=20261118c"></script>
+<script src="js/header.js?v=20261118c"></script>
+<script src="js/transition.js?v=20261118c"></script>
+<script src="js/theme.js?v=20261118c"></script>
+<script src="js/mobile-menu.js?v=20261118c"></script>
+<script src="js/mobile-home.js?v=20261118c"></script>
 </body>
 </html>

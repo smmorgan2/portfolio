@@ -103,6 +103,13 @@
   });
   foot.inert = true; // not clickable or tabbable while hidden
 
+  // Home page: its Home button glides back to the top instead of reloading the page
+  const homeTop = document.getElementById('footHome');
+  if (homeTop) homeTop.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (window.lenis) window.lenis.scrollTo(0, { duration: 1.6, force: true, lock: true }); else scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   const show = () => {
     foot.inert = false;
     if (header) header.conceal();
