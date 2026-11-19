@@ -89,6 +89,7 @@ try{{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: r
 <script src="js/media-viewer.js?v={V}"></script>
 <script src="js/transition.js?v={V}"></script>
 <script src="js/theme.js?v={V}"></script>
+<script src="js/favicon.js?v={V}"></script>
 <script src="js/mobile-menu.js?v={V}"></script>
 {extra_js}</body>
 </html>
