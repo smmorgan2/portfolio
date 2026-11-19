@@ -262,7 +262,15 @@
   }
   // On arrival, wait until the page has loaded and any page transition has cleared, so it's seen
   function peekSoon() {
-    const go2 = () => (window.txWait || Promise.resolve()).then(() => setTimeout(peekCard, 500));
+    // Gallery start (Sam, Nov 19): while the page is still "calm" (no pointer move yet, see index.html),
+    // the peek waits for the first move, along with the dots and the light/dark switch.
+    const afterWake = () => {
+      const h = document.documentElement;
+      if (!h.classList.contains('ui-calm')) return setTimeout(peekCard, 500);
+      const mo = new MutationObserver(() => { if (!h.classList.contains('ui-calm')) { mo.disconnect(); setTimeout(peekCard, 250); } });
+      mo.observe(h, { attributes: true, attributeFilter: ['class'] });
+    };
+    const go2 = () => (window.txWait || Promise.resolve()).then(afterWake);
     if (document.readyState === 'complete') go2(); else addEventListener('load', go2, { once: true });
   }
   // After the last project has slid out there's nothing on screen: no card, no rotate label.
