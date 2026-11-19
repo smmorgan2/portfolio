@@ -170,7 +170,10 @@
   const GAP = 160;         // artboard px between the two objects during a hand-off
   const EASE = 'sine.inOut';   // Sam, Nov 15: smoother hand-off (was power2.inOut, which starts and stops harder)
   const startOf = (i) => (i + 1) * HOLD + i * MOVE;   // when hand-off i (project i -> i+1) begins
-  const total = objs.length * HOLD + (objs.length - 1) * MOVE;
+  // The last project leaves too (Sam, Nov 19): with the card down there's no glass along the bottom,
+  // so a tall object (Composer, LISTEN) got cut flat by the section's edge as the page scrolled on.
+  // Now it slides up and out the same way every other hand-off does, before the section moves.
+  const total = objs.length * HOLD + objs.length * MOVE;
   const tl = gsap.timeline({ paused: true });
   objs.forEach((o, i) => { o.y = 0; o.place(); });
   if (!reduced) {
@@ -183,6 +186,9 @@
       tl.fromTo(b, { y: dist }, { y: 0, duration: MOVE, ease: EASE, onUpdate: placeB, immediateRender: false }, startOf(i));
       tl.fromTo(a, { y: 0 }, { y: out, duration: MOVE, ease: EASE, onUpdate: placeA, immediateRender: false }, startOf(i));
     }
+    const z = objs[objs.length - 1];
+    const outZ = () => -(z.q.y + z.q.h) - spaceAbove() - 40;   // clears the screen top
+    tl.fromTo(z, { y: 0 }, { y: outZ, duration: MOVE, ease: EASE, onUpdate: () => z.place(), immediateRender: false }, startOf(objs.length - 1));
   }
   tl.to({}, { duration: 0.001 }, total);   // the timeline spans the full journey
 
@@ -294,7 +300,8 @@
   const st = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: () => '+=' + Math.round(innerHeight * SCREENS_PER_PROJECT * objs.length),
+    // same scroll per hand-off as before, plus the last project's exit
+    end: () => '+=' + Math.round(innerHeight * SCREENS_PER_PROJECT * objs.length * total / (objs.length * HOLD + (objs.length - 1) * MOVE)),
     pin: true,
     scrub: reduced ? true : SCRUB,
     animation: tl,
@@ -302,7 +309,7 @@
   });
   // Scroll position where project i sits still (the middle of its rest).
   const restT = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE);   // timeline time when project i lands (used by the dots)
-  const restMid = (i) => (i === 0 ? 0 : i === objs.length - 1 ? total : startOf(i - 1) + MOVE + HOLD / 2);
+  const restMid = (i) => (i === 0 ? 0 : startOf(i - 1) + MOVE + HOLD / 2);
   const posFor = (i) => st.start + (restMid(i) / total) * (st.end - st.start);
   function goTo(i) {
     const y = posFor(i);
