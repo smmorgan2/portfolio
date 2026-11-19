@@ -1,0 +1,146 @@
+/* ---------- Project selection (Figma: ProjectSelection_v1a, Composer frame 619:177; js/project-scroll.js) ----------
+   Full bleed, first on the page (Sam, Nov 15). A 1920x1080 artboard scaled to fit (--ps), pinned to
+   the bottom of the screen so the glass strip (y831 to 1080) always sits on the bottom edge. The strip
+   and its blurred copy of the object run the full width of any screen. Title at x112 / y836, pills
+   at y925. The old badge outline and breakout layer are gone (home-v1 branch has them). */
+.ps { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
+.ps-stage {
+  position: absolute; left: 50%; bottom: 0;
+  width: 1920px; height: 1080px;
+  transform: translateX(-50%) scale(var(--ps, 0.5));
+  transform-origin: 50% 100%;
+}
+.ps canvas { position: absolute; display: block; will-change: transform; }
+/* Name and role (Figma S-M_DetailText, 26), fixed at the top corners while the projects are pinned.
+   x96 / right edge 1824 / y432 on the 1920 artboard (Figma ProjectSelection_v2). The shadow keeps them readable over light media. */
+.ps-who {
+  /* Centred top to bottom on the screen at any window size (Sam, Nov 17); sides stay on the x96 / x1824 margins */
+  position: absolute; z-index: 3; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+  padding: 0 calc(50% - 864px * var(--ps, 0.5)); display: flex; justify-content: space-between;
+  font-weight: 300; font-size: max(13px, calc(26px * var(--ps, 0.5))); letter-spacing: -0.05em; line-height: 1;
+  color: var(--fg); pointer-events: none;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--bg) 55%, transparent), 0 0 18px color-mix(in srgb, var(--bg) 45%, transparent);
+}
+.ps-clip { position: absolute; inset: 0; }
+.ps-objs { position: absolute; inset: 0; }
+/* Same glass as the header and footers, built directly: Chrome samples backdrop-filter from the
+   wrong place inside a scaled, clipped box, so the panel blurs its own copy of the objects with the
+   shared glass filter instead. The blur is divided by the stage scale to match on-screen glass. */
+.ps-glass {
+  position: absolute; left: -1500px; top: 831px; width: 4920px; height: 249px;   /* wider than any screen */
+  overflow: hidden; background: var(--bg);
+}
+.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
+.ps-glass::after {
+  content: ""; position: absolute; inset: 0;
+  background: var(--glass-fill);
+  /* the rim now comes from the liquid glass surface (.lg-rim), kept faint here (Sam, Nov 15) */
+  box-shadow: inset 0 18px 30px -18px var(--glass-glow);
+}
+/* Light catching the panel's top edge, following the pointer while it's over the frame
+   (after Compass "Liquid Glass": reflections that respond to the pointer). Text and artwork untouched. */
+.ps-glass::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(18% 1px at var(--mx, 50%) 0, rgba(255, 255, 255, 0.35), transparent),   /* softer now the cursor is always over it */
+    radial-gradient(26% 90px at var(--mx, 50%) 0, rgba(255, 255, 255, 0.08), transparent 70%);
+  opacity: 0; transition: opacity 0.25s ease;
+}
+.ps.is-rotating .ps-glass::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ps-glass::before { transition: none; } }
+.ps-info { position: absolute; inset: 0; pointer-events: none; }
+.ps-name {
+  position: absolute; left: 112px; top: 831px; margin: 0;
+  font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: normal;
+  color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
+  white-space: nowrap;
+}
+/* Pills (Sam, Nov 16, option B): one line at y925, right edge on x1824 (under "Motion Art Director"),
+   26px apart. Same height and styling on every pill; only the width changes, with the word. */
+.ps-tags { position: absolute; right: 96px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
+.ps-tags li {
+  height: 58.8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
+  font-weight: 300; font-size: 26.8px; letter-spacing: -0.05em; white-space: nowrap;
+  padding: 0 44px calc(2 * var(--pill-lift));   /* 44px each side; the bottom padding centres the capitals (see --pill-lift) */
+}
+.ps-link {
+  position: absolute; left: -1500px; top: -2000px; width: 4920px; height: 3080px;   /* the whole screen */
+  cursor: pointer;       /* a click opens the case study; moving turns the object (the .ps-cue badge says so) */
+  touch-action: pan-y;   /* vertical swipes scroll the page natively; sideways ones turn the object */
+}
+/* Keyboard rotate control: same area as the frame, takes no pointer input, shows a ring when focused */
+.ps-rot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
+.ps-rot:focus { outline: none; }
+.ps-rot:focus-visible { box-shadow: 0 0 0 calc(4px / var(--ps, 0.5)) var(--blue); }
+/* Rotation cue: glass badge beside the pointer while it is over the frame (js/project-scroll.js).
+   An orbit icon instead of left/right arrows, which read as "click to go to the next project". */
+.ps-cue {
+  position: fixed; left: 0; top: 0; z-index: 90; pointer-events: none;
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px;
+  border-radius: 999px; border: 1px solid var(--glass-rim);
+  background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-filter); backdrop-filter: var(--glass-filter);
+  color: var(--fg); font-weight: 300; font-size: 15px; letter-spacing: -0.03em; line-height: 1; white-space: nowrap;
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.ps-cue svg { width: 22px; height: 22px; flex: none; }
+.ps-cue span { padding-bottom: calc(2 * var(--pill-lift)); }
+.ps-cue.is-on { opacity: 1; }
+@media (hover: none) { .ps-cue { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ps-cue { transition: none; } }
+/* Keyboard users get the same words, at the top left of the frame, while the rotate control has focus */
+.ps-hint {
+  position: absolute; left: 168px; top: 108px; margin: 0; pointer-events: none;
+  font-weight: 300; font-size: 26px; letter-spacing: -0.05em; line-height: 1;
+  color: var(--grey); opacity: 0; transition: opacity 0.2s ease;
+}
+.ps-rot:focus-visible ~ .ps-hint { opacity: 1; }
+.ps.compact .ps-hint { display: none; }
+/* Project dots (js/project-scroll.js; Compass dot pagination): stacked in the gap right of the frame
+   (artboard x1823 to 1920), centred on the frame. Sizes are real screen px (divided by the stage scale). */
+.ps-dots {
+  /* level with the name row, which sits in the middle of the screen. The stage is 1080 tall and sits on
+     the bottom edge, so the screen's middle is 1080 - half the screen height, in artboard px (Nov 17) */
+  position: absolute; left: 1860px; top: calc(1080px - 50svh / var(--ps, 0.5)); transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; --step: calc(24px / var(--ps, 0.5));
+}
+.ps-dot {
+  width: var(--step); height: var(--step); padding: 0; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center; -webkit-tap-highlight-color: transparent;
+}
+.ps-dot::before {
+  content: ""; width: calc(7px / var(--ps, 0.5)); height: calc(7px / var(--ps, 0.5)); border-radius: 50%;
+  background: var(--fg); opacity: 0.3; transition: opacity 0.15s;
+}
+.ps-dot:hover::before { opacity: 0.6; }
+.ps-dot:focus-visible { outline: calc(2px / var(--ps, 0.5)) solid var(--blue); outline-offset: calc(-2px / var(--ps, 0.5)); border-radius: 50%; }
+.ps-dots::after {
+  content: ""; position: absolute; left: 50%; top: calc(var(--step) / 2); pointer-events: none;
+  width: calc(7px / var(--ps, 0.5)); height: calc(16px / var(--ps, 0.5)); border-radius: calc(4px / var(--ps, 0.5));
+  background: var(--accent);
+  transform: translate(-50%, -50%) translateY(calc(var(--pos, 0) * var(--step)));
+}
+.ps.compact .ps-dots { display: none; }
+@media (prefers-reduced-motion: reduce) { .ps-hint { transition: none; } }
+.ps-link:focus-visible { outline: none; }
+.ps-link:focus-visible::after {
+  content: ""; position: absolute; inset: 0; border: 6px solid var(--blue); border-radius: 160px;
+}
+/* Phones: the artboard gets small, so the name and pills move below the frame at readable sizes
+   (sizes divided by the stage scale so they come out in real screen px) */
+.ps.compact .ps-info {
+  inset: auto; left: 96.5px; top: calc(996px + 18px / var(--ps)); width: 1727px;
+  display: flex; flex-direction: column; gap: calc(10px / var(--ps));
+}
+.ps.compact .ps-name { position: static; font-size: calc(34px / var(--ps)); line-height: 1.1; }
+.ps.compact .ps-tags { position: static; gap: calc(6px / var(--ps)); flex-wrap: wrap; }
+.ps.compact .ps-tags li { width: auto; height: calc(30px / var(--ps)); padding: 0 calc(12px / var(--ps)) calc(2 * var(--pill-lift)); font-size: calc(13px / var(--ps)); border-radius: calc(15px / var(--ps)); }
+
+/* Light theme: the header plays the blue logo sequence (img/logo-light, js/header.js),
+   and the portrait sits in the blue frame (Sam's container_LIGHTMODE export) */
+.photo img.frame-light, .m-photo img.frame-light { display: none; }
+html[data-theme="light"] .photo img.frame-dark, html[data-theme="light"] .m-photo img.frame-dark { display: none; }
+html[data-theme="light"] .photo img.frame-light, html[data-theme="light"] .m-photo img.frame-light { display: block; }
+
+/* ---------- Theme toggle (js/theme.js) ----------
+   A switch in the style of the Compass toggle (52 x 24 track, 28 x 16 pill knob, 4 inset, 0.3s slide),

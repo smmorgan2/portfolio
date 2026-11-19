@@ -19,9 +19,9 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261118f">
-<link rel="stylesheet" href="css/case.css?v=20261118f">
-<link rel="stylesheet" href="css/mobile.css?v=20261118f">
+<link rel="stylesheet" href="css/site.css?v=20261119a">
+<link rel="stylesheet" href="css/case.css?v=20261119a">
+<link rel="stylesheet" href="css/mobile.css?v=20261119a">
 </head>
 <body data-page="home">
 <!-- Page transition screen (js/transition.js) -->
@@ -90,7 +90,9 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
         <p class="ps-name" id="psName"></p>
         <ul class="ps-tags" id="psTags"><li></li><li></li><li></li></ul>
       </div>
-      <a class="ps-link" id="psLink" href="google-ads.html" hidden><span class="sr-only">View the case study</span></a>
+      <div class="ps-link" id="psLink" hidden></div>
+      <!-- The glass card: hidden until the pointer nears the bottom of the screen; it's the way into each project (Sam, Nov 18) -->
+      <a class="ps-go" id="psGo" href="google-ads.html"><span class="sr-only">View the case study</span></a>
       <div class="ps-rot" id="psRot" role="slider" tabindex="0" aria-label="Rotate the project object" aria-orientation="horizontal"
            aria-valuemin="0" aria-valuemax="359" aria-valuenow="0" aria-valuetext="0 degrees"></div>
       <p class="ps-hint" aria-hidden="true">Use arrow keys to rotate</p>
@@ -189,21 +191,21 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
   <a class="is-dark-rim" href="#projects" id="footHome">Home</a>
 </footer>
 
-<script src="js/vendor/gsap.min.js?v=20261118f"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261118f"></script>
-<script src="js/vendor/lenis.min.js?v=20261118f"></script>
-<script src="js/smooth.js?v=20261118f"></script>
-<script src="js/glass.js?v=20261118f"></script>
-<script src="js/projects.js?v=20261118f"></script>
-<script src="js/project-scroll.js?v=20261118f"></script>
-<script src="js/intro.js?v=20261118f"></script>   <!-- after the project scroll: its pin comes later on the page -->
-<script src="js/case.js?v=20261118f"></script>   <!-- the glass footer; after intro.js so its trigger is placed after the pins -->
-<script src="js/cards.js?v=20261118f"></script>
-<script src="js/header.js?v=20261118f"></script>
-<script src="js/transition.js?v=20261118f"></script>
-<script src="js/theme.js?v=20261118f"></script>
-<script src="js/favicon.js?v=20261118f"></script>
-<script src="js/mobile-menu.js?v=20261118f"></script>
-<script src="js/mobile-home.js?v=20261118f"></script>
+<script src="js/vendor/gsap.min.js?v=20261119a"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261119a"></script>
+<script src="js/vendor/lenis.min.js?v=20261119a"></script>
+<script src="js/smooth.js?v=20261119a"></script>
+<script src="js/glass.js?v=20261119a"></script>
+<script src="js/projects.js?v=20261119a"></script>
+<script src="js/project-scroll.js?v=20261119a"></script>
+<script src="js/intro.js?v=20261119a"></script>   <!-- after the project scroll: its pin comes later on the page -->
+<script src="js/case.js?v=20261119a"></script>   <!-- the glass footer; after intro.js so its trigger is placed after the pins -->
+<script src="js/cards.js?v=20261119a"></script>
+<script src="js/header.js?v=20261119a"></script>
+<script src="js/transition.js?v=20261119a"></script>
+<script src="js/theme.js?v=20261119a"></script>
+<script src="js/favicon.js?v=20261119a"></script>
+<script src="js/mobile-menu.js?v=20261119a"></script>
+<script src="js/mobile-home.js?v=20261119a"></script>
 </body>
 </html>
