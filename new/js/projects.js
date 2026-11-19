@@ -46,6 +46,6 @@ window.PROJECTS = [
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     // Placed to match Figma ProjectSelection_v2 (633:506), Nov 16: lands on frame 114 (turned to show the
     // cylinder on the left, as in the Figma), 4% larger, tilted 1deg
-    seq: { path: 'img/projects/composer', frames: 180, x: 489, y: 7.7, w: 962, h: 1217.8, rest: 114, rot: 1 },
+    seq: { path: 'img/projects/composer', frames: 180, x: 489, y: 7.7, w: 962, h: 1217.8, rest: 12, rot: 1 },   // Sam, Nov 19: starts on this pose (tube on the right, badge to the front)
     m: { src: 'img/mobile/composer.webp', x: 1, y: 126.8, w: 400, h: 628.5 } },
 ];
