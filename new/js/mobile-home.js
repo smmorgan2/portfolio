@@ -35,11 +35,15 @@
         <p class="m-name"></p>
         <ul class="m-tags"><li></li><li></li><li></li></ul>
       </div>
-    </a>`;
+    </a>
+    <div class="m-dots" role="group" aria-label="Projects">${projects.map((p, i) =>
+      `<button type="button" class="m-dot" aria-label="${p.title}"></button>`).join('')}</div>`;
   const card = document.getElementById('mCard');
   const stills = [...trackEl.querySelectorAll('.m-objs .m-still')];
   const glassStills = [...trackEl.querySelectorAll('.m-glass-objs .m-still')];
-  const glassEls = [...trackEl.querySelectorAll('.m-glass, .m-fade, .m-cap')];
+  const glassEls = [...trackEl.querySelectorAll('.m-glass, .m-fade, .m-cap, .m-dots')];
+  const dots = [...trackEl.querySelectorAll('.m-dot')];
+  const dotsEl = trackEl.querySelector('.m-dots');
   const glassObjs = trackEl.querySelector('.m-glass-objs');
   if (window.Glass) Glass.surface(trackEl.querySelector('.m-glass'), { shine: false });
   const nameEl = trackEl.querySelector('.m-name');
@@ -57,6 +61,9 @@
     } else {
       card.removeAttribute('href'); card.removeAttribute('aria-label'); card.tabIndex = -1;
     }
+    // Position under the pills (Sam, Nov 19): the yellow bar slides to the current project
+    dotsEl.style.setProperty('--i', Math.max(0, slide - 1));
+    dots.forEach((d, k) => { if (k === slide - 1) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
     prevBtn.disabled = slide === 0;
     nextBtn.disabled = slide === SLIDES - 1;
     prevBtn.setAttribute('aria-label', slide === 1 ? 'Previous: hello' : slide > 1 ? `Previous project: ${projects[slide - 2].title}` : 'Previous');
@@ -147,6 +154,7 @@
   section.addEventListener('pointercancel', end);
   // The tap at the end of a swipe doesn't open the case study.
   card.addEventListener('click', (e) => { if (performance.now() - swipedAt < 400 || !card.href) e.preventDefault(); }, true);
+  dots.forEach((d, k) => d.addEventListener('click', () => goTo(k + 1)));
   prevBtn.addEventListener('click', () => goTo(index - 1));
   nextBtn.addEventListener('click', () => goTo(index + 1));
   // Keyboard (a tablet with a keyboard): arrow keys anywhere on the page

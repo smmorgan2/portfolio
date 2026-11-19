@@ -113,13 +113,14 @@
   .m-glass, .m-fade, .m-cap { will-change: transform; }
   .m-glass {
     position: absolute; left: 0; right: 0; top: calc(100svh - 240 * var(--mu)); bottom: 0; z-index: 2; pointer-events: none;
-    overflow: hidden; background: var(--bg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    overflow: hidden; background: var(--bg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
+    border-radius: calc(50 * var(--mu)) calc(50 * var(--mu)) 0 0;   /* Figma "Glass caption surface": 50 on the top corners */
   }
   /* The glass holds its own copy of the stills (lined up with the real ones), enlarged 6% and blurred a
      little, so it reads as thick clear glass in every browser, iPhone included. */
   .m-glass-objs {
     position: absolute; left: 0; top: calc(-100svh + 240 * var(--mu)); width: 100%; height: 100svh;
-    filter: blur(9px) saturate(1.5); transform: scale(1.06); transform-origin: 50% calc(100svh - 120 * var(--mu));
+    filter: blur(4px) saturate(180%) brightness(1.05); transform: scale(1.06);   /* clear glass, like desktop (was 9px) */ transform-origin: 50% calc(100svh - 120 * var(--mu));
   }
   .m-glass::after { content: ""; position: absolute; inset: 0; background: var(--glass-fill); }
   /* Dark mode: a light tint of black deeper in the glass, so the white title reads over a white render (Google Ads) */
@@ -154,6 +155,22 @@
     background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: calc(20.31 * var(--mu));
     font-weight: 300; font-size: calc(16.25 * var(--mu)); letter-spacing: -0.05em;
   }
+
+  /* Position dots under the pills (Sam, Nov 19), like the desktop dots turned sideways: grey dots with
+     a yellow bar that slides to the current project. 44px-tall tap row; sits between the pills and the name row. */
+  .m-dots {
+    --gap: 16px; position: absolute; z-index: 4; left: 50%; top: calc(100svh + (741 - 821) * var(--mu)); height: 28px; margin-top: -14px;
+    display: flex; gap: 0; translate: -50% 0;
+  }
+  .m-dot { width: var(--gap); height: 28px; padding: 0; border: 0; background: none; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
+  .m-dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--fg); opacity: 0.3; }
+  .m-dot:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; border-radius: 50%; }
+  .m-dots::after {
+    content: ""; position: absolute; top: 50%; left: calc(var(--gap) / 2 + var(--i, 0) * var(--gap)); pointer-events: none;
+    width: 16px; height: 6px; margin: -3px 0 0 -8px; border-radius: 3px; background: var(--accent);
+    transition: left 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (prefers-reduced-motion: reduce) { .m-dots::after { transition: none; } }
 
   /* Name and role: fixed along the bottom on every slide (x39 / x228, y764), over the glass */
   .m-who {
