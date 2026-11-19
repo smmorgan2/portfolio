@@ -127,7 +127,34 @@
   // slides up as the page opens and stays, and the header keeps its usual behaviour above it.
   // "Fits" = less than a footer's height left to scroll, so there's no real end of page to reach.
   const fits = () => document.documentElement.scrollHeight - innerHeight < space.offsetHeight;
-  if (fits()) {
+  if (homeTop) {
+    // Home (Sam, Nov 18): at the end of the page the glass comes up, holds for a second, then slides
+    // back down. After that it only comes up while the pointer is over the bottom strip where it sits,
+    // and goes down again when the pointer leaves. Scrolling back up hides it. The header is left alone.
+    const up = () => { foot.inert = false; if (reduced) tl.progress(1); else tl.timeScale(1).play(); };
+    const down = () => {
+      foot.inert = true;
+      if (document.activeElement && foot.contains(document.activeElement)) document.activeElement.blur();
+      if (reduced) tl.progress(0); else tl.timeScale(tl.duration() / CLOSE).reverse();
+    };
+    let atEnd = false, isUp = false, hold = null;
+    const set = (v) => { if (v === isUp) return; isUp = v; (v ? up : down)(); };
+    const overStrip = (y) => y >= innerHeight - foot.offsetHeight;
+    ScrollTrigger.create({
+      trigger: space, start: 'center bottom',
+      onEnter: () => { atEnd = true; set(true); clearTimeout(hold); hold = setTimeout(() => { hold = null; if (!pointerOver) set(false); }, 1000); },
+      onLeaveBack: () => { atEnd = false; clearTimeout(hold); hold = null; set(false); },
+    });
+    let pointerOver = false;
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      pointerOver = overStrip(e.clientY);
+      if (atEnd && !hold) set(pointerOver);
+    }, { passive: true });
+    document.documentElement.addEventListener('mouseleave', () => { pointerOver = false; if (!hold) set(false); });
+    // Keyboard: tabbing to Home brings the glass up
+    homeTop.addEventListener('focus', () => { if (atEnd) set(true); });
+  } else if (fits()) {
     foot.inert = false;
     if (reduced) tl.progress(1);
     else (window.txWait || Promise.resolve()).then(() => gsap.delayedCall(0.15, () => tl.play()));
