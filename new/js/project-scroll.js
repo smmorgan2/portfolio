@@ -226,7 +226,7 @@
     rot.setAttribute('aria-label', `Rotate the ${objs[i].p.title} object`);
     syncRot();
     if (reduced) objs.forEach((o, k) => o.show(k === i));
-    if (shown) pop();
+    if (shown) { pop(); peekCard(); }
   }
   /* ---------- The card (Sam, Nov 18) ----------
      Down by default: just the object, the name and the role. Moving the pointer into the bottom
@@ -250,7 +250,26 @@
     if (up) pop();   // name and pills pop in as the card arrives
   }
   const onScreen = () => { const r = section.getBoundingClientRect(); return r.top < innerHeight * 0.5 && r.bottom > innerHeight * 0.5; };
+  // Each time a project lands (and when the page opens) the card shows for a moment, then goes back
+  // down unless the pointer is there, so people learn it exists (Sam, Nov 19).
+  const PEEK_MS = 1400;
+  let peekT = null;
+  function peekCard() {
+    if (!shown || !onScreen() || gone()) return;
+    clearTimeout(peekT);
+    card(true);
+    peekT = setTimeout(() => { peekT = null; checkCard(); }, PEEK_MS);
+  }
+  // On arrival, wait until the page has loaded and any page transition has cleared, so it's seen
+  function peekSoon() {
+    const go2 = () => (window.txWait || Promise.resolve()).then(() => setTimeout(peekCard, 500));
+    if (document.readyState === 'complete') go2(); else addEventListener('load', go2, { once: true });
+  }
+  // After the last project has slid out there's nothing on screen: no card, no rotate label.
+  function gone() { return tl.time() > startOf(objs.length - 1) + MOVE * 0.35; }
   function checkCard() {
+    if (gone()) { clearTimeout(peekT); peekT = null; return card(false); }
+    if (peekT) return;   // showing for its moment
     if (document.activeElement === go) return card(true);
     if (py === null || !shown || !onScreen()) return card(false);
     const fromBottom = innerHeight - py;
@@ -274,7 +293,7 @@
   setActive(0);
   ScrollTrigger.create({
     trigger: section, start: 'top 55%',
-    onEnter: () => { shown = true; link.hidden = false; pop(); },
+    onEnter: () => { shown = true; link.hidden = false; pop(); peekSoon(); },
     onLeaveBack: () => { shown = false; link.hidden = true; if (popTl) popTl.kill(); gsap.set([nameEl, ...tagEls], { autoAlpha: 0 }); },
   });
 
@@ -346,7 +365,19 @@
   }
   syncDots();
 
-  tl.eventCallback('onUpdate', () => { syncActive(); syncDots(); });
+  let wasGone = false;
+  tl.eventCallback('onUpdate', () => {
+    syncActive(); syncDots();
+    const g = gone();
+    if (g !== wasGone) {
+      wasGone = g;
+      section.classList.toggle('is-gone', g);
+      const c = document.querySelector('.ps-cue');   // made further down
+      if (g) { if (c) c.classList.remove('is-on'); section.classList.remove('is-rotating'); }
+      else if (c && link.matches(':hover')) { c.classList.add('is-on'); section.classList.add('is-rotating'); }
+      checkCard();
+    }
+  });
   // ScrollTrigger sets the timeline's position on load/refresh without firing callbacks, so after a
   // reload part-way down (the browser restores the scroll) the objects and labels were left where
   // they started: Google Ads on screen with LISTEN's position. Re-sync after every refresh.
@@ -438,10 +469,10 @@
   document.body.appendChild(cue);
   const cueIcon = cue.querySelector('svg');
   const moveCue = (e) => { cue.style.transform = `translate3d(${e.clientX + 22}px, ${e.clientY + 22}px, 0)`; };
-  area.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch') { lastX = e.clientX; moveCue(e); section.classList.add('is-rotating'); cue.classList.add('is-on'); } });
+  area.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'touch' && !gone()) { lastX = e.clientX; moveCue(e); section.classList.add('is-rotating'); cue.classList.add('is-on'); } });
   const panel = section.querySelector('.ps-glass');
   area.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch') return;
+    if (e.pointerType === 'touch' || gone()) return;
     moveCue(e);
     const o = current(); if (o) cueIcon.style.transform = `rotate(${(o.angle * 0.25).toFixed(1)}deg)`;
     // Edge light on the glass panel follows the pointer (see .ps-glass::before).
@@ -478,6 +509,9 @@
   const endTouch = (e) => { if (touch && e.pointerId === touch.id) touch = null; };
   area.addEventListener('pointerup', endTouch);
   area.addEventListener('pointercancel', endTouch);
+
+  // Clicking the object opens its project too (Sam, Nov 19: people click the thing that moves)
+  area.addEventListener('click', () => { if (!gone() && go.href) go.click(); });
 
   // Keyboard: only while the rotate control has focus.
   rot.addEventListener('keydown', (e) => {
