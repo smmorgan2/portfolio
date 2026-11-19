@@ -430,7 +430,7 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps-link {
   position: absolute; left: -1500px; top: -2000px; width: 4920px; height: 3080px;   /* the whole screen */
-  cursor: default;       /* moving turns the object (the .ps-cue badge says so); the card below is the link now */
+  cursor: pointer;       /* moving turns the object (the .ps-cue badge says so); a click opens the project, like the card */
   touch-action: pan-y;   /* vertical swipes scroll the page natively; sideways ones turn the object */
 }
 /* The card's link: the 207 strip, riding with the glass */
@@ -439,6 +439,7 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
   transform: translateY(calc(var(--drop, 0) * 230px));
 }
 .ps-go:not([href]) { cursor: default; }
+.ps.is-gone .ps-link { cursor: default; }   /* the last project has slid out: nothing to click */
 .ps-go:focus-visible { outline: none; }
 .ps-go:focus-visible::after {
   content: ""; position: absolute; top: 8px; bottom: 0;
