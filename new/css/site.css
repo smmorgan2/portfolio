@@ -536,15 +536,53 @@ html[data-theme="light"] .tt-knob .moon { display: none; }
   .theme-toggle { top: calc(207px * var(--hs, 0.2) + 10px); left: auto; right: max(12px, env(safe-area-inset-right, 0px)); }
 }
 
-/* ---------- Home contact: the last beat of the sign-off (same type as contact.html: 150 Medium at x644) ---------- */
-.hc { min-height: 100vh; min-height: 100svh; box-sizing: border-box; padding: 9.64vw 0 0 33.54vw; background: var(--bg); }
-.hc .ct-links { list-style: none; margin: 0; padding: 0; }
-.hc .ct-links a {
-  display: inline-block; font-weight: 500; font-size: 7.8125vw; letter-spacing: -0.05em; line-height: 1.4;
-  color: var(--fg); text-decoration: none; transition: color 0.15s;
+/* ---------- Home contact: last beat of the sign-off (Figma Contact_page_v2, 682:421; 1920 x 1174) ----------
+   Every size is the Figma number times --u (one Figma px at this window width). The yellow (blue in
+   light mode) rim is img/contact-rim.svg used as a mask, so it follows the theme accent.
+   Previous version: tools/copy-archive/home-contact-before-v2.* */
+.hc {
+  --u: calc(100vw / 1920);
+  position: relative; height: calc(1174 * var(--u)); overflow: hidden; background: var(--bg); color: var(--fg);
 }
-.hc .ct-links a:hover, .hc .ct-links a:focus-visible { color: var(--accent); }
-.hc .ct-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+.hc p { margin: 0; }
+.hc a { color: inherit; text-decoration: none; }
+.hc a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+.hc-card { position: absolute; left: 50%; top: calc(154 * var(--u)); width: calc(959 * var(--u)); height: calc(522 * var(--u)); transform: translateX(-50%); }
+.hc-rim {
+  position: absolute; inset: 0; background: var(--accent);
+  -webkit-mask: url(../img/contact-rim.svg) center / 100% 100% no-repeat;
+          mask: url(../img/contact-rim.svg) center / 100% 100% no-repeat;
+}
+.hc-hi, .hc-email { position: absolute; left: 0; right: 0; text-align: center; letter-spacing: -0.05em; line-height: 1.4; white-space: nowrap; }
+.hc-hi { top: calc(101 * var(--u)); font-weight: 300; font-size: calc(40 * var(--u)); }
+.hc-email { top: calc(175 * var(--u)); font-weight: 500; font-size: calc(80 * var(--u)); transition: color 0.15s; }
+.hc-email:hover { color: var(--accent); }
+.hc-btns {
+  position: absolute; left: 0; right: 0; top: calc(390 * var(--u)); margin: 0; padding: 0; list-style: none;
+  display: flex; justify-content: center; gap: calc(65 * var(--u));
+}
+.hc-btns a {
+  width: calc(228 * var(--u)); height: calc(58.8 * var(--u)); box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
+  font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; white-space: nowrap;
+  padding-bottom: calc(2 * var(--pill-lift)); transition: scale 0.15s;
+}
+.hc-btns a:hover { scale: 1.04; }
+.hc-name {
+  position: absolute; left: 0; top: calc(676 * var(--u)); width: 100%;
+  font-weight: 500; font-size: calc(363.826 * var(--u)); letter-spacing: -0.05em; line-height: 1.369;
+  color: var(--accent); white-space: nowrap; pointer-events: none;
+}
+.hc-credit, .hc-mail { position: absolute; top: calc(1104 * var(--u)); z-index: 1; font-weight: 300; font-size: calc(26 * var(--u)); letter-spacing: -0.05em; line-height: 1.4; white-space: nowrap; }
+.hc-credit { left: calc(26 * var(--u)); }
+.hc-mail { right: calc(25 * var(--u)); }
+.hc-mail:hover { color: var(--accent); }
+/* Narrow windows keep the same composition; only the small type and pills stop shrinking. */
+@media (max-width: 1100px) {
+  .hc-btns a { width: auto; min-width: calc(228 * var(--u)); height: max(30px, calc(58.8 * var(--u))); padding: 0 14px calc(2 * var(--pill-lift)); font-size: max(13px, calc(26 * var(--u))); }
+  .hc-credit, .hc-mail { font-size: max(12px, calc(26 * var(--u))); }
+}
 
 /* ---------- Liquid glass surface (after Compass "Liquid Glass", Sam Nov 16; js/glass.js Glass.surface) ----------
    On top of every glass: a thin light rim (bright top-left fading to a faint bottom-right), a faint
