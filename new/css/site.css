@@ -580,6 +580,9 @@ html[data-theme="light"] .tt-knob .moon { display: none; }
 .hc-mail:hover { color: var(--accent); }
 /* The glass Home footer (css/case.css) on the home page uses the same Figma-pixel unit */
 body[data-page="home"] .cs-foot, body[data-page="home"] .cs-foot-space { --u: calc(min(100vw, 1920px) / 1920); }
+/* Here the glass comes up over the bottom of the contact (Figma Contact_page_v2): the spacer only marks
+   where it triggers and overlaps the last 207 Figma px instead of adding blank page below. */
+body[data-page="home"] .cs-foot-space { margin-top: calc(-207 * var(--u)); position: relative; pointer-events: none; }
 /* Narrow windows keep the same composition; only the small type and pills stop shrinking. */
 @media (max-width: 1100px) {
   .hc-btns a { width: auto; min-width: calc(228 * var(--u)); height: max(30px, calc(58.8 * var(--u))); padding: 0 14px calc(2 * var(--pill-lift)); font-size: max(13px, calc(26 * var(--u))); }
