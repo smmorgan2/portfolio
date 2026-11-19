@@ -380,11 +380,18 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 /* Same glass as the header and footers, built directly: Chrome samples backdrop-filter from the
    wrong place inside a scaled, clipped box, so the panel blurs its own copy of the objects with the
    shared glass filter instead. The blur is divided by the stage scale to match on-screen glass. */
+/* The card (Sam, Nov 18): same size as the header (207 artboard px, full width, 50 corner radius on
+   the inside edge), and hidden below the screen until the pointer nears the bottom (js/project-scroll.js
+   drives --drop: 0 = up, 1 = down). Its blurred copy of the object moves the other way so it stays
+   lined up with the real one. The strip is 4920 wide; the clip trims it to the screen, with the corners. */
 .ps-glass {
-  position: absolute; left: -1500px; top: 831px; width: 4920px; height: 249px;   /* wider than any screen */
+  position: absolute; left: -1500px; top: 873px; width: 4920px; height: 207px;   /* wider than any screen */
   overflow: hidden; background: var(--bg);
+  --edge: max(0px, calc(2460px - 50vw / var(--ps, 0.5)));
+  clip-path: inset(0 var(--edge) 0 var(--edge) round 50px 50px 0 0);
+  transform: translateY(calc(var(--drop, 0) * 230px));
 }
-.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
+.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); transform: translateY(calc(var(--drop, 0) * -230px)); }
 .ps-glass::after {
   content: ""; position: absolute; inset: 0;
   background: var(--glass-fill);
@@ -402,16 +409,19 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps.is-rotating .ps-glass::before { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ps-glass::before { transition: none; } }
-.ps-info { position: absolute; inset: 0; pointer-events: none; }
+.ps-info { position: absolute; inset: 0; pointer-events: none; transform: translateY(calc(var(--drop, 0) * 230px)); }
+/* Name and pills sit in the 207 card where they sat in the old 249 strip, centred (both +21) */
 .ps-name {
-  position: absolute; left: 112px; top: 831px; margin: 0;
+  position: absolute; left: 112px; top: 852px; margin: 0;
   font-weight: 500; font-size: 152.17px; letter-spacing: -0.05em; line-height: normal;
   color: color-mix(in srgb, var(--accent) calc(var(--flash, 0) * 100%), var(--fg));   /* pop-in flash */
-  white-space: nowrap;
+  white-space: nowrap; transition: color 0.2s;
 }
+.ps:has(.ps-go:hover) .ps-name { color: var(--accent); }   /* the card is the link: the name lights up */
+.ps:has(.ps-go:hover) .ps-glass::before { opacity: 1; }
 /* Pills (Sam, Nov 16, option B): one line at y925, right edge on x1824 (under "Motion Art Director"),
    26px apart. Same height and styling on every pill; only the width changes, with the word. */
-.ps-tags { position: absolute; right: 96px; top: 925px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
+.ps-tags { position: absolute; right: 96px; top: 946px; margin: 0; padding: 0; list-style: none; display: flex; gap: 26px; }
 .ps-tags li {
   height: 58.8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
   background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 40.7px;
@@ -420,8 +430,20 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
 }
 .ps-link {
   position: absolute; left: -1500px; top: -2000px; width: 4920px; height: 3080px;   /* the whole screen */
-  cursor: pointer;       /* a click opens the case study; moving turns the object (the .ps-cue badge says so) */
+  cursor: default;       /* moving turns the object (the .ps-cue badge says so); the card below is the link now */
   touch-action: pan-y;   /* vertical swipes scroll the page natively; sideways ones turn the object */
+}
+/* The card's link: the 207 strip, riding with the glass */
+.ps-go {
+  position: absolute; left: -1500px; top: 873px; width: 4920px; height: 207px; z-index: 2;
+  transform: translateY(calc(var(--drop, 0) * 230px));
+}
+.ps-go:not([href]) { cursor: default; }
+.ps-go:focus-visible { outline: none; }
+.ps-go:focus-visible::after {
+  content: ""; position: absolute; top: 8px; bottom: 0;
+  left: max(8px, calc(2460px - 50vw / var(--ps, 0.5) + 8px)); right: max(8px, calc(2460px - 50vw / var(--ps, 0.5) + 8px));
+  border: calc(4px / var(--ps, 0.5)) solid var(--blue); border-bottom: 0; border-radius: 44px 44px 0 0;
 }
 /* Keyboard rotate control: same area as the frame, takes no pointer input, shows a ring when focused */
 .ps-rot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; }
@@ -617,4 +639,4 @@ html[data-theme="light"] .lg-shine { background: radial-gradient(60% 120% at var
    Chrome / Edge: a real lens filter, js/project-scroll.js builds #psLens (edge bend + enlargement).
    Others: the copy is simply enlarged 6% from the middle of the screen. */
 html.lg-svg .ps-glass-objs { filter: url(#psLens) blur(calc(8px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }   /* less frost, so the bend reads */
-html:not(.lg-svg) .ps-glass-objs { transform: scale(1.06); transform-origin: 50% 50%; filter: blur(calc(8px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
+html:not(.lg-svg) .ps-glass-objs { transform: translateY(calc(var(--drop, 0) * -230px)) scale(1.06); transform-origin: 50% 50%; filter: blur(calc(8px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }

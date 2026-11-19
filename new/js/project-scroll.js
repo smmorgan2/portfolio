@@ -16,7 +16,10 @@
                 outline). Above that line it draws over the outline, so the object breaks through
                 the top instead of being chopped by it. All copies share one position: no seam.
      .ps-info   project name + three pills, which pop on with the intro's word animation.
-     .ps-link   the whole frame links to the active project's case study (a click; moving never navigates).
+     .ps-link   the whole frame: moving over it turns the object (it no longer links anywhere).
+     .ps-go     the glass card's link to the active project's case study. The card (glass, name,
+                pills) stays below the screen until the pointer nears the bottom edge, and goes back
+                down when it moves away (Sam, Nov 18), like the header does at the top.
      .ps-rot    keyboard rotate control over the same area (role="slider"), plus the "Move to rotate" hint.
 
    Scroll drives vertical position only. A project always arrives at its landing pose (frame 000).
@@ -38,7 +41,7 @@
   // enlarges about 6% from the middle of the screen, plus a bend along the top edge. Chrome / Edge
   // build the real filter; other browsers get the plain 6% enlargement in CSS (site.css).
   if (window.Glass) {
-    if (Glass.lensFilter('psLens', 4920, 249, { flatBottom: true, edge: 80, strength: 300, rim: 0.5, magnify: 1, magnifyY: 0.05 })) {
+    if (Glass.lensFilter('psLens', 4920, 207, { flatBottom: true, edge: 80, strength: 300, rim: 0.5, magnify: 1, magnifyY: 0.05 })) {
       // Only filter the part of the strip that's on screen (it's 4920 wide so any screen is covered)
       const lens = document.getElementById('psLens');
       const fitLens = () => {
@@ -54,7 +57,8 @@
   const tagsEl = document.getElementById('psTags');
   const tagEls = [...tagsEl.querySelectorAll('li')];
   const link = document.getElementById('psLink');
-  const linkLabel = link.querySelector('.sr-only');
+  const go = document.getElementById('psGo');
+  const goLabel = go.querySelector('.sr-only');
   const rot = document.getElementById('psRot');
   // Rotation input state (declared early: setActive clears it).
   let lastX = null;           // pointer baseline; null = not tracking
@@ -65,7 +69,7 @@
   /* ---------- Geometry (artboard px, from Figma) ---------- */
   // Full bleed (Sam, Nov 15): the old badge frame is the whole artboard now.
   const FRAME = { x: 0, y: 0, w: 1920, h: 1080 };
-  const PANEL = { x: -1500, y: 831 };      // glass strip, relative to the artboard (see .ps-glass)
+  const PANEL = { x: -1500, y: 873 };      // glass card, relative to the artboard (see .ps-glass)
   const COMPACT_BELOW = 0.45;              // stage scale under which the name and pills move below the frame
 
   let s = 1;
@@ -196,9 +200,9 @@
     const p = objs[i].p;
     nameEl.textContent = p.title;
     [p.client, ...p.tags].forEach((t, k) => { if (tagEls[k]) tagEls[k].textContent = t; });
-    // No case study yet (home: true): the frame isn't a link, so a click does nothing.
-    if (p.href) { link.href = p.href; link.style.cursor = ''; } else { link.removeAttribute('href'); link.style.cursor = 'default'; }
-    linkLabel.textContent = `${p.title}: ${p.client}, ${p.tags.join(', ')}.` + (p.href ? ' View the case study' : '');
+    // No case study yet (home: true): the card isn't a link, so a click does nothing.
+    if (p.href) go.href = p.href; else go.removeAttribute('href');
+    goLabel.textContent = `${p.title}: ${p.client}, ${p.tags.join(', ')}.` + (p.href ? ' View the case study' : '');
   }
   function pop() {
     if (popTl) popTl.kill();
@@ -218,6 +222,47 @@
     if (reduced) objs.forEach((o, k) => o.show(k === i));
     if (shown) pop();
   }
+  /* ---------- The card (Sam, Nov 18) ----------
+     Down by default: just the object, the name and the role. Moving the pointer into the bottom
+     HOT_ZONE brings the card up (glass, project name, pills), and it's the way into the project.
+     It stays while the pointer is over it and slides back down once the pointer moves above it,
+     leaves the window, or the projects scroll away. Same zone, size and timing as the header peek
+     at the top (js/header.js). Tabbing to it brings it up too. */
+  const CARD_H = 207, HOT_ZONE = 80;
+  const OPEN = { duration: 0.7, ease: 'expo.out' }, CLOSE = { duration: 0.45, ease: 'expo.in' };
+  const drop = { v: 1 };
+  const applyDrop = () => section.style.setProperty('--drop', drop.v.toFixed(4));
+  applyDrop();
+  let cardUp = false, cardTw = null, py = null;
+  function card(up) {
+    if (up === cardUp) return;
+    cardUp = up;
+    section.classList.toggle('card-up', up);
+    if (cardTw) cardTw.kill();
+    if (reduced) { drop.v = up ? 0 : 1; applyDrop(); return; }
+    cardTw = gsap.to(drop, { v: up ? 0 : 1, ...(up ? OPEN : CLOSE), onUpdate: applyDrop });
+    if (up) pop();   // name and pills pop in as the card arrives
+  }
+  const onScreen = () => { const r = section.getBoundingClientRect(); return r.top < innerHeight * 0.5 && r.bottom > innerHeight * 0.5; };
+  function checkCard() {
+    if (document.activeElement === go) return card(true);
+    if (py === null || !shown || !onScreen()) return card(false);
+    const fromBottom = innerHeight - py;
+    if (!cardUp) { if (fromBottom <= HOT_ZONE) card(true); }
+    else if (fromBottom > CARD_H * s) card(false);
+  }
+  addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') return; py = e.clientY; checkCard(); }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => { py = null; checkCard(); });
+  addEventListener('blur', () => { py = null; checkCard(); });
+  addEventListener('scroll', checkCard, { passive: true });
+  go.addEventListener('focus', checkCard);
+  go.addEventListener('blur', () => setTimeout(checkCard, 0));
+  // The glass edge light follows the pointer along the card
+  go.addEventListener('pointermove', (e) => {
+    const r = section.querySelector('.ps-glass').getBoundingClientRect();
+    section.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+  });
+
   // Labels appear (with the pop) as the section arrives, already on the first project.
   gsap.set([nameEl, ...tagEls], { autoAlpha: 0 });
   setActive(0);
@@ -426,8 +471,6 @@
   const endTouch = (e) => { if (touch && e.pointerId === touch.id) touch = null; };
   area.addEventListener('pointerup', endTouch);
   area.addEventListener('pointercancel', endTouch);
-  // A tap still opens the case study; the click a browser fires at the end of a swipe does not.
-  area.addEventListener('click', (e) => { if (performance.now() - swipedAt < 450) e.preventDefault(); }, true);
 
   // Keyboard: only while the rotate control has focus.
   rot.addEventListener('keydown', (e) => {
@@ -435,7 +478,7 @@
     if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); turnBy(step); }
     else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); turnBy(-step); }
     else if (e.key === 'Home') { e.preventDefault(); const o = current(); if (o) { o.setAngle(0); syncRot(); } }
-    else if (e.key === 'Enter') { e.preventDefault(); link.click(); }
+    else if (e.key === 'Enter') { e.preventDefault(); if (go.href) go.click(); }
   });
 
   // Losing the page or the window drops any tracking, so stale input can't turn anything.
