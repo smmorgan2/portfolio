@@ -126,7 +126,9 @@
   /* Dark mode: a light tint of black deeper in the glass, so the white title reads over a white render (Google Ads) */
   html:not([data-theme="light"]) .m-glass::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.4) 60%), var(--glass-fill); }
   /* Progressive blur over the glass's top edge, so the still goes sharp to glassy */
-  .m-fade { position: absolute; left: 0; right: 0; top: calc(100svh + (504 - 821) * var(--mu)); height: calc(137 * var(--mu)); z-index: 2; pointer-events: none; }
+  /* Off (Sam, Nov 19): this band softened the objects above the glass's edge. Objects stay sharp up to the glass now, like desktop. */
+  .m-fade { display: none; }
+  .m-fade-was { position: absolute; left: 0; right: 0; top: calc(100svh + (504 - 821) * var(--mu)); height: calc(137 * var(--mu)); z-index: 2; pointer-events: none; }
   .m-fade i { position: absolute; inset: 0; }
   .m-fade i:nth-child(1) {
     -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
