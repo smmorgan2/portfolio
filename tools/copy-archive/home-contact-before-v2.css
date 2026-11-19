@@ -1,0 +1,9 @@
+/* ---------- Home contact: the last beat of the sign-off (same type as contact.html: 150 Medium at x644) ---------- */
+.hc { min-height: 100vh; min-height: 100svh; box-sizing: border-box; padding: 9.64vw 0 0 33.54vw; background: var(--bg); }
+.hc .ct-links { list-style: none; margin: 0; padding: 0; }
+.hc .ct-links a {
+  display: inline-block; font-weight: 500; font-size: 7.8125vw; letter-spacing: -0.05em; line-height: 1.4;
+  color: var(--fg); text-decoration: none; transition: color 0.15s;
+}
+.hc .ct-links a:hover, .hc .ct-links a:focus-visible { color: var(--accent); }
+.hc .ct-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
