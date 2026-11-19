@@ -68,81 +68,83 @@
     right: max(14px, env(safe-area-inset-right, 0px));
   }
 
-  /* ---------- Home (Figma Mobile - Home+ProjectSelection_v2, 402 x 1331): projects, then the greeting ---------- */
-  .m-home {
-    display: block; position: relative; margin: 0 auto;
-    width: calc(402 * var(--mu)); height: calc(1331 * var(--mu));
-  }
+  /* ---------- Home: one screen, a sideways carousel (Sam, Nov 19; Figma Mobile - Home+ProjectSelection_v2,
+     402 x 821: 688:300 greeting, 633:684 / 688:229 / 688:258 projects). The 402 x 821 artboard sits on
+     the bottom edge of the screen, so the glass, caption and name row land exactly; any extra height goes
+     above, under the logo. Every y below is Figma px measured from the artboard's top:
+     calc(100svh + (y - 821) * var(--mu)). Slide 1 = greeting, then one slide per project. ---------- */
+  body[data-page="home"] { --mu: min(calc(min(100vw, 560px) / 402), calc(100svh / 821)); }
+  html:has(body[data-page="home"]), body[data-page="home"] { overflow: hidden; height: 100%; overscroll-behavior: none; }
+  .m-home { display: block; position: relative; width: 100%; height: 100svh; overflow: hidden; }
+  .m-ps { position: absolute; inset: 0; touch-action: pan-y; }
+  .m-intro { position: absolute; inset: 0; will-change: transform; }
   .m-greet {
-    position: absolute; left: calc(43.5 * var(--mu)); top: calc(809 * var(--mu)); width: calc(315 * var(--mu)); margin: 0;
+    position: absolute; left: calc(50% + (47 - 201) * var(--mu)); top: calc(100svh + (207 - 821) * var(--mu)); width: calc(315 * var(--mu)); margin: 0;
     text-align: center; font-weight: 500; font-size: calc(64 * var(--mu)); letter-spacing: -0.05em; line-height: 1.08;
     color: var(--fg); white-space: nowrap;
   }
   .m-greet .hl { color: var(--accent); }
   .m-greet .hl i { font-style: normal; color: var(--fg); }
   .m-pron {
-    position: absolute; left: calc(308 * var(--mu)); top: calc(818 * var(--mu)); margin: 0;
+    position: absolute; left: calc(50% + (312 - 201) * var(--mu)); top: calc(100svh + (216 - 821) * var(--mu)); margin: 0;
     font-weight: 300; font-size: calc(13 * var(--mu)); letter-spacing: -0.05em; line-height: 1.2; color: var(--fg);
   }
-  /* Portrait: the same frame + cutout pair as the desktop intro (Figma "Portrait collage" 339 wide at x12 y227) */
-  .m-photo { position: absolute; left: calc(12 * var(--mu)); top: calc(893 * var(--mu)); width: calc(339 * var(--mu)); aspect-ratio: 650 / 387; }
+  /* Portrait: the same frame + cutout pair as the desktop intro (Figma "Portrait collage" 339 wide at x16 y318) */
+  .m-photo { position: absolute; left: calc(50% + (16 - 201) * var(--mu)); top: calc(100svh + (318 - 821) * var(--mu)); width: calc(339 * var(--mu)); aspect-ratio: 650 / 387; }
   .m-photo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .m-state {
-    position: absolute; left: calc(20 * var(--mu)); top: calc(1140 * var(--mu)); width: calc(362 * var(--mu)); margin: 0;
-    text-align: center; font-weight: 300; font-size: calc(26 * var(--mu)); letter-spacing: -0.05em; line-height: 1.3;
+    position: absolute; left: calc(50% + (24 - 201) * var(--mu)); top: calc(100svh + (580 - 821) * var(--mu)); width: calc(362 * var(--mu)); margin: 0;
+    text-align: left; font-weight: 300; font-size: calc(26 * var(--mu)); letter-spacing: -0.05em; line-height: 1.3;
     color: var(--fg);
   }
   /* Word pop colour: accent fading into the text colour as --flash goes 1 -> 0 (js/mobile-home.js) */
   .mw { display: inline-block; --flash: 0; color: color-mix(in srgb, var(--accent) calc(var(--flash) * 100%), var(--fg)); }
   .m-greet .mw.hl { color: var(--accent); }
 
-  /* ---------- Projects (Figma v2): full width, no card outline. The still is free above the glass and
-     clipped at the bottom of the strip (y745). Glass strip y581 to 745; title + pills at y596. ---------- */
-  .m-ps { position: absolute; left: 0; right: 0; top: 0; height: calc(780 * var(--mu)); touch-action: pan-y; }
+  /* Projects: the stills are free above the glass and cut off at the bottom of the screen. The glass
+     (y581 to the bottom) arrives with the first project and stays; its caption swaps per project. */
   .m-track { position: absolute; inset: 0; }
-  .m-card {
-    position: absolute; left: 0; top: 0; width: 100%; height: calc(745 * var(--mu));
-    display: block; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent;
-  }
+  .m-card { position: absolute; inset: 0; display: block; color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  .m-card:not([href]) { cursor: default; }
   .m-card:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; }
-  .m-outline { display: none; }
   .m-objs { position: absolute; z-index: 1; inset: 0; overflow: hidden; pointer-events: none; }
-  .m-objs-in { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+  .m-objs-in { position: absolute; inset: 0; }
   .m-still { position: absolute; display: block; max-width: none; will-change: transform; transform-origin: 50% 50%; }
-  /* Liquid glass (Nov 16): the strip holds its own copy of the stills, enlarged 6% from its middle and
-     blurred, so it refracts in every browser (iPhone included); then the fill on top. */
+  .m-glass, .m-fade, .m-cap { will-change: transform; }
   .m-glass {
-    position: absolute; left: 0; right: 0; top: calc(581 * var(--mu)); bottom: 0; z-index: 2; pointer-events: none;
-    overflow: hidden; background: var(--bg);
+    position: absolute; left: 0; right: 0; top: calc(100svh - 240 * var(--mu)); bottom: 0; z-index: 2; pointer-events: none;
+    overflow: hidden; background: var(--bg); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
+  /* The glass holds its own copy of the stills (lined up with the real ones), enlarged 6% and blurred a
+     little, so it reads as thick clear glass in every browser, iPhone included. */
   .m-glass-objs {
-    position: absolute; left: 0; top: calc(-581 * var(--mu)); width: 100%; height: calc(745 * var(--mu));
-    filter: blur(14px) saturate(1.4); transform: scale(1.06); transform-origin: 50% calc(663 * var(--mu));   /* less frost so the lens reads */
+    position: absolute; left: 0; top: calc(-100svh + 240 * var(--mu)); width: 100%; height: 100svh;
+    filter: blur(9px) saturate(1.5); transform: scale(1.06); transform-origin: 50% calc(100svh - 120 * var(--mu));
   }
   .m-glass::after { content: ""; position: absolute; inset: 0; background: var(--glass-fill); }
-  /* Progressive blur over the strip's top edge (centred on y581), so the still goes sharp to frosted */
-  .m-fade { position: absolute; left: 0; right: 0; top: calc(504 * var(--mu)); height: calc(137 * var(--mu)); z-index: 2; pointer-events: none; }
+  /* Dark mode: a light tint of black deeper in the glass, so the white title reads over a white render (Google Ads) */
+  html:not([data-theme="light"]) .m-glass::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.4) 60%), var(--glass-fill); }
+  /* Progressive blur over the glass's top edge, so the still goes sharp to glassy */
+  .m-fade { position: absolute; left: 0; right: 0; top: calc(100svh + (504 - 821) * var(--mu)); height: calc(137 * var(--mu)); z-index: 2; pointer-events: none; }
   .m-fade i { position: absolute; inset: 0; }
   .m-fade i:nth-child(1) {
-    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
-    -webkit-mask: linear-gradient(transparent 0%, #000 25%); mask: linear-gradient(transparent 0%, #000 25%);
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+    -webkit-mask: linear-gradient(transparent 0%, #000 35%, transparent 70%); mask: linear-gradient(transparent 0%, #000 35%, transparent 70%);
   }
   .m-fade i:nth-child(2) {
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    -webkit-mask: linear-gradient(transparent 12%, #000 42%); mask: linear-gradient(transparent 12%, #000 42%);
+    -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+    -webkit-mask: linear-gradient(transparent 25%, #000 50%, transparent 80%); mask: linear-gradient(transparent 25%, #000 50%, transparent 80%);
   }
-  .m-fade i:nth-child(3) {
-    -webkit-backdrop-filter: blur(30px) saturate(1.4); backdrop-filter: blur(30px) saturate(1.4);
-    -webkit-mask: linear-gradient(transparent 28%, #000 56%, transparent 100%); mask: linear-gradient(transparent 28%, #000 56%, transparent 100%);
-  }
+  .m-fade i:nth-child(3) { display: none; }
   .m-cap {
-    position: absolute; z-index: 4; left: calc(39.25 * var(--mu)); top: calc(596.4 * var(--mu)); width: calc(318.9 * var(--mu));
+    position: absolute; z-index: 4; left: calc(50% + (39.25 - 201) * var(--mu)); top: calc(100svh + (596.4 - 821) * var(--mu)); width: calc(318.9 * var(--mu));
     display: flex; flex-direction: column; gap: calc(24.3 * var(--mu)); pointer-events: none;
   }
   .m-name {
     --flash: 0; margin: 0; text-align: center; white-space: nowrap;
     color: color-mix(in srgb, var(--accent) calc(var(--flash) * 100%), var(--fg));
     font-weight: 500; font-size: calc(56.88 * var(--mu)); letter-spacing: -0.05em; line-height: 1.1;
+    text-shadow: 0 1px 12px color-mix(in srgb, var(--bg) 45%, transparent);
   }
   .m-tags { display: flex; justify-content: center; gap: calc(8.125 * var(--mu)); margin: 0; padding: 0; list-style: none; }
   .m-tags li {
@@ -153,20 +155,37 @@
     font-weight: 300; font-size: calc(16.25 * var(--mu)); letter-spacing: -0.05em;
   }
 
-  /* ---------- Dots under the card (Compass dot pagination): one per project, the accent dot
-     slides with your finger. Each dot is a 24px tap target around a 7px dot. ---------- */
-  .m-dots {
-    position: absolute; left: 50%; top: calc(752 * var(--mu)); transform: translateX(-50%);   /* just under the strip */
-    display: flex; gap: 0; --step: 24px;
+  /* Name and role: fixed along the bottom on every slide (x39 / x228, y764), over the glass */
+  .m-who {
+    position: absolute; z-index: 5; left: calc(50% + (39 - 201) * var(--mu)); width: calc(318 * var(--mu)); top: calc(100svh + (764 - 821) * var(--mu));
+    margin: 0; display: flex; justify-content: space-between; pointer-events: none;
+    font-weight: 300; font-size: calc(16.25 * var(--mu)); letter-spacing: -0.05em; line-height: calc(23 * var(--mu)); color: var(--fg);
   }
-  .m-dot { width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; }
-  .m-dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--fg); opacity: 0.3; }
-  .m-dots::after {
-    content: ""; position: absolute; top: 50%; left: 12px; width: 16px; height: 7px; margin: -3.5px 0 0 -8px;
-    border-radius: 4px; background: var(--accent); pointer-events: none;
-    transform: translateX(calc(var(--m-pos, 0) * var(--step)));
+  .m-who span:first-child { width: calc(100.55 * var(--mu)); text-align: center; }
+  .m-who span:last-child { width: calc(129 * var(--mu)); text-align: center; }
+
+  /* Carousel controls (Compass Layout > Carousel): round outlined previous / next buttons, here on the
+     screen edges level with the objects. Glass behind the chevron so it reads over any render. A 44px
+     tap area around a 36px button. Hidden at the ends (nothing before the greeting, nothing after the last project). */
+  .m-arrow {
+    position: absolute; z-index: 6; top: calc(100svh + (390 - 821) * var(--mu)); width: 44px; height: 44px; margin-top: -22px;
+    display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--fg); cursor: pointer;
+    -webkit-tap-highlight-color: transparent; transition: opacity 0.15s ease-out, scale 0.15s ease-out;
   }
-  .m-dot:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; border-radius: 50%; }
+  .m-arrow.is-prev { left: max(6px, env(safe-area-inset-left, 0px)); }
+  .m-arrow.is-next { right: max(6px, env(safe-area-inset-right, 0px)); }
+  .m-arrow::before {
+    content: ""; position: absolute; width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.35);
+    -webkit-backdrop-filter: blur(8px) saturate(1.5); backdrop-filter: blur(8px) saturate(1.5);
+  }
+  html[data-theme="light"] .m-arrow::before { border-color: rgba(0, 0, 0, 0.14); background: rgba(255, 255, 255, 0.55); }
+  .m-arrow svg { position: relative; width: 18px; height: 18px; }
+  .m-arrow:active { scale: 0.92; }
+  .m-arrow[disabled] { opacity: 0; pointer-events: none; }
+  .m-arrow:focus-visible { outline: none; }
+  .m-arrow:focus-visible::before { outline: 2px solid var(--blue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .m-arrow { transition: none; } }
 
   /* ---------- Contact (Figma Mobile - Contact: three 80px links, centred, from y200) ---------- */
   body[data-page="case"] .ct { padding: calc(193 * var(--mu)) 0 0; text-align: center; min-height: calc(100svh - 96px); }

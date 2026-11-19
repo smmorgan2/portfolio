@@ -19,9 +19,9 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://use.typekit.net/wpk2hzh.css">
 <!-- Bump ?v= on every update so browsers never mix old and new files. -->
-<link rel="stylesheet" href="css/site.css?v=20261119i">
-<link rel="stylesheet" href="css/case.css?v=20261119i">
-<link rel="stylesheet" href="css/mobile.css?v=20261119i">
+<link rel="stylesheet" href="css/site.css?v=20261119k">
+<link rel="stylesheet" href="css/case.css?v=20261119k">
+<link rel="stylesheet" href="css/mobile.css?v=20261119k">
 </head>
 <body data-page="home">
 <!-- Page transition screen (js/transition.js) -->
@@ -72,12 +72,22 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
 
 <main>
   <!-- Phones and tablets only (css/mobile.css, js/mobile-home.js). Figma: Mobile - Home+ProjectSelection -->
+  <!-- Phones (Sam, Nov 19; Figma Mobile - Home+ProjectSelection_v2 688:300, 633:684, 688:229, 688:258):
+       one screen, a sideways carousel. Slide 1 is the greeting, then one slide per project.
+       Compass carousel controls (previous / next) sit on the screen edges; swiping works too. -->
   <div class="m-home" id="mHome">
-    <section class="m-ps" id="mProjects" aria-label="Projects. Swipe sideways for more."><div class="m-track" id="mTrack"></div></section>
-    <p class="m-greet" aria-hidden="true"><span class="mw">Hi!</span> <span class="mw">I’m</span> <span class="mw hl">Sam<i>.</i></span></p>
-    <p class="m-pron mw" aria-hidden="true">(he/they)</p>
-    <div class="m-photo" aria-hidden="true"><img class="frame-dark" src="img/intro/frame.webp" alt=""><img class="frame-light" src="img/intro/frame-light.webp" alt="" loading="lazy"><img src="img/intro/sam.webp" alt=""></div>
-    <p class="m-state" aria-hidden="true"><span class="mw">I</span> <span class="mw">collage</span> <span class="mw">culture</span> <span class="mw">through</span> <span class="mw">design</span> <span class="mw">and</span> <span class="mw">art</span> <span class="mw">direction.</span></p>
+    <section class="m-ps" id="mProjects" aria-roledescription="carousel" aria-label="Sam Morgan: hello, then projects">
+      <div class="m-intro" id="mIntro">
+        <p class="m-greet" aria-hidden="true"><span class="mw">Hi!</span> <span class="mw">I’m</span> <span class="mw hl">Sam<i>.</i></span></p>
+        <p class="m-pron mw" aria-hidden="true">(he/they)</p>
+        <div class="m-photo" aria-hidden="true"><img class="frame-dark" src="img/intro/frame.webp" alt=""><img class="frame-light" src="img/intro/frame-light.webp" alt="" loading="lazy"><img src="img/intro/sam.webp" alt=""></div>
+        <p class="m-state" aria-hidden="true"><span class="mw">I</span> <span class="mw">collage</span> <span class="mw">culture</span> <span class="mw">through</span> <span class="mw">design</span> <span class="mw">and</span> <span class="mw">art</span> <span class="mw">direction.</span></p>
+      </div>
+      <div class="m-track" id="mTrack"></div>
+      <button type="button" class="m-arrow is-prev" id="mPrev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <button type="button" class="m-arrow is-next" id="mNext" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+    </section>
+    <p class="m-who"><span>Sam Morgan</span><span>Motion Art Director</span></p>
   </div>
   <!-- Project selection, the first thing on the page (Sam, Nov 15: work first, personality last).
        Full-bleed layout from Figma ProjectSelection_v1a (Composer frame, node 619:177). Built by
@@ -165,20 +175,20 @@ try{if(sessionStorage.getItem("sm-tx")&&!matchMedia("(prefers-reduced-motion: re
   <a class="is-dark-rim" href="#projects" id="footHome">Home</a>
 </footer>
 
-<script src="js/vendor/gsap.min.js?v=20261119i"></script>
-<script src="js/vendor/ScrollTrigger.min.js?v=20261119i"></script>
-<script src="js/vendor/lenis.min.js?v=20261119i"></script>
-<script src="js/smooth.js?v=20261119i"></script>
-<script src="js/glass.js?v=20261119i"></script>
-<script src="js/projects.js?v=20261119i"></script>
-<script src="js/project-scroll.js?v=20261119i"></script>
-<script src="js/intro.js?v=20261119i"></script>   <!-- after the project scroll: its pin comes later on the page -->
-<script src="js/case.js?v=20261119i"></script>   <!-- the glass footer; after intro.js so its trigger is placed after the pins -->
-<script src="js/header.js?v=20261119i"></script>
-<script src="js/transition.js?v=20261119i"></script>
-<script src="js/theme.js?v=20261119i"></script>
-<script src="js/favicon.js?v=20261119i"></script>
-<script src="js/mobile-menu.js?v=20261119i"></script>
-<script src="js/mobile-home.js?v=20261119i"></script>
+<script src="js/vendor/gsap.min.js?v=20261119k"></script>
+<script src="js/vendor/ScrollTrigger.min.js?v=20261119k"></script>
+<script src="js/vendor/lenis.min.js?v=20261119k"></script>
+<script src="js/smooth.js?v=20261119k"></script>
+<script src="js/glass.js?v=20261119k"></script>
+<script src="js/projects.js?v=20261119k"></script>
+<script src="js/project-scroll.js?v=20261119k"></script>
+<script src="js/intro.js?v=20261119k"></script>   <!-- after the project scroll: its pin comes later on the page -->
+<script src="js/case.js?v=20261119k"></script>   <!-- the glass footer; after intro.js so its trigger is placed after the pins -->
+<script src="js/header.js?v=20261119k"></script>
+<script src="js/transition.js?v=20261119k"></script>
+<script src="js/theme.js?v=20261119k"></script>
+<script src="js/favicon.js?v=20261119k"></script>
+<script src="js/mobile-menu.js?v=20261119k"></script>
+<script src="js/mobile-home.js?v=20261119k"></script>
 </body>
 </html>
