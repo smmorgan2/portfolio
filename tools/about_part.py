@@ -10,7 +10,8 @@ EDUCATION = ['ArtCenter College of Design, Graduate Program', 'Otis, Certificate
 LINKS = [('Email', 'mailto:smmorgan2@gmail.com', False),
          ('LinkedIn', 'https://www.linkedin.com/in/sam-morgan-297a02108/', True),
          ('Instagram', 'https://www.instagram.com/sammorgan.mov/', True),
-         ('Are.na', 'https://www.are.na/sam_morgan-mov', True)]
+         ('Are.na', 'https://www.are.na/sam_morgan-mov', True),
+         ('Resume', 'files/Sam_Morgan_CV.pdf', True)]   # Sam, Nov 19: the CV uploaded Nov 18 (same file as the old site's CV link)
 lis = lambda items: ''.join(f'<li>{t}</li>' for t in items)
 ext = lambda new: ' target="_blank" rel="noopener"' if new else ''
 about = f'''
