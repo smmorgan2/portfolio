@@ -30,7 +30,7 @@ window.PROJECTS = [
     client: 'BYTE', tags: ['Design', 'Motion'],
     seq: { path: 'img/projects/spotify', frames: 180, x: 541.2, y: -511.1, w: 925.8, h: 1511.5, rest: 31, rot: 13.3 },
     // Phone still: frame 31 with the same tilt baked in (no Figma phone frame for Spotify yet)
-    m: { src: 'img/mobile/spotify.webp', x: 30, y: 10, w: 360, h: 781 } },
+    m: { src: 'img/mobile/spotify.webp', x: 52, y: 92, w: 306, h: 664 } },   // Nov 19 carousel: 85%, lower, clear of the logo
   { id: 'google-ads', title: 'Google Ads', href: 'google-ads.html', live: true,
     client: 'Entropico', tags: ['Design', 'Motion'],
     // Placed to match Figma Website Design > ProjectSelection_v2 (633:537), Nov 16: frame 1, 6% larger, tilted -1deg
@@ -41,11 +41,11 @@ window.PROJECTS = [
   { id: 'listen',     title: 'Listen Mag', href: 'listen.html',     live: true,
     client: 'Listen Mag', tags: ['Social', 'Motion'],
     seq: { path: 'img/projects/listen', frames: 180, x: 399.1, y: -2, w: 1065, h: 1196, ease: [0.333, 0, 0.667, 1] },
-    m: { src: 'img/mobile/listen.webp', x: -54, y: 158.1, w: 510, h: 577.9, rot: -4 } },
+    m: { src: 'img/mobile/listen.webp', x: -26.8, y: 199, w: 473.3, h: 538.3 } },   // Nov 19: fitted to Figma 688:229 (frame 0)
   { id: 'composer',   title: 'Composer',   href: 'composer.html',   live: true,
     client: 'Whipsaw', tags: ['Art Direction', 'Motion'],
     // Placed to match Figma ProjectSelection_v2 (633:506), Nov 16: lands on frame 114 (turned to show the
     // cylinder on the left, as in the Figma), 4% larger, tilted 1deg
     seq: { path: 'img/projects/composer', frames: 180, x: 489, y: 7.7, w: 962, h: 1217.8, rest: 12, rot: 1 },   // Sam, Nov 19: starts on this pose (tube on the right, badge to the front)
-    m: { src: 'img/mobile/composer.webp', x: 1, y: 126.8, w: 400, h: 628.5 } },
+    m: { src: 'img/mobile/composer.webp', x: 7.8, y: 179.8, w: 392.7, h: 587 } },   // Nov 19: fitted to Figma 688:258 (frame 20, 14deg)
 ];
