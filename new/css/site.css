@@ -24,7 +24,7 @@
   /* Glass: one recipe for every glass object on the site (header, hover cards, footers).
      Refraction strength and edge width live in js/glass.js (Glass.PRESET). */
   --glass-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
-  --glass-filter: blur(14px) saturate(170%) brightness(1.08);
+  --glass-filter: blur(3px) saturate(180%) brightness(1.05);   /* Nov 19: clear glass that bends (js/glass.js wobble), not frost. Was blur(14px) */
   --glass-rim: rgba(255, 255, 255, 0.45);       /* bright edge line */
   --glass-rim-soft: rgba(255, 255, 255, 0.18);  /* fainter side edges */
   --glass-glow: rgba(255, 255, 255, 0.18);      /* soft light just inside the edge */
@@ -391,12 +391,12 @@ html.tx-in .tx-tile { visibility: visible; opacity: 1; }
   clip-path: inset(0 var(--edge) 0 var(--edge) round 50px 50px 0 0);
   transform: translateY(calc(var(--drop, 0) * 230px));
 }
-.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(14px / var(--ps, 0.5))) saturate(170%) brightness(1.08); transform: translateY(calc(var(--drop, 0) * -230px)); }
+.ps-glass-objs { position: absolute; inset: 0; filter: blur(calc(3px / var(--ps, 0.5))) saturate(170%) brightness(1.08); transform: translateY(calc(var(--drop, 0) * -230px)); }
 .ps-glass::after {
   content: ""; position: absolute; inset: 0;
   background: var(--glass-fill);
   /* the rim now comes from the liquid glass surface (.lg-rim), kept faint here (Sam, Nov 15) */
-  box-shadow: inset 0 18px 30px -18px var(--glass-glow);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36), inset 0 18px 30px -18px var(--glass-glow);   /* 1px lit top edge */
 }
 /* Light catching the panel's top edge, following the pointer while it's over the frame
    (after Compass "Liquid Glass": reflections that respond to the pointer). Text and artwork untouched. */
@@ -639,5 +639,5 @@ html[data-theme="light"] .lg-shine { background: radial-gradient(60% 120% at var
 /* Project strip: the glass refracts a copy of the artwork (so it works in every browser).
    Chrome / Edge: a real lens filter, js/project-scroll.js builds #psLens (edge bend + enlargement).
    Others: the copy is simply enlarged 6% from the middle of the screen. */
-html.lg-svg .ps-glass-objs { filter: url(#psLens) blur(calc(8px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }   /* less frost, so the bend reads */
-html:not(.lg-svg) .ps-glass-objs { transform: translateY(calc(var(--drop, 0) * -230px)) scale(1.06); transform-origin: 50% 50%; filter: blur(calc(8px / var(--ps, 0.5))) saturate(170%) brightness(1.08); }
+html.lg-svg .ps-glass-objs { filter: url(#psLens) blur(calc(3px / var(--ps, 0.5))) saturate(180%) brightness(1.05); }   /* less frost, so the bend reads */
+html:not(.lg-svg) .ps-glass-objs { transform: translateY(calc(var(--drop, 0) * -230px)) scale(1.06); transform-origin: 50% 50%; filter: blur(calc(3px / var(--ps, 0.5))) saturate(180%) brightness(1.05); }

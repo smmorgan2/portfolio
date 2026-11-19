@@ -84,6 +84,17 @@
     return c.toDataURL();
   }
 
+  /* Wobble (Sam, Nov 19, after the "real glass bends" reel): a soft noise field pushes every
+     backdrop pixel a little sideways, so what's behind the glass warps like it's seen through thick
+     glass instead of being smeared by blur. Paired with much less blur (--glass-filter). Values are
+     in the filter's own px: opts.noise = how far pixels move, opts.noiseFreq = how big the ripples are. */
+  function wobble(input, opts) {
+    const scale = opts.noise ?? 26, freq = opts.noiseFreq ?? 0.007;
+    if (!scale) return '';
+    return `<feTurbulence type="fractalNoise" baseFrequency="${freq} ${freq * 1.6}" numOctaves="2" seed="7" result="noise"/>` +
+      `<feDisplacementMap in="${input}" in2="noise" scale="${scale}" xChannelSelector="R" yChannelSelector="G"/>`;
+  }
+
   function refract(el, opts = {}) {
     const noop = { setSize() {}, rebuild() {}, build() { return ''; }, use() {} };
     if (!supported) return noop;
@@ -93,7 +104,7 @@
     filter.setAttribute('color-interpolation-filters', 'sRGB');
     filter.innerHTML =
       '<feImage x="0" y="0" preserveAspectRatio="none" result="map"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G"/>';
+      '<feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" result="bent"/>' + wobble('bent', opts);
     ensureDefs().appendChild(filter);
     const feImage = filter.querySelector('feImage');
     const feDisp = filter.querySelector('feDisplacementMap');
@@ -168,7 +179,7 @@
     const href = buildMap(W, H, opts.radius || 0, opts.edge ?? 60, !!opts.flatTop, !!opts.flatBottom, opts.magnify || 0, opts.rim ?? 1, opts.magnifyY ?? null);
     filter.innerHTML =
       `<feImage x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" href="${href}" result="map"/>` +
-      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${opts.strength ?? 75}" xChannelSelector="R" yChannelSelector="G"/>`;
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${opts.strength ?? 75}" xChannelSelector="R" yChannelSelector="G" result="bent"/>` + wobble('bent', opts);
     ensureDefs().appendChild(filter);
     return true;
   }
