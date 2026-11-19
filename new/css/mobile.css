@@ -172,6 +172,37 @@
   }
   @media (prefers-reduced-motion: reduce) { .m-dots::after { transition: none; } }
 
+  /* Closing slide (Sam, Nov 19): after the last project, the way to About and Contact even if the
+     S-M menu is never found. Same type as the About page's "Let's work together" and the pills. */
+  .m-end {
+    position: absolute; z-index: 3; left: 50%; top: calc(100svh + (330 - 821) * var(--mu)); width: calc(318 * var(--mu)); margin-left: calc(-159 * var(--mu));
+    display: flex; flex-direction: column; align-items: center; gap: calc(28 * var(--mu)); will-change: transform;
+  }
+  .m-end-line { margin: 0; text-align: center; font-weight: 500; font-size: calc(44 * var(--mu)); letter-spacing: -0.05em; line-height: 1.1; color: var(--fg); }
+  .m-end-links { display: flex; gap: calc(12 * var(--mu)); margin: 0; padding: 0; list-style: none; }
+  .m-end-links a {
+    width: calc(120 * var(--mu)); height: 44px; display: flex; align-items: center; justify-content: center; text-decoration: none;
+    padding-bottom: calc(2 * var(--pill-lift)); background: var(--accent); color: var(--on-accent); border: 1px solid var(--pill-rim); border-radius: 22px;
+    font-weight: 300; font-size: 17px; letter-spacing: -0.05em; -webkit-tap-highlight-color: transparent;
+  }
+  .m-end-links a:active { scale: 0.96; }
+  .m-end-links a:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+  /* Menu hint on the first visit (js/mobile-home.js): the logo flickers yellow / blue and bounces,
+     and "Tap for menu" shows under it for a few seconds */
+  .m-hint {
+    position: fixed; z-index: 119; left: 0; right: 0; margin: 0; text-align: center; pointer-events: none;
+    top: calc((63 + 50.9 + 10) * var(--mu));
+    font-weight: 300; font-size: 14px; letter-spacing: -0.03em; color: var(--fg);
+    opacity: 0; translate: 0 -6px; transition: opacity 0.4s ease-out, translate 0.4s ease-out;
+  }
+  .m-hint.is-on { opacity: 1; translate: 0 0; }
+  .m-logo.is-hinting { animation: m-hint-bounce 1.2s ease-in-out 2; }
+  .m-logo.is-hinting svg { animation: m-hint-flicker 0.6s steps(1) 4; }
+  @keyframes m-hint-flicker { 0% { fill: var(--accent); } 50% { fill: var(--hint-alt, var(--blue)); } }
+  html[data-theme="light"] .m-logo { --hint-alt: #EDFF21; }   /* the other logo colour in light mode */
+  @keyframes m-hint-bounce { 0%, 100% { scale: 1; } 20% { scale: 1.12; } 40% { scale: 0.96; } 60% { scale: 1.04; } }
+
   /* Name and role: fixed along the bottom on every slide (x39 / x228, y764), over the glass */
   .m-who {
     position: absolute; z-index: 5; left: calc(50% + (39 - 201) * var(--mu)); width: calc(318 * var(--mu)); top: calc(100svh + (764 - 821) * var(--mu));

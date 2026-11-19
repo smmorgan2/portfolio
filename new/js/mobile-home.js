@@ -14,7 +14,8 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const projects = window.PROJECTS.filter((p) => (p.live || p.home) && p.m);
   const mu = () => parseFloat(getComputedStyle(root).getPropertyValue('--mu')) || Math.min(innerWidth, 560) / 402;
-  const SLIDES = projects.length + 1;      // greeting + projects
+  const SLIDES = projects.length + 2;      // greeting + projects + the closing slide (About / Contact)
+  const LAST = SLIDES - 1;
 
   /* ---------- Build the project layer ---------- */
   const section = document.getElementById('mProjects');
@@ -36,9 +37,15 @@
         <ul class="m-tags"><li></li><li></li><li></li></ul>
       </div>
     </a>
+    <div class="m-end" id="mEnd">
+      <p class="m-end-line">Let’s work together</p>
+      <ul class="m-end-links"><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul>
+    </div>
     <div class="m-dots" role="group" aria-label="Projects">${projects.map((p, i) =>
       `<button type="button" class="m-dot" aria-label="${p.title}"></button>`).join('')}</div>`;
   const card = document.getElementById('mCard');
+  const endEl = document.getElementById('mEnd');
+  const endLinks = [...endEl.querySelectorAll('a')];
   const stills = [...trackEl.querySelectorAll('.m-objs .m-still')];
   const glassStills = [...trackEl.querySelectorAll('.m-glass-objs .m-still')];
   const glassEls = [...trackEl.querySelectorAll('.m-glass, .m-fade, .m-cap, .m-dots')];
@@ -51,10 +58,12 @@
 
   // Slide 0 is the greeting; slide k (1..n) is project k-1
   function fill(slide) {
-    const p = projects[Math.max(0, slide - 1)];
+    const p = projects[Math.max(0, Math.min(projects.length - 1, slide - 1))];
+    const isProject = slide > 0 && slide < LAST;
+    endLinks.forEach((a) => { a.tabIndex = slide === LAST ? 0 : -1; });
     nameEl.textContent = p.title;
     [p.client, ...p.tags].forEach((t, k) => { if (tagEls[k]) tagEls[k].textContent = t; });
-    if (slide > 0 && p.href) {
+    if (isProject && p.href) {
       card.href = p.href;
       card.setAttribute('aria-label', `${p.title}: ${p.client}, ${p.tags.join(', ')}. View the case study. Project ${slide} of ${projects.length}.`);
       card.tabIndex = 0;
@@ -62,12 +71,12 @@
       card.removeAttribute('href'); card.removeAttribute('aria-label'); card.tabIndex = -1;
     }
     // Position under the pills (Sam, Nov 19): the yellow bar slides to the current project
-    dotsEl.style.setProperty('--i', Math.max(0, slide - 1));
+    dotsEl.style.setProperty('--i', Math.max(0, Math.min(projects.length - 1, slide - 1)));
     dots.forEach((d, k) => { if (k === slide - 1) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
     prevBtn.disabled = slide === 0;
-    nextBtn.disabled = slide === SLIDES - 1;
+    nextBtn.disabled = slide === LAST;
     prevBtn.setAttribute('aria-label', slide === 1 ? 'Previous: hello' : slide > 1 ? `Previous project: ${projects[slide - 2].title}` : 'Previous');
-    nextBtn.setAttribute('aria-label', slide < SLIDES - 1 ? `Next project: ${projects[slide].title}` : 'Next');
+    nextBtn.setAttribute('aria-label', slide < LAST - 1 ? `Next project: ${projects[slide].title}` : slide === LAST - 1 ? 'Next: About and Contact' : 'Next');
   }
   // Same word pop as desktop (js/project-scroll.js): rise, flash the accent colour, settle.
   function popCaption() {
@@ -91,7 +100,9 @@
     const sp = S();
     introEl.style.transform = `translate3d(${x}px,0,0)`;
     // The glass, fade and caption come in with the first project, then stay put
-    const gx = Math.max(0, sp + x);
+    // ...and leave with the last project, for the closing slide
+    const gx = Math.max(0, sp + x) + Math.min(0, x + projects.length * sp);
+    endEl.style.transform = `translate3d(${LAST * sp + x}px,0,0)`;
     glassEls.forEach((el) => { el.style.transform = gx ? `translate3d(${gx}px,0,0)` : ''; });
     stills.forEach((el, i) => {
       const off = (i + 1) * sp + x;
@@ -108,7 +119,7 @@
     const changed = next !== index;
     index = next;
     const target = -index * S();
-    if (changed) { fill(index); if (index > 0) popCaption(); }
+    if (changed) { fill(index); if (index > 0 && index < LAST) popCaption(); }
     if (settle) settle.kill();
     if (reduced || !window.gsap) { x = target; render(); return; }
     // A faster swipe finishes faster: the slide leaves with the finger's speed.
@@ -180,10 +191,33 @@
   fill(index);
   render();
 
+  /* ---------- Menu hint (Sam, Nov 19): the S-M logo is the menu button, which nobody guesses.
+     On the first visit, once the greeting has played, the logo flickers between its two colours
+     (yellow and blue, like the tab icon) with a little bounce, and "Tap for menu" shows under it
+     for a few seconds. Never again after that, or after the logo has been tapped once. ---------- */
+  const HINT_KEY = 'sm-menu-hint';
+  let hinted = false;
+  try { hinted = !!localStorage.getItem(HINT_KEY); } catch (e) { /* storage blocked: hint every visit */ }
+  const markHinted = () => { hinted = true; try { localStorage.setItem(HINT_KEY, '1'); } catch (e) { /* fine */ } };
+  addEventListener('click', (e) => { if (e.target.closest && e.target.closest('.m-logo')) { markHinted(); hideHint(); } }, true);
+  let hintEl = null, hintT = null;
+  function hideHint() { if (hintEl) hintEl.classList.remove('is-on'); const l = document.querySelector('.m-logo'); if (l) l.classList.remove('is-hinting'); }
+  function menuHint() {
+    if (hinted) return;
+    const logo = document.querySelector('.m-logo');
+    if (!logo || logo.getAttribute('aria-expanded') === 'true') return;
+    markHinted();
+    hintEl = document.createElement('p');
+    hintEl.className = 'm-hint'; hintEl.setAttribute('aria-hidden', 'true'); hintEl.textContent = 'Tap for menu';
+    document.body.appendChild(hintEl);
+    requestAnimationFrame(() => { hintEl.classList.add('is-on'); if (!reduced) logo.classList.add('is-hinting'); });
+    hintT = setTimeout(hideHint, 3600);
+  }
+
   /* ---------- Greeting: plays on arrival ---------- */
   const words = [...introEl.querySelectorAll('.mw')];
   const photo = introEl.querySelector('.m-photo');
-  if (reduced || !window.gsap) return;
+  if (reduced || !window.gsap) { setTimeout(menuHint, 1200); return; }
   gsap.set([...words, photo], { autoAlpha: 0 });
   const tl = gsap.timeline({ paused: true });
   const wordIn = (el, at, flash = true) => {
@@ -203,6 +237,7 @@
   wordIn(pron, 1.2);
   state.forEach((w, k) => wordIn(w, 1.6 + k * 0.22));
   // Plays once the page (and any page transition) is ready; already done if you arrived on a project
-  if (index > 0) tl.progress(1);
+  tl.eventCallback('onComplete', () => setTimeout(menuHint, 500));
+  if (index > 0) { tl.progress(1); setTimeout(menuHint, 1500); }
   else (window.txWait || Promise.resolve()).then(() => setTimeout(() => tl.play(), 150));
 })();
